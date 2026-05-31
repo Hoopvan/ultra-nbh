@@ -684,7 +684,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 
 <script>
 const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ── CONSTANTES ─────────────────────────────────────────────
 const LEVELS = [
