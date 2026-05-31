@@ -12,10 +12,6 @@
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-<script>
-  const SUPABASE_URL = "https://adkephbplykqdejhpted.supabase.co";        
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFka2VwaGJwbHlrcWRlamhwdGVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjUyMTAsImV4cCI6MjA5NTc0MTIxMH0.EQ_AZLYxI9hN65Xk_mf--D03q29Zp6h0lncsGeBTBRY";    
-</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
@@ -683,8 +679,13 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 </div>
 
 <script>
+// ── CONFIG SUPABASE ────────────────────────────────────────
+// Remplace ces deux valeurs avec tes vraies clés
+const SUPABASE_URL = "https://adkephbplykqdejhpted.supabase.co";        
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFka2VwaGJwbHlrcWRlamhwdGVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjUyMTAsImV4cCI6MjA5NTc0MTIxMH0.EQ_AZLYxI9hN65Xk_mf--D03q29Zp6h0lncsGeBTBRY";  
+
 const { createClient } = supabase;
-window.db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ── CONSTANTES ─────────────────────────────────────────────
 const LEVELS = [
