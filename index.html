@@ -266,30 +266,16 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 <!-- ONBOARDING -->
 <div id="screen-onboarding" class="screen">
   <div class="ob-mascot">
-    <svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="75" cy="75" r="73" fill="#13131a" stroke="#252530" stroke-width="1"/>
-      <ellipse cx="75" cy="87" rx="30" ry="35" fill="#f0f0f5"/>
-      <ellipse cx="75" cy="58" rx="21" ry="23" fill="#f0f0f5"/>
-      <ellipse cx="56" cy="43" rx="8" ry="11" fill="#f0f0f5" transform="rotate(-15 56 43)"/>
-      <ellipse cx="94" cy="43" rx="8" ry="11" fill="#f0f0f5" transform="rotate(15 94 43)"/>
-      <ellipse cx="55" cy="41" rx="4.5" ry="6.5" fill="#e8192c" transform="rotate(-15 55 41)"/>
-      <ellipse cx="95" cy="41" rx="4.5" ry="6.5" fill="#e8192c" transform="rotate(15 95 41)"/>
-      <circle cx="67" cy="56" r="4" fill="#0a0a0f"/><circle cx="83" cy="56" r="4" fill="#0a0a0f"/>
-      <circle cx="68.5" cy="54.5" r="1.5" fill="white"/><circle cx="84.5" cy="54.5" r="1.5" fill="white"/>
-      <ellipse cx="75" cy="63" rx="3" ry="2.5" fill="#e8192c"/>
-      <ellipse cx="75" cy="90" rx="24" ry="27" fill="#0d1b3e"/>
-      <text x="75" y="96" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="16" fill="white">NBH</text>
-      <ellipse cx="54" cy="113" rx="9" ry="6.5" fill="#f0f0f5" transform="rotate(-20 54 113)"/>
-      <ellipse cx="96" cy="113" rx="9" ry="6.5" fill="#f0f0f5" transform="rotate(20 96 113)"/>
-      <path d="M97 99 Q118 92 121 105 Q124 118 107 115" stroke="#f0f0f5" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <circle cx="121" cy="106" r="4" fill="#0a0a0f"/>
-    </svg>
+	<img src="/logo-nbh.png" style="width:150px;height:150px;object-fit:contain" alt="NBH">
   </div>
   <div class="ob-logo">HOOP<span>.</span></div>
   <div class="ob-sub">Nantes Basket Hermine</div>
   <div class="ob-tagline">Deviens<br><em>l'Hermine</em><br>de Nantes</div>
   <p class="ob-desc">Joue, progresse, appartiens.<br>L'app qui fait grandir ta relation avec le club.</p>
   <button class="btn-red" onclick="signInWithGoogle()">CONNEXION AVEC GOOGLE</button>
+  <button onclick="startDemoMode()" style="margin-top:12px;background:transparent;color:var(--white-muted);border:1px solid var(--black4);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;padding:12px;cursor:pointer;width:100%;display:none" id="demo-btn">
+    MODE DÉMO (local uniquement)
+  </button>
   <div class="error-banner" id="auth-error">Connexion impossible. Vérifie ta configuration Supabase.</div>
 </div>
 
@@ -681,8 +667,8 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 <script>
 // ── CONFIG SUPABASE ────────────────────────────────────────
 // Remplace ces deux valeurs avec tes vraies clés
-const SUPABASE_URL = "https://adkephbplykqdejhpted.supabase.co";        
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFka2VwaGJwbHlrcWRlamhwdGVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjUyMTAsImV4cCI6MjA5NTc0MTIxMH0.EQ_AZLYxI9hN65Xk_mf--D03q29Zp6h0lncsGeBTBRY"; 
+const SUPABASE_URL = "https://adkephbplykqdejhpted.supabase.co";       
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFka2VwaGJwbHlrcWRlamhwdGVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjUyMTAsImV4cCI6MjA5NTc0MTIxMH0.EQ_AZLYxI9hN65Xk_mf--D03q29Zp6h0lncsGeBTBRY";
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -721,6 +707,13 @@ let newHair = 'hair1';
 // ── INIT ───────────────────────────────────────────────────
 window.onload = async () => {
   startCountdown();
+
+  // Affiche le bouton démo uniquement en local
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    const btn = document.getElementById('demo-btn');
+    if (btn) btn.style.display = 'block';
+  }
+
   const { data: { session } } = await db.auth.getSession();
   if (session) { currentUser = session.user; await loadOrCreateProfile(); }
   else showScreen('onboarding');
@@ -728,6 +721,33 @@ window.onload = async () => {
     if (event === 'SIGNED_IN' && session) { currentUser = session.user; await loadOrCreateProfile(); }
   });
 };
+
+// Mode démo — profil fictif en mémoire, pas de Supabase auth
+function startDemoMode() {
+  currentUser = { id: 'demo-user-local' };
+  profile = {
+    id: 'demo-user-local',
+    name: 'Fan Demo',
+    xp: 150,
+    interactions: 8,
+    streak: 3,
+    last_play: new Date().toISOString().split('T')[0],
+    active_items: ['couleurs', 'echarpe'],
+    avatar_silhouette: 'A',
+    avatar_skin: 'skin2',
+    avatar_hair: 'hair1',
+    pouls_date: null,
+    vestiaire_date: null
+  };
+
+  // Override des fonctions Supabase pour le mode démo
+  window._demoMode = true;
+
+  loadGames().then(() => {
+    loadCommunityData();
+    showMain();
+  });
+}
 
 async function signInWithGoogle() {
   const { error } = await db.auth.signInWithOAuth({
@@ -770,6 +790,7 @@ function updateCreatePreview() {
 }
 
 async function submitProfile() {
+  if (window._demoMode) { profile.name = newName; profile.avatar_silhouette = newSil; profile.avatar_skin = newSkin; profile.avatar_hair = newHair; showMain(); return; }
   const { data, error } = await db.from('users').insert({
     id: currentUser.id,
     name: newName,
@@ -793,6 +814,7 @@ async function checkStreak() {
 }
 
 async function updateProfile(fields) {
+  if (window._demoMode) { profile = {...profile, ...fields}; return; }
   const { data } = await db.from('users').update(fields).eq('id', currentUser.id).select().single();
   if (data) profile = data;
 }
@@ -1121,7 +1143,9 @@ async function submitPouls() {
   if(!selEmotion || !profile) return;
   const today = new Date().toISOString().split('T')[0];
   const matchId = gamesData.pouls?.content?.match_id || 'match-inconnu';
-  await db.from('pouls_votes').insert({ user_id: currentUser.id, emotion: selEmotion.label, match_id: matchId });
+  if (!window._demoMode) {
+    await db.from('pouls_votes').insert({ user_id: currentUser.id, emotion: selEmotion.label, match_id: matchId });
+  }
   await addXP(20); await addInteraction(); await updateProfile({ pouls_date: today });
   const { data: votes } = await db.from('pouls_votes').select('emotion').eq('match_id', matchId);
   let pct = 0;
