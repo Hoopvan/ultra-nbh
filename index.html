@@ -738,7 +738,7 @@ async function signInWithGoogle() {
 
 async function loadOrCreateProfile() {
   const { data } = await db.from('users').select('*').eq('id', currentUser.id).single();
-  if (data) { profile = data; await checkStreak(); showMain(); }
+  if (data) { profile = data; await checkStreak(); await loadGames(); showMain(); }
   else showScreen('name');
 }
 
@@ -809,7 +809,6 @@ function showScreen(name) {
 function showMain() {
   document.getElementById('screen-loading').classList.remove('active');
   document.getElementById('navbar').style.display = 'flex';
-  loadGames();
   showTab('tribune');
   loadCommunityData();
 }
