@@ -415,8 +415,8 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
   <div class="screen-scroll">
     <div class="tribune-hero">
       <div class="tribune-hero-label">⚡ Prochain match</div>
-      <div class="tribune-hero-match">Hermine Nantes<br>vs Elan Chalon</div>
-      <div class="tribune-hero-date">Vendredi 6 juin · 20h00 · Trocardière</div>
+      <div class="tribune-hero-match" id="tribune-match-name">Hermine Nantes<br>vs Elan Chalon</div>
+      <div class="tribune-hero-date" id="tribune-match-date">Vendredi 6 juin · 20h00 · Trocardière</div>
       <div class="countdown-row">
         <div class="countdown-box"><span class="countdown-val" id="cd-j">--</span><span class="countdown-unit">Jours</span></div>
         <div class="countdown-box"><span class="countdown-val" id="cd-h">--</span><span class="countdown-unit">Heures</span></div>
@@ -682,7 +682,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 // ── CONFIG SUPABASE ────────────────────────────────────────
 // Remplace ces deux valeurs avec tes vraies clés
 const SUPABASE_URL = "https://adkephbplykqdejhpted.supabase.co";        
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFka2VwaGJwbHlrcWRlamhwdGVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjUyMTAsImV4cCI6MjA5NTc0MTIxMH0.EQ_AZLYxI9hN65Xk_mf--D03q29Zp6h0lncsGeBTBRY";  
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFka2VwaGJwbHlrcWRlamhwdGVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjUyMTAsImV4cCI6MjA5NTc0MTIxMH0.EQ_AZLYxI9hN65Xk_mf--D03q29Zp6h0lncsGeBTBRY"; 
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -738,7 +738,7 @@ async function signInWithGoogle() {
 
 async function loadOrCreateProfile() {
   const { data } = await db.from('users').select('*').eq('id', currentUser.id).single();
-  if (data) { profile = data; await checkStreak(); await loadGames(); showMain(); }
+  if (data) { profile = data; await checkStreak(); await loadGames(); await loadCommunityData(); showMain(); }
   else showScreen('name');
 }
 
@@ -810,7 +810,6 @@ function showMain() {
   document.getElementById('screen-loading').classList.remove('active');
   document.getElementById('navbar').style.display = 'flex';
   showTab('tribune');
-  loadCommunityData();
 }
 
 const TABS = ['tribune','missions','avatar'];
@@ -1013,16 +1012,38 @@ async function loadCommunityData() {
   const { count } = await db.from('users').select('*', {count:'exact',head:true});
   const fc = document.getElementById('fans-total'); if(fc) fc.textContent = count || '—';
 
-  const { data: votes } = await db.from('pouls_votes').select('emotion');
-  if(votes && votes.length) {
-    const t = {'En feu':0,'Confiant':0,'On y croit':0,'Nerveux':0};
-    votes.forEach(v => { if(t[v.emotion]!==undefined) t[v.emotion]++; });
-    const total = votes.length;
-    [['feu','En feu'],['conf','Confiant'],['croit','On y croit'],['nerv','Nerveux']].forEach(([k,e]) => {
-      const pct = Math.round(t[e]/total*100);
-      const bar=document.getElementById('bar-'+k); if(bar) bar.style.width=pct+'%';
-      const p=document.getElementById('pct-'+k); if(p) p.textContent=pct+'%';
-    });
+  // Infos du prochain match depuis le jeu Pouls actif
+  if (gamesData.pouls) {
+    const c = gamesData.pouls.content;
+    const matchEl = document.getElementById('tribune-match-name');
+    const dateEl = document.getElementById('tribune-match-date');
+    if (matchEl) matchEl.innerHTML = c.match.replace(' vs ', '<br>vs ');
+    if (dateEl) dateEl.textContent = c.date_label;
+    // Filtre les votes par match_id
+    const { data: votes } = await db.from('pouls_votes').select('emotion').eq('match_id', c.match_id);
+    if(votes && votes.length) {
+      const t = {'En feu':0,'Confiant':0,'On y croit':0,'Nerveux':0};
+      votes.forEach(v => { if(t[v.emotion]!==undefined) t[v.emotion]++; });
+      const total = votes.length;
+      [['feu','En feu'],['conf','Confiant'],['croit','On y croit'],['nerv','Nerveux']].forEach(([k,e]) => {
+        const pct = Math.round(t[e]/total*100);
+        const bar=document.getElementById('bar-'+k); if(bar) bar.style.width=pct+'%';
+        const p=document.getElementById('pct-'+k); if(p) p.textContent=pct+'%';
+      });
+    }
+  } else {
+    // Fallback si pas de jeu actif
+    const { data: votes } = await db.from('pouls_votes').select('emotion');
+    if(votes && votes.length) {
+      const t = {'En feu':0,'Confiant':0,'On y croit':0,'Nerveux':0};
+      votes.forEach(v => { if(t[v.emotion]!==undefined) t[v.emotion]++; });
+      const total = votes.length;
+      [['feu','En feu'],['conf','Confiant'],['croit','On y croit'],['nerv','Nerveux']].forEach(([k,e]) => {
+        const pct = Math.round(t[e]/total*100);
+        const bar=document.getElementById('bar-'+k); if(bar) bar.style.width=pct+'%';
+        const p=document.getElementById('pct-'+k); if(p) p.textContent=pct+'%';
+      });
+    }
   }
 
   const { data: topFans } = await db.from('users').select('name,xp,streak,avatar_silhouette,avatar_skin,avatar_hair').order('xp',{ascending:false}).limit(10);
