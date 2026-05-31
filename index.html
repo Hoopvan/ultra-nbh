@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hoop NBH">
+<title>Hoop NBH</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  const SUPABASE_URL = "https://adkephbplykqdejhpted.supabase.co";        
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFka2VwaGJwbHlrcWRlamhwdGVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjUyMTAsImV4cCI6MjA5NTc0MTIxMH0.EQ_AZLYxI9hN65Xk_mf--D03q29Zp6h0lncsGeBTBRY";    
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --black:#0a0a0f; --black2:#13131a; --black3:#1c1c26; --black4:#252530; --black5:#2e2e3d;
+  --red:#e8192c; --red-dim:rgba(232,25,44,0.12); --red-mid:rgba(232,25,44,0.25);
+  --white:#f0f0f5; --white-dim:rgba(240,240,245,0.08); --white-mid:rgba(240,240,245,0.25);
+  --white-muted:rgba(240,240,245,0.45); --navy:#0d1b3e; --navy-bright:#1a3a7a;
+  --gold:#f5a623; --radius:16px; --radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:var(--white);font-family:'Barlow',sans-serif}
+#app{height:100vh;width:100vw;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;overflow:hidden}
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden}
+.screen.active{display:flex}
+.screen-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:88px}
+
+/* LOADING */
+#screen-loading{display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:var(--black)}
+#screen-loading.active{display:flex}
+.loading-logo{font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;letter-spacing:-2px;color:var(--white)}
+.loading-logo span{color:var(--red)}
+.loading-spinner{width:32px;height:32px;border:3px solid var(--black4);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ONBOARDING */
+#screen-onboarding{display:none;align-items:center;justify-content:center;flex-direction:column;padding:40px 28px;text-align:center;background:radial-gradient(ellipse at 50% 30%,#1a0a0e 0%,var(--black) 70%)}
+#screen-onboarding.active{display:flex}
+.ob-logo{font-family:'Barlow Condensed',sans-serif;font-size:60px;font-weight:900;letter-spacing:-2px;line-height:1;color:var(--white);margin-bottom:2px}
+.ob-logo span{color:var(--red)}
+.ob-sub{font-size:11px;font-weight:700;letter-spacing:4px;color:var(--white-muted);text-transform:uppercase;margin-bottom:32px}
+.ob-mascot{width:150px;height:150px;margin:0 auto 28px}
+.ob-tagline{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;line-height:1.15;color:var(--white);margin-bottom:10px}
+.ob-tagline em{color:var(--red);font-style:normal}
+.ob-desc{font-size:14px;color:var(--white-muted);line-height:1.6;margin-bottom:32px}
+
+/* NAME */
+#screen-name{display:none;align-items:center;justify-content:center;flex-direction:column;padding:40px 28px;text-align:center}
+#screen-name.active{display:flex}
+.name-title{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;color:var(--white);margin-bottom:8px}
+.name-sub{font-size:14px;color:var(--white-muted);margin-bottom:32px;line-height:1.5}
+.input-field{width:100%;background:var(--black3);border:1.5px solid var(--black5);border-radius:var(--radius-sm);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;padding:16px 20px;margin-bottom:12px;outline:none;transition:border-color .2s;text-align:center;letter-spacing:1px}
+.input-field:focus{border-color:var(--red)}
+.input-field::placeholder{color:var(--white-muted);font-weight:400;font-size:18px;letter-spacing:0}
+
+/* AVATAR CREATION */
+#screen-create-avatar{display:none;flex-direction:column;flex:1;overflow:hidden}
+#screen-create-avatar.active{display:flex}
+.create-av-scroll{flex:1;overflow-y:auto;padding:0 20px 100px;-webkit-overflow-scrolling:touch}
+.create-av-title{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--white);margin-bottom:4px}
+.create-av-sub{font-size:13px;color:var(--white-muted);margin-bottom:24px}
+.create-av-preview{width:130px;height:146px;margin:0 auto 24px;display:block}
+.picker-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--white-muted);margin-bottom:10px}
+.sil-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+.sil-btn{background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:14px 10px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:8px}
+.sil-btn.sel{border-color:var(--red);background:var(--red-dim)}
+.sil-btn svg{width:60px;height:67px}
+.sil-label{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white-muted)}
+.sil-btn.sel .sil-label{color:var(--red)}
+.skin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px}
+.skin-btn{height:44px;border-radius:10px;border:2px solid var(--black4);cursor:pointer;transition:all .15s;position:relative}
+.skin-btn.sel{border-color:var(--red);transform:scale(1.08)}
+.skin-btn.sel::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:white;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.hair-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px}
+.hair-btn{background:var(--black2);border:2px solid var(--black4);border-radius:10px;padding:8px 4px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.hair-btn.sel{border-color:var(--red);background:var(--red-dim)}
+.hair-btn svg{width:40px;height:40px}
+.hair-label{font-size:9px;color:var(--white-muted);text-transform:uppercase;letter-spacing:.5px}
+.hair-btn.sel .hair-label{color:var(--red)}
+
+/* BUTTONS */
+.btn-red{background:var(--red);color:var(--white);border:none;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:16px 40px;cursor:pointer;width:100%;transition:transform .1s,opacity .1s;position:relative;overflow:hidden}
+.btn-red::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 60%)}
+.btn-red:active{transform:scale(.97);opacity:.88}
+.btn-red:disabled{opacity:.4;pointer-events:none}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;flex-shrink:0;background:var(--black);border-bottom:1px solid var(--black3)}
+.topbar-logo{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--white)}
+.topbar-logo span{color:var(--red)}
+.xp-chip{display:flex;align-items:center;gap:5px;background:var(--black3);border-radius:20px;padding:6px 12px;border:1px solid var(--black5)}
+.xp-chip-val{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;color:var(--red)}
+.xp-chip-label{font-size:10px;color:var(--white-muted);text-transform:uppercase;letter-spacing:1px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--white-muted);padding:18px 16px 8px}
+
+/* TRIBUNE */
+.tribune-hero{margin:14px 16px 0;background:linear-gradient(135deg,var(--navy) 0%,#0a1428 100%);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--navy-bright);position:relative;overflow:hidden}
+.tribune-hero::before{content:'';position:absolute;top:-30px;right:-20px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(26,58,122,.6) 0%,transparent 70%)}
+.tribune-hero-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(74,158,255,.8);margin-bottom:6px}
+.tribune-hero-match{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--white);line-height:1.1;margin-bottom:4px}
+.tribune-hero-date{font-size:12px;color:var(--white-muted);margin-bottom:14px}
+.countdown-row{display:flex;gap:8px}
+.countdown-box{background:rgba(255,255,255,.08);border-radius:8px;padding:8px 12px;text-align:center;flex:1}
+.countdown-val{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--white);line-height:1;display:block}
+.countdown-unit{font-size:9px;color:var(--white-muted);text-transform:uppercase;letter-spacing:1px}
+.fans-counter{margin:0 16px;background:var(--black2);border-radius:var(--radius-sm);border:1px solid var(--black4);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.fans-counter-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--white)}
+.fans-counter-val span{color:var(--red)}
+.fans-counter-label{font-size:12px;color:var(--white-muted)}
+.pouls-collectif{margin:0 16px;background:var(--black2);border-radius:var(--radius);border:1px solid var(--black4);padding:16px}
+.pouls-collectif-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse-anim 1.5s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse-anim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.emotion-bars{display:flex;flex-direction:column;gap:7px}
+.emotion-bar-row{display:flex;align-items:center;gap:10px}
+.emotion-bar-emoji{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.emotion-bar-track{flex:1;height:8px;background:var(--black4);border-radius:4px;overflow:hidden}
+.emotion-bar-fill{height:100%;border-radius:4px;transition:width 1s ease}
+.emotion-bar-pct{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white-muted);width:32px;text-align:right;flex-shrink:0}
+.fan-jour{margin:0 16px;background:linear-gradient(135deg,#1a1200 0%,var(--black2) 100%);border-radius:var(--radius);border:1px solid rgba(245,166,35,.2);padding:14px 16px;display:flex;align-items:center;gap:14px}
+.fan-jour-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+.fan-jour-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:1px}
+.fan-jour-sub{font-size:12px;color:var(--white-muted)}
+.fans-wall{padding:0 16px}
+.fans-wall-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.fan-tile{display:flex;flex-direction:column;align-items:center;gap:4px}
+.fan-tile-avatar{width:52px;height:52px;border-radius:14px;background:var(--black3);border:1.5px solid var(--black5);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}
+.fan-tile-avatar.online{border-color:var(--red)}
+.fan-tile-avatar.online::after{content:'';position:absolute;bottom:3px;right:3px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--black3)}
+.fan-tile-name{font-size:10px;color:var(--white-muted);text-align:center;line-height:1.2}
+
+/* MISSIONS */
+.missions-header{padding:14px 16px 0}
+.missions-greeting{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--white);line-height:1.1;margin-bottom:2px}
+.missions-greeting span{color:var(--red)}
+.missions-greeting-sub{font-size:13px;color:var(--white-muted);margin-bottom:14px}
+.xp-bar-wrap{padding:0 16px}
+.xp-bar-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.xp-bar-level{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)}
+.xp-bar-pts{font-size:11px;color:var(--white-muted)}
+.xp-bar-track{height:7px;background:var(--black3);border-radius:4px;overflow:hidden}
+.xp-bar-fill{height:100%;background:var(--red);border-radius:4px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.streak-card{margin:0 16px;background:var(--navy);border-radius:var(--radius);border:1px solid rgba(26,58,122,.8);padding:14px 16px;display:flex;align-items:center;gap:12px}
+.streak-val{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--white);line-height:1}
+.streak-val b{color:#4a9eff}
+.streak-sub{font-size:12px;color:var(--white-muted);margin-top:2px}
+.missions-list{padding:0 16px;display:flex;flex-direction:column;gap:10px}
+.mission-card{background:var(--black2);border-radius:var(--radius);border:1px solid var(--black4);overflow:hidden;cursor:pointer;transition:transform .12s,border-color .15s}
+.mission-card.available{border-color:rgba(232,25,44,.25)}
+.mission-card.done{opacity:.5;pointer-events:none}
+.mission-card.locked{opacity:.4;pointer-events:none}
+.mission-card:active{transform:scale(.985)}
+.mission-card-inner{padding:14px 16px;display:flex;align-items:center;gap:12px}
+.mission-icon{width:46px;height:46px;border-radius:12px;background:var(--red-dim);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mission-card.done .mission-icon{background:var(--white-dim)}
+.mission-info{flex:1}
+.mission-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--white);margin-bottom:2px}
+.mission-desc{font-size:12px;color:var(--white-muted);line-height:1.4}
+.mission-xp{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;padding:5px 10px;border-radius:20px;flex-shrink:0}
+.xp-avail{background:var(--red);color:white}
+.xp-done{background:var(--black4);color:var(--white-muted)}
+.xp-locked{background:var(--black4);color:var(--white-muted)}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px}
+.stat-box{background:var(--black2);border-radius:var(--radius-sm);border:1px solid var(--black4);padding:14px 10px;text-align:center}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--white);line-height:1}
+.stat-label{font-size:10px;color:var(--white-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.next-unlocks{padding:0 16px;display:flex;flex-direction:column;gap:7px}
+.next-unlock-row{background:var(--black2);border-radius:var(--radius-sm);border:1px solid var(--black4);padding:10px 14px;display:flex;align-items:center;gap:12px}
+.next-unlock-info{flex:1}
+.next-unlock-name{font-size:13px;font-weight:500;color:var(--white);margin-bottom:5px}
+.next-unlock-bar{height:4px;background:var(--black4);border-radius:2px;overflow:hidden}
+.next-unlock-fill{height:100%;background:var(--red);border-radius:2px;transition:width .6s}
+.next-unlock-count{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white-muted);flex-shrink:0}
+
+/* AVATAR SCREEN */
+.avatar-header{padding:14px 16px 0;text-align:center}
+.avatar-display{width:150px;height:168px;margin:8px auto 0}
+.avatar-fan-name{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--white);text-align:center;margin-top:6px}
+.avatar-rank{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);text-align:center;margin-top:2px;margin-bottom:16px}
+.equip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px}
+.equip-item{background:var(--black2);border-radius:var(--radius-sm);border:1px solid var(--black4);padding:14px 8px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;position:relative}
+.equip-item.unlocked{border-color:rgba(232,25,44,.3)}
+.equip-item.active-eq{border-color:var(--red);background:var(--red-dim)}
+.equip-item.locked-eq{opacity:.4;cursor:default}
+.equip-icon{font-size:28px;margin-bottom:5px}
+.equip-name{font-size:10px;color:var(--white-muted);text-transform:uppercase;letter-spacing:.5px}
+.equip-req{font-size:9px;color:var(--red);font-weight:600;margin-top:3px}
+.lock-badge{position:absolute;top:5px;right:6px;font-size:9px;color:var(--white-muted)}
+
+/* GAMES */
+.game-screen{display:none;flex-direction:column;flex:1;background:var(--black);overflow:hidden}
+.game-screen.active{display:flex}
+.game-scroll{flex:1;overflow-y:auto;padding:20px 20px 100px;-webkit-overflow-scrolling:touch}
+.game-topbar{display:flex;align-items:center;gap:12px;padding:14px 20px 10px;flex-shrink:0;border-bottom:1px solid var(--black3)}
+.game-back-btn{width:36px;height:36px;background:var(--black3);border:1px solid var(--black5);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.game-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white)}
+.game-xp-label{font-size:11px;color:var(--white-muted)}
+.pouls-q{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;color:var(--white);line-height:1.2;text-align:center;margin-bottom:6px}
+.pouls-match-info{font-size:13px;color:var(--white-muted);text-align:center;margin-bottom:28px}
+.emotions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+.emotion-btn{background:var(--black2);border:1.5px solid var(--black4);border-radius:var(--radius);padding:18px 12px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:8px}
+.emotion-btn:active{transform:scale(.95)}
+.emotion-btn.sel{border-color:var(--red);background:var(--red-dim)}
+.emotion-emoji{font-size:34px}
+.emotion-label{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white)}
+.emotion-btn.sel .emotion-label{color:var(--red)}
+.pouls-result-wrap{display:none;flex-direction:column;align-items:center;text-align:center;padding-top:20px}
+.pouls-result-wrap.show{display:flex}
+.result-big-emoji{font-size:72px;animation:pop .4s cubic-bezier(.17,.67,.5,1.4);margin-bottom:14px}
+@keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+.result-title{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:800;color:var(--white);margin-bottom:10px}
+.result-desc{font-size:14px;color:var(--white-muted);line-height:1.6;margin-bottom:24px}
+.result-desc strong{color:var(--white)}
+.xp-earned-badge{background:var(--red-dim);border:1px solid var(--red);border-radius:var(--radius);padding:14px 28px;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--red);margin-bottom:20px}
+.player-card{background:linear-gradient(135deg,var(--navy) 0%,#0a1428 100%);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:18px;border:1px solid var(--navy-bright)}
+.player-number{font-family:'Barlow Condensed',sans-serif;font-size:60px;font-weight:900;color:var(--red);line-height:1}
+.player-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--white)}
+.player-pos{font-size:12px;color:var(--white-muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+.v-question{font-size:15px;color:var(--white);line-height:1.5;text-align:center;margin-bottom:18px;background:var(--black3);padding:14px;border-radius:var(--radius-sm)}
+.v-question strong{color:var(--red)}
+.answers-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.answer-btn{background:var(--black2);border:1.5px solid var(--black4);border-radius:var(--radius-sm);padding:13px 16px;cursor:pointer;text-align:left;transition:all .15s;font-family:'Barlow',sans-serif;font-size:14px;color:var(--white);display:flex;align-items:center;gap:10px}
+.answer-btn.correct{border-color:#1a9e5e;background:rgba(26,158,94,.12);color:#4fd49a}
+.answer-btn.wrong{border-color:var(--red);background:var(--red-dim);color:var(--red);opacity:.7}
+.answer-letter{width:26px;height:26px;border-radius:6px;background:var(--black4);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;flex-shrink:0}
+.v-explication{background:var(--black3);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--white-muted);line-height:1.6;margin-bottom:16px;display:none}
+
+/* NAVBAR */
+.navbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(13,13,20,.96);border-top:1px solid var(--black4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;justify-content:space-around;align-items:center;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:4px 16px;flex:1}
+.nav-icon{font-size:22px;color:var(--white-muted);transition:color .15s}
+.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-muted);font-weight:600;transition:color .15s}
+.nav-btn.active .nav-icon{color:var(--red)}
+.nav-btn.active .nav-label{color:var(--white)}
+
+/* NOTIF */
+.notif{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-90px);background:var(--black3);border:1px solid var(--black5);border-radius:var(--radius);padding:11px 20px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white);z-index:999;max-width:300px;text-align:center;transition:transform .35s cubic-bezier(.17,.67,.5,1.3);pointer-events:none;white-space:nowrap}
+.notif.show{transform:translateX(-50%) translateY(0)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--black2);border:1px solid var(--black5);border-radius:24px 24px 0 0;padding:32px 24px calc(32px + env(safe-area-inset-bottom));width:100%;max-width:430px;text-align:center;animation:slideUp .35s cubic-bezier(.17,.67,.5,1.3)}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-pill{width:40px;height:4px;background:var(--black5);border-radius:2px;margin:0 auto 24px}
+.modal-unlock-icon{font-size:64px;margin-bottom:12px}
+.modal-badge{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--white);margin-bottom:8px}
+.modal-desc{font-size:14px;color:var(--white-muted);line-height:1.5;margin-bottom:24px}
+.error-banner{background:rgba(232,25,44,.1);border:1px solid rgba(232,25,44,.3);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--red);text-align:center;margin:12px 0 0;display:none}
+.error-banner.show{display:block}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- LOADING -->
+<div id="screen-loading" class="screen active">
+  <div class="loading-logo">HOOP<span>.</span></div>
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="screen-onboarding" class="screen">
+  <div class="ob-mascot">
+    <svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="75" cy="75" r="73" fill="#13131a" stroke="#252530" stroke-width="1"/>
+      <ellipse cx="75" cy="87" rx="30" ry="35" fill="#f0f0f5"/>
+      <ellipse cx="75" cy="58" rx="21" ry="23" fill="#f0f0f5"/>
+      <ellipse cx="56" cy="43" rx="8" ry="11" fill="#f0f0f5" transform="rotate(-15 56 43)"/>
+      <ellipse cx="94" cy="43" rx="8" ry="11" fill="#f0f0f5" transform="rotate(15 94 43)"/>
+      <ellipse cx="55" cy="41" rx="4.5" ry="6.5" fill="#e8192c" transform="rotate(-15 55 41)"/>
+      <ellipse cx="95" cy="41" rx="4.5" ry="6.5" fill="#e8192c" transform="rotate(15 95 41)"/>
+      <circle cx="67" cy="56" r="4" fill="#0a0a0f"/><circle cx="83" cy="56" r="4" fill="#0a0a0f"/>
+      <circle cx="68.5" cy="54.5" r="1.5" fill="white"/><circle cx="84.5" cy="54.5" r="1.5" fill="white"/>
+      <ellipse cx="75" cy="63" rx="3" ry="2.5" fill="#e8192c"/>
+      <ellipse cx="75" cy="90" rx="24" ry="27" fill="#0d1b3e"/>
+      <text x="75" y="96" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="16" fill="white">NBH</text>
+      <ellipse cx="54" cy="113" rx="9" ry="6.5" fill="#f0f0f5" transform="rotate(-20 54 113)"/>
+      <ellipse cx="96" cy="113" rx="9" ry="6.5" fill="#f0f0f5" transform="rotate(20 96 113)"/>
+      <path d="M97 99 Q118 92 121 105 Q124 118 107 115" stroke="#f0f0f5" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="106" r="4" fill="#0a0a0f"/>
+    </svg>
+  </div>
+  <div class="ob-logo">HOOP<span>.</span></div>
+  <div class="ob-sub">Nantes Basket Hermine</div>
+  <div class="ob-tagline">Deviens<br><em>l'Hermine</em><br>de Nantes</div>
+  <p class="ob-desc">Joue, progresse, appartiens.<br>L'app qui fait grandir ta relation avec le club.</p>
+  <button class="btn-red" onclick="signInWithGoogle()">CONNEXION AVEC GOOGLE</button>
+  <div class="error-banner" id="auth-error">Connexion impossible. Vérifie ta configuration Supabase.</div>
+</div>
+
+<!-- NAME -->
+<div id="screen-name" class="screen">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 28px">
+    <div class="name-title">Comment<br>on t'appelle ?</div>
+    <p class="name-sub">Ce sera ton nom dans la communauté Hoop NBH.</p>
+    <input type="text" class="input-field" id="name-input" placeholder="Ton nom de fan..." maxlength="16" autocomplete="off">
+    <button class="btn-red" id="name-submit-btn" onclick="goToAvatarCreate()">SUIVANT →</button>
+  </div>
+</div>
+
+<!-- CRÉATION AVATAR -->
+<div id="screen-create-avatar" class="screen">
+  <div class="topbar" style="border:none">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--white)">Crée ton perso</div>
+    <div style="font-size:12px;color:var(--white-muted)">Étape 2/2</div>
+  </div>
+  <div class="create-av-scroll">
+    <!-- Prévisualisation -->
+    <div style="text-align:center;padding:16px 0 8px">
+      <div id="create-preview" style="width:120px;height:135px;margin:0 auto"></div>
+    </div>
+
+    <!-- Visage -->
+    <div class="picker-label">Visage</div>
+    <div class="sil-grid">
+      <button class="sil-btn sel" id="sil-A" onclick="setSil('A')">
+        <svg viewBox="0 0 60 67" fill="none">
+          <!-- Visage masculin : mâchoire carrée -->
+          <ellipse cx="30" cy="34" rx="16" ry="17" fill="#888"/>
+          <path d="M16 40 Q30 50 44 40" fill="#888"/>
+          <rect x="17" y="42" width="26" height="8" rx="3" fill="#888"/>
+          <circle cx="23" cy="31" r="3" fill="#555"/>
+          <circle cx="37" cy="31" r="3" fill="#555"/>
+          <path d="M24 40 Q30 44 36 40" stroke="#555" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="sil-label">Visage A</span>
+      </button>
+      <button class="sil-btn" id="sil-B" onclick="setSil('B')">
+        <svg viewBox="0 0 60 67" fill="none">
+          <!-- Visage féminin : ovale, traits fins, cils -->
+          <ellipse cx="30" cy="35" rx="14" ry="17" fill="#888"/>
+          <circle cx="23" cy="32" r="3" fill="#555"/>
+          <circle cx="37" cy="32" r="3" fill="#555"/>
+          <path d="M20 27 Q23 25 26 27" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M34 27 Q37 25 40 27" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M25 41 Q30 45 35 41" stroke="#a05060" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="21" cy="35" rx="3" ry="2" fill="rgba(200,80,100,.25)"/>
+          <ellipse cx="39" cy="35" rx="3" ry="2" fill="rgba(200,80,100,.25)"/>
+        </svg>
+        <span class="sil-label">Visage B</span>
+      </button>
+    </div>
+
+    <!-- Couleur de peau -->
+    <div class="picker-label">Couleur de peau</div>
+    <div class="skin-grid">
+      <button class="skin-btn sel" id="skin-skin1" style="background:#f5c89a" onclick="setSkin('skin1')"></button>
+      <button class="skin-btn" id="skin-skin2" style="background:#d4956a" onclick="setSkin('skin2')"></button>
+      <button class="skin-btn" id="skin-skin3" style="background:#a0673a" onclick="setSkin('skin3')"></button>
+      <button class="skin-btn" id="skin-skin4" style="background:#6b3a1f" onclick="setSkin('skin4')"></button>
+    </div>
+
+    <!-- Cheveux -->
+    <div class="picker-label">Coupe de cheveux</div>
+    <div class="hair-grid">
+      <button class="hair-btn sel" id="hair-hair1" onclick="setHair('hair1')">
+        <svg viewBox="0 0 40 40" fill="none" style="width:40px;height:40px">
+          <ellipse cx="20" cy="23" rx="13" ry="14" fill="#d4956a"/>
+          <ellipse cx="20" cy="13" rx="13" ry="8" fill="#2a1a0a"/>
+          <ellipse cx="20" cy="11" rx="11" ry="6" fill="#2a1a0a"/>
+          <ellipse cx="7" cy="22" rx="4" ry="8" fill="#2a1a0a" opacity=".6"/>
+          <ellipse cx="33" cy="22" rx="4" ry="8" fill="#2a1a0a" opacity=".6"/>
+        </svg>
+        <span class="hair-label">Court</span>
+      </button>
+      <button class="hair-btn" id="hair-hair2" onclick="setHair('hair2')">
+        <svg viewBox="0 0 40 40" fill="none" style="width:40px;height:40px">
+          <ellipse cx="20" cy="23" rx="13" ry="14" fill="#d4956a"/>
+          <ellipse cx="20" cy="12" rx="13" ry="8" fill="#2a1a0a"/>
+          <rect x="7" y="14" width="5" height="14" rx="2.5" fill="#2a1a0a" opacity=".5"/>
+          <rect x="28" y="14" width="5" height="14" rx="2.5" fill="#2a1a0a" opacity=".5"/>
+          <ellipse cx="20" cy="10" rx="11" ry="7" fill="#2a1a0a"/>
+        </svg>
+        <span class="hair-label">Dégradé</span>
+      </button>
+      <button class="hair-btn" id="hair-hair3" onclick="setHair('hair3')">
+        <svg viewBox="0 0 40 40" fill="none" style="width:40px;height:40px">
+          <ellipse cx="20" cy="23" rx="13" ry="14" fill="#d4956a"/>
+          <ellipse cx="20" cy="13" rx="13" ry="9" fill="#2a1a0a"/>
+          <ellipse cx="7" cy="24" rx="4" ry="11" fill="#2a1a0a"/>
+          <ellipse cx="33" cy="24" rx="4" ry="11" fill="#2a1a0a"/>
+          <circle cx="20" cy="6" r="7" fill="#2a1a0a"/>
+          <rect x="15" y="8" width="10" height="5" rx="2.5" fill="#e8192c"/>
+        </svg>
+        <span class="hair-label">Chignon</span>
+      </button>
+      <button class="hair-btn" id="hair-hair4" onclick="setHair('hair4')">
+        <svg viewBox="0 0 40 40" fill="none" style="width:40px;height:40px">
+          <ellipse cx="20" cy="23" rx="13" ry="14" fill="#d4956a"/>
+          <ellipse cx="20" cy="12" rx="13" ry="8" fill="#2a1a0a"/>
+          <ellipse cx="7" cy="23" rx="4" ry="11" fill="#2a1a0a"/>
+          <ellipse cx="33" cy="23" rx="4" ry="11" fill="#2a1a0a"/>
+          <rect x="15" y="9" width="10" height="4" rx="2" fill="#e8192c"/>
+          <path d="M30 14 Q38 20 36 30" stroke="#2a1a0a" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="hair-label">Queue</span>
+      </button>
+    </div>
+
+    <button class="btn-red" onclick="submitProfile()">CRÉER MON PERSO 🏀</button>
+  </div>
+</div>
+
+<!-- TRIBUNE -->
+<div id="screen-tribune" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">HOOP<span>.</span></div>
+    <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-t">0</span><span class="xp-chip-label">XP</span></div>
+  </div>
+  <div class="screen-scroll">
+    <div class="tribune-hero">
+      <div class="tribune-hero-label">⚡ Prochain match</div>
+      <div class="tribune-hero-match">Hermine Nantes<br>vs Elan Chalon</div>
+      <div class="tribune-hero-date">Vendredi 6 juin · 20h00 · Trocardière</div>
+      <div class="countdown-row">
+        <div class="countdown-box"><span class="countdown-val" id="cd-j">--</span><span class="countdown-unit">Jours</span></div>
+        <div class="countdown-box"><span class="countdown-val" id="cd-h">--</span><span class="countdown-unit">Heures</span></div>
+        <div class="countdown-box"><span class="countdown-val" id="cd-m">--</span><span class="countdown-unit">Min</span></div>
+        <div class="countdown-box"><span class="countdown-val" id="cd-s">--</span><span class="countdown-unit">Sec</span></div>
+      </div>
+    </div>
+    <div class="section-label">La communauté</div>
+    <div class="fans-counter">
+      <div><div class="fans-counter-val"><span id="fans-total">—</span> fans</div><div class="fans-counter-label">dans l'Hermine aujourd'hui</div></div>
+      <div style="font-size:28px">🏀</div>
+    </div>
+    <div class="section-label">Le pouls du club</div>
+    <div class="pouls-collectif">
+      <div class="pouls-collectif-title"><div class="pulse-dot"></div>Émotion collective avant le match</div>
+      <div class="emotion-bars">
+        <div class="emotion-bar-row"><span class="emotion-bar-emoji">🔥</span><div class="emotion-bar-track"><div class="emotion-bar-fill" id="bar-feu" style="width:0%;background:var(--red)"></div></div><span class="emotion-bar-pct" id="pct-feu">—</span></div>
+        <div class="emotion-bar-row"><span class="emotion-bar-emoji">😤</span><div class="emotion-bar-track"><div class="emotion-bar-fill" id="bar-conf" style="width:0%;background:#4a9eff"></div></div><span class="emotion-bar-pct" id="pct-conf">—</span></div>
+        <div class="emotion-bar-row"><span class="emotion-bar-emoji">🙏</span><div class="emotion-bar-track"><div class="emotion-bar-fill" id="bar-croit" style="width:0%;background:var(--gold)"></div></div><span class="emotion-bar-pct" id="pct-croit">—</span></div>
+        <div class="emotion-bar-row"><span class="emotion-bar-emoji">😬</span><div class="emotion-bar-track"><div class="emotion-bar-fill" id="bar-nerv" style="width:0%;background:#888"></div></div><span class="emotion-bar-pct" id="pct-nerv">—</span></div>
+      </div>
+    </div>
+    <div class="section-label">Fan du jour</div>
+    <div class="fan-jour">
+      <div style="font-size:28px">👑</div>
+      <div style="width:44px;height:44px;flex-shrink:0" id="fj-av"></div>
+      <div><div class="fan-jour-label">⭐ Fan du jour</div><div class="fan-jour-name" id="fj-name">—</div><div class="fan-jour-sub" id="fj-sub">Chargement...</div></div>
+    </div>
+    <div class="section-label">La Tribune</div>
+    <div class="fans-wall"><div class="fans-wall-grid" id="fans-grid"></div></div>
+    <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- MISSIONS -->
+<div id="screen-missions" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">HOOP<span>.</span></div>
+    <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-m">0</span><span class="xp-chip-label">XP</span></div>
+  </div>
+  <div class="screen-scroll">
+    <div class="missions-header">
+      <div class="missions-greeting">Terrain de <span id="m-fan-name">Fan</span></div>
+      <div class="missions-greeting-sub" id="m-date"></div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="xp-bar-wrap">
+      <div class="xp-bar-header"><span class="xp-bar-level" id="m-lvl-label">Niveau 1 — Curieux</span><span class="xp-bar-pts" id="m-lvl-pts"></span></div>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="m-xp-bar" style="width:0%"></div></div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="streak-card">
+      <div style="font-size:32px">🔥</div>
+      <div><div class="streak-val"><b id="m-streak">0</b> jour<span id="m-streak-s"></span> de suite</div><div class="streak-sub">Reviens demain pour maintenir ta série !</div></div>
+    </div>
+    <div class="section-label">Missions du jour</div>
+    <div class="missions-list">
+      <div class="mission-card available" id="mc-pouls" onclick="openGame('pouls')">
+        <div class="mission-card-inner">
+          <div class="mission-icon">❤️</div>
+          <div class="mission-info"><div class="mission-title">Le Pouls du Club</div><div class="mission-desc">Comment tu te sens avant le prochain match ?</div></div>
+          <span class="mission-xp xp-avail" id="mx-pouls">+20 XP</span>
+        </div>
+      </div>
+      <div class="mission-card available" id="mc-vestiaire" onclick="openGame('vestiaire')">
+        <div class="mission-card-inner">
+          <div class="mission-icon">🏀</div>
+          <div class="mission-info"><div class="mission-title">Le Vestiaire</div><div class="mission-desc">Découvre un joueur autrement.</div></div>
+          <span class="mission-xp xp-avail" id="mx-vestiaire">+30 XP</span>
+        </div>
+      </div>
+      <div class="mission-card locked">
+        <div class="mission-card-inner">
+          <div class="mission-icon" style="background:var(--black3)">📅</div>
+          <div class="mission-info"><div class="mission-title">Histoire du Club</div><div class="mission-desc">Un chapitre depuis 1891. Bientôt disponible.</div></div>
+          <span class="mission-xp xp-locked">Bientôt</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-label">Mes stats</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val" id="s-xp">0</div><div class="stat-label">XP total</div></div>
+      <div class="stat-box"><div class="stat-val" id="s-missions">0</div><div class="stat-label">Missions</div></div>
+      <div class="stat-box"><div class="stat-val"><span id="s-streak">0</span>🔥</div><div class="stat-label">Série</div></div>
+    </div>
+    <div class="section-label">Prochains déblocages</div>
+    <div class="next-unlocks" id="next-unlocks"></div>
+    <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- AVATAR -->
+<div id="screen-avatar" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">HOOP<span>.</span></div>
+    <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-a">0</span><span class="xp-chip-label">XP</span></div>
+  </div>
+  <div class="screen-scroll">
+    <div class="avatar-header">
+      <div class="avatar-display" id="avatar-svg"></div>
+      <div class="avatar-fan-name" id="av-name">—</div>
+      <div class="avatar-rank" id="av-rank">★ Curieux</div>
+      <button onclick="openAvatarEdit()" style="margin:0 auto 4px;display:flex;align-items:center;gap:6px;background:var(--black3);border:1px solid var(--black5);border-radius:20px;padding:8px 16px;color:var(--white-muted);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.5px">
+        ✏️ Modifier mon look
+      </button>
+    </div>
+
+    <!-- EDIT AVATAR (inline dans Mon Perso) -->
+    <div id="avatar-edit-panel" style="display:none;padding:0 16px">
+      <div style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:16px;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--white-muted);margin-bottom:12px">Visage</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px">
+          <button class="sil-btn" id="edit-sil-A" onclick="editSil('A')">
+            <svg viewBox="0 0 60 67" fill="none" style="width:50px;height:56px">
+              <ellipse cx="30" cy="22" rx="13" ry="14" fill="#888"/>
+              <ellipse cx="30" cy="48" rx="16" ry="18" fill="#888"/>
+              <ellipse cx="14" cy="46" rx="5" ry="12" fill="#888" transform="rotate(-8 14 46)"/>
+              <ellipse cx="46" cy="46" rx="5" ry="12" fill="#888" transform="rotate(8 46 46)"/>
+            </svg>
+            <span class="sil-label">Silhouette A</span>
+          </button>
+          <button class="sil-btn" id="edit-sil-B" onclick="editSil('B')">
+            <svg viewBox="0 0 60 67" fill="none" style="width:50px;height:56px">
+              <ellipse cx="30" cy="20" rx="12" ry="13" fill="#888"/>
+              <ellipse cx="30" cy="44" rx="10" ry="14" fill="#888"/>
+              <ellipse cx="19" cy="50" rx="7" ry="14" fill="#888" transform="rotate(-5 19 50)"/>
+              <ellipse cx="41" cy="50" rx="7" ry="14" fill="#888" transform="rotate(5 41 50)"/>
+              <ellipse cx="30" cy="36" rx="14" ry="8" fill="#888"/>
+            </svg>
+            <span class="sil-label">Silhouette B</span>
+          </button>
+        </div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--white-muted);margin-bottom:10px">Couleur de peau</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+          <button class="skin-btn" id="edit-skin-skin1" style="background:#f5c89a;height:40px;border-radius:8px;border:2px solid var(--black4);cursor:pointer;transition:all .15s" onclick="editSkin('skin1')"></button>
+          <button class="skin-btn" id="edit-skin-skin2" style="background:#d4956a;height:40px;border-radius:8px;border:2px solid var(--black4);cursor:pointer;transition:all .15s" onclick="editSkin('skin2')"></button>
+          <button class="skin-btn" id="edit-skin-skin3" style="background:#a0673a;height:40px;border-radius:8px;border:2px solid var(--black4);cursor:pointer;transition:all .15s" onclick="editSkin('skin3')"></button>
+          <button class="skin-btn" id="edit-skin-skin4" style="background:#6b3a1f;height:40px;border-radius:8px;border:2px solid var(--black4);cursor:pointer;transition:all .15s" onclick="editSkin('skin4')"></button>
+        </div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--white-muted);margin-bottom:10px">Coupe de cheveux</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+          <button class="hair-btn" id="edit-hair-hair1" onclick="editHair('hair1')">
+            <svg viewBox="0 0 40 40" fill="none" style="width:36px;height:36px"><ellipse cx="20" cy="23" rx="13" ry="14" fill="#d4956a"/><ellipse cx="20" cy="13" rx="13" ry="8" fill="#2a1a0a"/><ellipse cx="20" cy="11" rx="11" ry="6" fill="#2a1a0a"/><ellipse cx="7" cy="22" rx="4" ry="8" fill="#2a1a0a" opacity=".6"/><ellipse cx="33" cy="22" rx="4" ry="8" fill="#2a1a0a" opacity=".6"/></svg>
+            <span class="hair-label">Court</span>
+          </button>
+          <button class="hair-btn" id="edit-hair-hair2" onclick="editHair('hair2')">
+            <svg viewBox="0 0 40 40" fill="none" style="width:36px;height:36px"><ellipse cx="20" cy="23" rx="13" ry="14" fill="#d4956a"/><ellipse cx="20" cy="12" rx="13" ry="8" fill="#2a1a0a"/><rect x="7" y="14" width="5" height="14" rx="2.5" fill="#2a1a0a" opacity=".5"/><rect x="28" y="14" width="5" height="14" rx="2.5" fill="#2a1a0a" opacity=".5"/><ellipse cx="20" cy="10" rx="11" ry="7" fill="#2a1a0a"/></svg>
+            <span class="hair-label">Dégradé</span>
+          </button>
+          <button class="hair-btn" id="edit-hair-hair3" onclick="editHair('hair3')">
+            <svg viewBox="0 0 40 40" fill="none" style="width:36px;height:36px"><ellipse cx="20" cy="23" rx="13" ry="14" fill="#d4956a"/><ellipse cx="20" cy="13" rx="13" ry="9" fill="#2a1a0a"/><ellipse cx="7" cy="24" rx="4" ry="11" fill="#2a1a0a"/><ellipse cx="33" cy="24" rx="4" ry="11" fill="#2a1a0a"/><circle cx="20" cy="6" r="7" fill="#2a1a0a"/><rect x="15" y="8" width="10" height="5" rx="2.5" fill="#e8192c"/></svg>
+            <span class="hair-label">Chignon</span>
+          </button>
+          <button class="hair-btn" id="edit-hair-hair4" onclick="editHair('hair4')">
+            <svg viewBox="0 0 40 40" fill="none" style="width:36px;height:36px"><ellipse cx="20" cy="23" rx="13" ry="14" fill="#d4956a"/><ellipse cx="20" cy="12" rx="13" ry="8" fill="#2a1a0a"/><ellipse cx="7" cy="23" rx="4" ry="11" fill="#2a1a0a"/><ellipse cx="33" cy="23" rx="4" ry="11" fill="#2a1a0a"/><rect x="15" y="9" width="10" height="4" rx="2" fill="#e8192c"/><path d="M30 14 Q38 20 36 30" stroke="#2a1a0a" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+            <span class="hair-label">Queue</span>
+          </button>
+        </div>
+        <button class="btn-red" onclick="saveAvatarEdit()">SAUVEGARDER</button>
+      </div>
+    </div>
+
+    <div class="section-label">Équipements</div>
+    <div class="equip-grid" id="equip-grid"></div>
+
+    <!-- PARAMÈTRES -->
+    <div class="section-label">Paramètres</div>
+    <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
+      <button onclick="signOut()" style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white-muted);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">🚪</span> Se déconnecter
+      </button>
+      <button onclick="confirmDeleteAccount()" style="background:rgba(232,25,44,.08);border:1px solid rgba(232,25,44,.2);border-radius:var(--radius-sm);padding:14px 16px;color:var(--red);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">🗑️</span> Supprimer mon compte
+      </button>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- GAME POULS -->
+<div id="game-pouls" class="game-screen">
+  <div class="game-topbar">
+    <button class="game-back-btn" onclick="closeGame()">←</button>
+    <div><div class="game-title">Le Pouls du Club</div><div class="game-xp-label">+20 XP à gagner</div></div>
+  </div>
+  <div class="game-scroll">
+    <div id="pouls-vote-ui">
+      <div class="pouls-q">Comment tu te sens avant le prochain match ?</div>
+      <div class="pouls-match-info" id="pouls-match-info-text">Chargement...</div>
+      <div class="emotions-grid">
+        <button class="emotion-btn" onclick="selectEmotion(this,'🔥','En feu')"><span class="emotion-emoji">🔥</span><span class="emotion-label">En feu</span></button>
+        <button class="emotion-btn" onclick="selectEmotion(this,'😤','Confiant')"><span class="emotion-emoji">😤</span><span class="emotion-label">Confiant</span></button>
+        <button class="emotion-btn" onclick="selectEmotion(this,'😬','Nerveux')"><span class="emotion-emoji">😬</span><span class="emotion-label">Nerveux</span></button>
+        <button class="emotion-btn" onclick="selectEmotion(this,'🙏','On y croit')"><span class="emotion-emoji">🙏</span><span class="emotion-label">On y croit</span></button>
+      </div>
+      <button class="btn-red" id="pouls-submit" onclick="submitPouls()" disabled>VALIDER MON POULS</button>
+    </div>
+    <div class="pouls-result-wrap" id="pouls-result-ui">
+      <div class="result-big-emoji" id="r-emoji">🔥</div>
+      <div class="result-title">Ton émotion est comptée !</div>
+      <div class="result-desc" id="r-desc"></div>
+      <div class="xp-earned-badge">+20 XP ⚡</div>
+      <button class="btn-red" onclick="closeGame()">RETOUR</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME VESTIAIRE -->
+<div id="game-vestiaire" class="game-screen">
+  <div class="game-topbar">
+    <button class="game-back-btn" onclick="closeGame()">←</button>
+    <div><div class="game-title">Le Vestiaire</div><div class="game-xp-label">+30 XP à gagner</div></div>
+  </div>
+  <div class="game-scroll">
+    <div class="player-card">
+      <div class="player-number" id="v-num">—</div>
+      <div class="player-name" id="v-name">Chargement...</div>
+      <div class="player-pos" id="v-pos"></div>
+    </div>
+    <div class="v-question" id="v-question-text"></div>
+    <div class="answers-list" id="v-answers"></div>
+    <div class="v-explication" id="v-expl"></div>
+    <div class="xp-earned-badge" id="v-xp" style="display:none;text-align:center">+30 XP ⚡</div>
+    <button class="btn-red" id="v-continue" style="display:none" onclick="closeGame()">RETOUR</button>
+  </div>
+</div>
+
+<nav class="navbar" id="navbar" style="display:none">
+  <button class="nav-btn active" id="nav-tribune" onclick="showTab('tribune')"><span class="nav-icon">🏟️</span><span class="nav-label">Tribune</span></button>
+  <button class="nav-btn" id="nav-missions" onclick="showTab('missions')"><span class="nav-icon">🎯</span><span class="nav-label">Missions</span></button>
+  <button class="nav-btn" id="nav-avatar" onclick="showTab('avatar')"><span class="nav-icon">👤</span><span class="nav-label">Mon Perso</span></button>
+</nav>
+
+<div class="notif" id="notif"><span id="notif-txt"></span></div>
+<div class="modal-overlay" id="unlock-modal">
+  <div class="modal">
+    <div class="modal-pill"></div>
+    <div class="modal-unlock-icon" id="m-icon">🧣</div>
+    <div class="modal-badge">Nouveau déblocage !</div>
+    <div class="modal-title" id="m-title">—</div>
+    <div class="modal-desc" id="m-desc">—</div>
+    <button class="btn-red" onclick="closeModal()">SUPER !</button>
+  </div>
+</div>
+
+<!-- MODAL SUPPRESSION -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <div class="modal-pill"></div>
+    <div style="font-size:48px;margin-bottom:12px">⚠️</div>
+    <div class="modal-title" style="color:var(--red)">Supprimer mon compte</div>
+    <div class="modal-desc">Ton profil, ton XP, ton avatar et tes données seront supprimés définitivement. Cette action est irréversible.</div>
+    <button onclick="deleteAccount()" style="background:var(--red);color:white;border:none;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:16px;cursor:pointer;width:100%;margin-bottom:10px">
+      OUI, SUPPRIMER
+    </button>
+    <button onclick="document.getElementById('delete-modal').classList.remove('show')" style="background:transparent;color:var(--white-muted);border:1px solid var(--black5);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:14px;cursor:pointer;width:100%">
+      ANNULER
+    </button>
+  </div>
+</div>
+
+<script>
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── CONSTANTES ─────────────────────────────────────────────
+const LEVELS = [
+  {name:'Curieux',min:0,max:100},{name:'Supporter',min:100,max:300},
+  {name:'Fidèle',min:300,max:600},{name:'Ultras',min:600,max:1000},
+  {name:'Légende',min:1000,max:9999}
+];
+const UNLOCKABLES = [
+  {id:'couleurs',icon:'🔵',name:'Couleurs NBH',req:0,desc:'Les couleurs du club'},
+  {id:'echarpe',icon:'🧣',name:'Écharpe',req:5,desc:'L\'écharpe officielle de l\'Hermine'},
+  {id:'casquette',icon:'🧢',name:'Casquette',req:15,desc:'La casquette bleue marine'},
+  {id:'maillot',icon:'👕',name:'Maillot',req:30,desc:'Le maillot domicile du club'},
+  {id:'badge',icon:'🏅',name:'Badge Fondateur',req:50,desc:'Membre fondateur de la communauté'},
+  {id:'couronne',icon:'👑',name:'Couronne',req:100,desc:'Légende de l\'Hermine'}
+];
+// Jeux chargés depuis Supabase
+let gamesData = { pouls: null, vestiaire: null };
+
+// Palettes
+const SKINS = {skin1:'#f5c89a',skin2:'#d4956a',skin3:'#a0673a',skin4:'#6b3a1f'};
+
+// ── STATE ──────────────────────────────────────────────────
+let currentUser = null;
+let profile = null;
+let selEmotion = null;
+let vAnswered = false;
+// État création avatar
+let newName = '';
+let newSil = 'A';
+let newSkin = 'skin1';
+let newHair = 'hair1';
+
+// ── INIT ───────────────────────────────────────────────────
+window.onload = async () => {
+  startCountdown();
+  const { data: { session } } = await db.auth.getSession();
+  if (session) { currentUser = session.user; await loadOrCreateProfile(); }
+  else showScreen('onboarding');
+  db.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) { currentUser = session.user; await loadOrCreateProfile(); }
+  });
+};
+
+async function signInWithGoogle() {
+  const { error } = await db.auth.signInWithOAuth({
+    provider:'google', options:{ redirectTo: window.location.href }
+  });
+  if (error) document.getElementById('auth-error').classList.add('show');
+}
+
+async function loadOrCreateProfile() {
+  const { data } = await db.from('users').select('*').eq('id', currentUser.id).single();
+  if (data) { profile = data; await checkStreak(); showMain(); }
+  else showScreen('name');
+}
+
+// ── CRÉATION PROFIL ────────────────────────────────────────
+function goToAvatarCreate() {
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) { document.getElementById('name-input').focus(); return; }
+  newName = name;
+  showScreen('create-avatar');
+  updateCreatePreview();
+}
+
+// Sélecteurs de personnalisation
+function setSil(v) {
+  newSil = v; ['A','B'].forEach(s => document.getElementById('sil-'+s).classList.toggle('sel', s===v));
+  updateCreatePreview();
+}
+function setSkin(v) {
+  newSkin = v; Object.keys(SKINS).forEach(s => document.getElementById('skin-'+s).classList.toggle('sel', s===v));
+  updateCreatePreview();
+}
+function setHair(v) {
+  newHair = v; ['hair1','hair2','hair3','hair4'].forEach(h => document.getElementById('hair-'+h).classList.toggle('sel', h===v));
+  updateCreatePreview();
+}
+function updateCreatePreview() {
+  const el = document.getElementById('create-preview');
+  if (el) el.innerHTML = buildAvatarSVG(false, false, false, newSil, newSkin, newHair);
+}
+
+async function submitProfile() {
+  const { data, error } = await db.from('users').insert({
+    id: currentUser.id,
+    name: newName,
+    xp: 0, interactions: 0, streak: 1,
+    last_play: new Date().toISOString().split('T')[0],
+    active_items: ['couleurs'],
+    avatar_silhouette: newSil,
+    avatar_skin: newSkin,
+    avatar_hair: newHair
+  }).select().single();
+  if (data) { profile = data; showMain(); }
+  else console.error('Insert error:', error);
+}
+
+async function checkStreak() {
+  if (!profile) return;
+  const today = new Date().toISOString().split('T')[0];
+  const diff = Math.floor((new Date(today) - new Date(profile.last_play)) / 86400000);
+  if (diff === 1) await updateProfile({ streak: profile.streak + 1, last_play: today });
+  else if (diff > 1) await updateProfile({ streak: 1, last_play: today });
+}
+
+async function updateProfile(fields) {
+  const { data } = await db.from('users').update(fields).eq('id', currentUser.id).select().single();
+  if (data) profile = data;
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────
+function showScreen(name) {
+  document.getElementById('screen-loading').classList.remove('active');
+  ['onboarding','name','create-avatar','tribune','missions','avatar'].forEach(s => {
+    document.getElementById('screen-'+s)?.classList.remove('active');
+  });
+  document.getElementById('screen-'+name).classList.add('active');
+}
+
+function showMain() {
+  document.getElementById('screen-loading').classList.remove('active');
+  document.getElementById('navbar').style.display = 'flex';
+  loadGames();
+  showTab('tribune');
+  loadCommunityData();
+}
+
+const TABS = ['tribune','missions','avatar'];
+function showTab(tab) {
+  TABS.forEach(t => {
+    document.getElementById('screen-'+t).classList.toggle('active', t===tab);
+    document.getElementById('nav-'+t).classList.toggle('active', t===tab);
+  });
+  updateUI();
+  if (tab === 'tribune') loadCommunityData();
+}
+
+// ── UI ─────────────────────────────────────────────────────
+function getLevel() {
+  const xp = profile?.xp || 0;
+  return LEVELS.find(l => xp >= l.min && xp < l.max) || LEVELS[LEVELS.length-1];
+}
+
+function updateUI() {
+  if (!profile) return;
+  const lvl = getLevel();
+  const lvlIdx = LEVELS.indexOf(lvl) + 1;
+  const pct = Math.min(100, Math.round((profile.xp - lvl.min) / (lvl.max - lvl.min) * 100));
+  ['xp-t','xp-m','xp-a'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=profile.xp; });
+  const mn=document.getElementById('m-fan-name'); if(mn) mn.textContent=profile.name;
+  const md=document.getElementById('m-date');
+  if(md){ const d=new Date(); md.textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}); }
+  const ml=document.getElementById('m-lvl-label'); if(ml) ml.textContent=`Niveau ${lvlIdx} — ${lvl.name}`;
+  const mp=document.getElementById('m-lvl-pts'); if(mp) mp.textContent=`${profile.xp}/${lvl.max} XP`;
+  const mx=document.getElementById('m-xp-bar'); if(mx) mx.style.width=pct+'%';
+  const ms=document.getElementById('m-streak'); if(ms) ms.textContent=profile.streak;
+  const mss=document.getElementById('m-streak-s'); if(mss) mss.textContent=profile.streak>1?'s':'';
+  const sx=document.getElementById('s-xp'); if(sx) sx.textContent=profile.xp;
+  const sm=document.getElementById('s-missions'); if(sm) sm.textContent=profile.interactions;
+  const ss=document.getElementById('s-streak'); if(ss) ss.textContent=profile.streak;
+  const today = new Date().toISOString().split('T')[0];
+  if(profile.pouls_date===today) setMissionDone('mc-pouls','mx-pouls');
+  if(profile.vestiaire_date===today) setMissionDone('mc-vestiaire','mx-vestiaire');
+  const an=document.getElementById('av-name'); if(an) an.textContent=profile.name;
+  const ar=document.getElementById('av-rank'); if(ar) ar.textContent=`★ ${lvl.name}`;
+  renderAvatar();
+  renderEquip();
+  renderNextUnlocks();
+}
+
+function setMissionDone(cardId, xpId) {
+  const mc=document.getElementById(cardId); if(mc) mc.className='mission-card done';
+  const mx=document.getElementById(xpId); if(mx){ mx.textContent='Fait ✓'; mx.className='mission-xp xp-done'; }
+}
+
+// ── AVATAR ─────────────────────────────────────────────────
+function renderAvatar() {
+  const wrap = document.getElementById('avatar-svg'); if(!wrap) return;
+  const items = profile?.active_items || ['couleurs'];
+  wrap.innerHTML = buildAvatarSVG(
+    items.includes('echarpe'), items.includes('casquette'), items.includes('maillot'),
+    profile?.avatar_silhouette || 'A',
+    profile?.avatar_skin || 'skin1',
+    profile?.avatar_hair || 'hair1'
+  );
+}
+
+function buildAvatarSVG(echarpe, casquette, maillot, sil='A', skin='skin1', hair='hair1') {
+  const sc = SKINS[skin] || '#f5c89a';
+  const hc = '#2a1a0a'; // hair color
+  const bodyColor = maillot ? '#0d1b3e' : '#1c1c26';
+
+  // ── VISAGE : A = masculin (mâchoire carrée), B = féminin (ovale) ──
+  const faceSVG = sil === 'B'
+    ? `<!-- Visage féminin : ovale, traits fins, cils -->
+       <ellipse cx="75" cy="63" rx="25" ry="28" fill="${sc}"/>
+       <ellipse cx="47" cy="65" rx="5" ry="6.5" fill="${sc}"/>
+       <ellipse cx="103" cy="65" rx="5" ry="6.5" fill="${sc}"/>
+       <circle cx="65" cy="58" r="4" fill="#1a1a2e"/><circle cx="85" cy="58" r="4" fill="#1a1a2e"/>
+       <circle cx="66.5" cy="56.5" r="1.5" fill="white"/><circle cx="86.5" cy="56.5" r="1.5" fill="white"/>
+       <path d="M61 52 Q65 49 69 52" stroke="#3a2010" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+       <path d="M81 52 Q85 49 89 52" stroke="#3a2010" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+       <path d="M61 50 Q65 47.5 69 50" stroke="#1a1a2e" stroke-width="2" fill="none" stroke-linecap="round"/>
+       <path d="M81 50 Q85 47.5 89 50" stroke="#1a1a2e" stroke-width="2" fill="none" stroke-linecap="round"/>
+       <ellipse cx="75" cy="66" rx="2.5" ry="2" fill="${sc}" stroke="#c49a6c" stroke-width=".5"/>
+       <path d="M69 73 Q75 78 81 73" stroke="#c0506a" stroke-width="2" fill="none" stroke-linecap="round"/>
+       <ellipse cx="64" cy="62" rx="4" ry="2.5" fill="rgba(232,100,120,.15)"/>
+       <ellipse cx="86" cy="62" rx="4" ry="2.5" fill="rgba(232,100,120,.15)"/>`
+    : `<!-- Visage masculin : légèrement carré, mâchoire marquée -->
+       <ellipse cx="75" cy="64" rx="27" ry="29" fill="${sc}"/>
+       <ellipse cx="48" cy="66" rx="5.5" ry="7" fill="${sc}"/>
+       <ellipse cx="102" cy="66" rx="5.5" ry="7" fill="${sc}"/>
+       <path d="M52 78 Q75 86 98 78" fill="${sc}"/>
+       <circle cx="65" cy="59" r="4.5" fill="#1a1a2e"/><circle cx="85" cy="59" r="4.5" fill="#1a1a2e"/>
+       <circle cx="66.5" cy="57.5" r="1.5" fill="white"/><circle cx="86.5" cy="57.5" r="1.5" fill="white"/>
+       <path d="M60 53 Q65 50 70 53" stroke="#5a3a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+       <path d="M80 53 Q85 50 90 53" stroke="#5a3a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+       <ellipse cx="75" cy="68" rx="3" ry="2.5" fill="${sc}" stroke="#c49a6c" stroke-width=".5"/>
+       <path d="M69 75 Q75 80 81 75" stroke="#8b4513" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+
+  // ── CHEVEUX : hair1/hair2 = masc, hair3/hair4 = fém ──
+  const hairSVG = {
+    // Masculin — court dégradé
+    hair1: `<ellipse cx="75" cy="38" rx="27" ry="14" fill="${hc}"/><ellipse cx="75" cy="34" rx="24" ry="10" fill="${hc}"/>
+            <ellipse cx="50" cy="50" rx="6" ry="10" fill="${hc}"/><ellipse cx="100" cy="50" rx="6" ry="10" fill="${hc}"/>`,
+    // Masculin — dégradé fondu (côtés rasés, dessus plus long)
+    hair2: `<ellipse cx="75" cy="36" rx="27" ry="12" fill="${hc}"/>
+            <rect x="48" y="36" width="7" height="16" rx="3.5" fill="${hc}" opacity=".6"/>
+            <rect x="95" y="36" width="7" height="16" rx="3.5" fill="${hc}" opacity=".6"/>
+            <ellipse cx="75" cy="32" rx="22" ry="10" fill="${hc}"/>`,
+    // Féminin — chignon haut
+    hair3: `<ellipse cx="75" cy="38" rx="27" ry="15" fill="${hc}"/>
+            <ellipse cx="75" cy="30" rx="20" ry="12" fill="${hc}"/>
+            <ellipse cx="47" cy="60" rx="5" ry="14" fill="${hc}"/>
+            <ellipse cx="103" cy="60" rx="5" ry="14" fill="${hc}"/>
+            <circle cx="75" cy="22" r="10" fill="${hc}"/>
+            <rect x="69" y="24" width="12" height="6" rx="3" fill="${hc}"/>`,
+    // Féminin — queue de cheval
+    hair4: `<ellipse cx="75" cy="37" rx="27" ry="14" fill="${hc}"/>
+            <ellipse cx="75" cy="32" rx="23" ry="10" fill="${hc}"/>
+            <ellipse cx="47" cy="58" rx="5" ry="13" fill="${hc}"/>
+            <ellipse cx="103" cy="58" rx="5" ry="13" fill="${hc}"/>
+            <rect x="70" y="28" width="10" height="5" rx="2.5" fill="#e8192c"/>
+            <path d="M98 38 Q115 48 112 65 Q110 75 103 72" stroke="${hc}" stroke-width="8" fill="none" stroke-linecap="round"/>`
+  }[hair] || '';
+
+  // Casquette override cheveux
+  const capSVG = casquette
+    ? `<ellipse cx="75" cy="36" rx="32" ry="14" fill="#0d1b3e"/><rect x="43" y="29" width="64" height="18" rx="4" fill="#0d1b3e"/><rect x="41" y="44" width="24" height="7" rx="3" fill="#0d1b3e"/><text x="75" y="44" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="11" fill="#e8192c">NBH</text>`
+    : hairSVG;
+
+  // ── CORPS : unique, ajusté légèrement selon visage ──
+  const bodySVG = `<ellipse cx="75" cy="112" rx="32" ry="38" fill="${bodyColor}"/>
+    ${maillot?`<text x="75" y="118" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="14" fill="white">NBH</text>`:''}`;
+
+  const scarfSVG = echarpe
+    ? `<rect x="52" y="85" width="46" height="10" rx="5" fill="#e8192c"/><rect x="57" y="93" width="6" height="15" rx="3" fill="#e8192c"/><rect x="87" y="93" width="6" height="15" rx="3" fill="#e8192c"/><text x="75" y="93" text-anchor="middle" font-family="Barlow Condensed" font-weight="700" font-size="7" fill="white">HERMINE</text>`
+    : '';
+
+  return `<svg viewBox="0 0 150 168" fill="none" xmlns="http://www.w3.org/2000/svg">
+    ${bodySVG}
+    ${faceSVG}
+    ${capSVG}
+    ${scarfSVG}
+    <ellipse cx="42" cy="110" rx="8.5" ry="21" fill="${bodyColor}" transform="rotate(-10 42 110)"/>
+    <ellipse cx="108" cy="110" rx="8.5" ry="21" fill="${bodyColor}" transform="rotate(10 108 110)"/>
+    <ellipse cx="36" cy="128" rx="8" ry="7" fill="${sc}" transform="rotate(-10 36 128)"/>
+    <ellipse cx="114" cy="128" rx="8" ry="7" fill="${sc}" transform="rotate(10 114 128)"/>
+    <rect x="57" y="147" width="15" height="17" rx="7" fill="#252530"/>
+    <rect x="78" y="147" width="15" height="17" rx="7" fill="#252530"/>
+  </svg>`;
+}
+
+function miniAvatarSVG(p) {
+  const sc = SKINS[p?.avatar_skin || 'skin1'] || '#f5c89a';
+  const cap = p?.avatar_silhouette === 'B';
+  return `<svg viewBox="0 0 52 52" fill="none"><ellipse cx="26" cy="30" rx="13" ry="16" fill="${cap?'#0d1b3e':'#1c1c26'}"/><ellipse cx="26" cy="20" rx="10" ry="11" fill="${sc}"/>${cap?`<ellipse cx="26" cy="12" rx="11" ry="5" fill="#0d1b3e"/><rect x="15" y="10" width="22" height="7" rx="2" fill="#0d1b3e"/>`:''}<circle cx="22" cy="19" r="2" fill="#1a1a2e"/><circle cx="30" cy="19" r="2" fill="#1a1a2e"/></svg>`;
+}
+
+function renderEquip() {
+  const grid = document.getElementById('equip-grid'); if(!grid) return;
+  const items = profile?.active_items || ['couleurs'];
+  const interactions = profile?.interactions || 0;
+  grid.innerHTML = UNLOCKABLES.map(u => {
+    const unlocked = interactions >= u.req;
+    const active = items.includes(u.id);
+    return `<div class="equip-item ${unlocked?'unlocked':'locked-eq'} ${active?'active-eq':''}"
+      onclick="${unlocked && u.id!=='couleurs' ? `toggleEquip('${u.id}')` : ''}">
+      <div class="equip-icon">${u.icon}</div>
+      <div class="equip-name">${u.name}</div>
+      ${!unlocked ? `<div class="equip-req">${u.req} actions</div><div class="lock-badge">🔒</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function toggleEquip(id) {
+  if (!profile) return;
+  const items = [...(profile.active_items || ['couleurs'])];
+  const idx = items.indexOf(id);
+  if(idx > -1) items.splice(idx, 1); else items.push(id);
+  await updateProfile({ active_items: items });
+  renderAvatar(); renderEquip();
+}
+
+function renderNextUnlocks() {
+  const wrap = document.getElementById('next-unlocks'); if(!wrap) return;
+  const interactions = profile?.interactions || 0;
+  const next = UNLOCKABLES.filter(u => interactions < u.req).slice(0, 3);
+  if(!next.length){ wrap.innerHTML='<div style="font-size:13px;color:var(--red);padding:0 0 4px">🏆 Tout débloqué !</div>'; return; }
+  wrap.innerHTML = next.map(u => {
+    const pct = Math.min(100, Math.round(interactions / u.req * 100));
+    return `<div class="next-unlock-row">
+      <div style="font-size:22px;flex-shrink:0">${u.icon}</div>
+      <div class="next-unlock-info">
+        <div class="next-unlock-name">${u.name}</div>
+        <div class="next-unlock-bar"><div class="next-unlock-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="next-unlock-count">${interactions}/${u.req}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── COMMUNITY ──────────────────────────────────────────────
+async function loadCommunityData() {
+  const { count } = await db.from('users').select('*', {count:'exact',head:true});
+  const fc = document.getElementById('fans-total'); if(fc) fc.textContent = count || '—';
+
+  const { data: votes } = await db.from('pouls_votes').select('emotion');
+  if(votes && votes.length) {
+    const t = {'En feu':0,'Confiant':0,'On y croit':0,'Nerveux':0};
+    votes.forEach(v => { if(t[v.emotion]!==undefined) t[v.emotion]++; });
+    const total = votes.length;
+    [['feu','En feu'],['conf','Confiant'],['croit','On y croit'],['nerv','Nerveux']].forEach(([k,e]) => {
+      const pct = Math.round(t[e]/total*100);
+      const bar=document.getElementById('bar-'+k); if(bar) bar.style.width=pct+'%';
+      const p=document.getElementById('pct-'+k); if(p) p.textContent=pct+'%';
+    });
+  }
+
+  const { data: topFans } = await db.from('users').select('name,xp,streak,avatar_silhouette,avatar_skin,avatar_hair').order('xp',{ascending:false}).limit(10);
+  if(topFans && topFans.length) {
+    const top = topFans[0];
+    const fn=document.getElementById('fj-name'); if(fn) fn.textContent=top.name;
+    const fs=document.getElementById('fj-sub'); if(fs) fs.textContent=`${getLevel().name} · ${top.xp} XP · 🔥 ${top.streak}j`;
+    const fa=document.getElementById('fj-av'); if(fa){ fa.style.cssText='width:44px;height:44px'; fa.innerHTML=miniAvatarSVG(top); }
+    const grid=document.getElementById('fans-grid'); if(!grid) return;
+    grid.innerHTML = topFans.map((f,i) => `
+      <div class="fan-tile">
+        <div class="fan-tile-avatar ${i<3?'online':''}">${miniAvatarSVG(f)}</div>
+        <div class="fan-tile-name">${f.name.substring(0,8)}</div>
+      </div>`).join('');
+  }
+}
+
+// ── GAMES ──────────────────────────────────────────────────
+// ── CHARGEMENT JEUX DEPUIS SUPABASE ────────────────────────
+async function loadGames() {
+  const today = new Date().toISOString().split('T')[0];
+  const { data } = await db.from('games')
+    .select('*')
+    .eq('active', true)
+    .lte('date', today)
+    .order('date', { ascending: false });
+
+  if (!data) return;
+
+  // Prend le jeu le plus récent de chaque type
+  gamesData.pouls = data.find(g => g.type === 'pouls') || null;
+  gamesData.vestiaire = data.find(g => g.type === 'vestiaire') || null;
+
+  // Met à jour les infos du Pouls dans l'écran du jeu
+  if (gamesData.pouls) {
+    const c = gamesData.pouls.content;
+    const el = document.getElementById('pouls-match-info-text');
+    if (el) el.textContent = `${c.match} · ${c.date_label}`;
+  }
+
+  // Met à jour les infos du Vestiaire
+  if (gamesData.vestiaire) {
+    const c = gamesData.vestiaire.content;
+    const num = document.getElementById('v-num'); if(num) num.textContent = c.num;
+    const name = document.getElementById('v-name'); if(name) name.textContent = c.name;
+    const pos = document.getElementById('v-pos'); if(pos) pos.textContent = c.pos;
+    const q = document.getElementById('v-question-text'); if(q) q.innerHTML = c.question;
+  }
+}
+
+function openGame(name) {
+  TABS.forEach(t => document.getElementById('screen-'+t).classList.remove('active'));
+  document.getElementById('navbar').style.display = 'none';
+  document.getElementById('game-'+name).classList.add('active');
+  if(name === 'vestiaire') initVestiaire();
+}
+
+function closeGame() {
+  ['pouls','vestiaire'].forEach(g => document.getElementById('game-'+g).classList.remove('active'));
+  document.getElementById('navbar').style.display = 'flex';
+  document.getElementById('pouls-vote-ui').style.display = 'block';
+  document.getElementById('pouls-result-ui').classList.remove('show');
+  document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('sel'));
+  selEmotion = null;
+  const sb=document.getElementById('pouls-submit'); if(sb) sb.disabled=true;
+  showTab('missions');
+}
+
+function selectEmotion(btn, emoji, label) {
+  document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel'); selEmotion = {emoji, label};
+  document.getElementById('pouls-submit').disabled = false;
+}
+
+async function submitPouls() {
+  if(!selEmotion || !profile) return;
+  const today = new Date().toISOString().split('T')[0];
+  const matchId = gamesData.pouls?.content?.match_id || 'match-inconnu';
+  await db.from('pouls_votes').insert({ user_id: currentUser.id, emotion: selEmotion.label, match_id: matchId });
+  await addXP(20); await addInteraction(); await updateProfile({ pouls_date: today });
+  const { data: votes } = await db.from('pouls_votes').select('emotion').eq('match_id', matchId);
+  let pct = 0;
+  if(votes && votes.length){ const same=votes.filter(v=>v.emotion===selEmotion.label).length; pct=Math.round(same/votes.length*100); }
+  document.getElementById('pouls-vote-ui').style.display = 'none';
+  document.getElementById('pouls-result-ui').classList.add('show');
+  document.getElementById('r-emoji').textContent = selEmotion.emoji;
+  document.getElementById('r-desc').innerHTML = `<strong>${pct}% des fans</strong> ressentent la même chose avant ce match.<br>L'Hermine peut compter sur toi.`;
+  updateUI();
+}
+
+function initVestiaire() {
+  vAnswered = false;
+  const c = gamesData.vestiaire?.content;
+  if (!c) { console.warn('Pas de jeu Vestiaire actif'); return; }
+  const list = document.getElementById('v-answers'); if(!list) return;
+  list.innerHTML = c.answers.map((a,i) => `
+    <button class="answer-btn" id="va-${i}" onclick="answerVestiaire(${i},${a.correct})">
+      <span class="answer-letter">${['A','B','C'][i]}</span>${a.text}
+    </button>`).join('');
+  document.getElementById('v-expl').style.display='none';
+  document.getElementById('v-xp').style.display='none';
+  document.getElementById('v-continue').style.display='none';
+}
+
+async function answerVestiaire(idx, correct) {
+  if(vAnswered) return; vAnswered = true;
+  const today = new Date().toISOString().split('T')[0];
+  const c = gamesData.vestiaire?.content;
+  if (!c) return;
+  c.answers.forEach((a,i) => {
+    const b=document.getElementById('va-'+i); if(!b) return;
+    b.style.pointerEvents='none';
+    if(a.correct) b.classList.add('correct');
+    else if(i===idx && !correct) b.classList.add('wrong');
+  });
+  document.getElementById('v-expl').textContent = c.explication;
+  document.getElementById('v-expl').style.display = 'block';
+  document.getElementById('v-xp').style.display = 'block';
+  document.getElementById('v-continue').style.display = 'block';
+  await addXP(correct ? 30 : 15); await addInteraction(); await updateProfile({ vestiaire_date: today });
+  updateUI();
+}
+
+// ── ÉDITION AVATAR ─────────────────────────────────────────
+function openAvatarEdit() {
+  const panel = document.getElementById('avatar-edit-panel');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    // Sync les sélecteurs avec le profil actuel
+    const sil = profile?.avatar_silhouette || 'A';
+    const skin = profile?.avatar_skin || 'skin1';
+    const hair = profile?.avatar_hair || 'hair1';
+    ['A','B'].forEach(s => document.getElementById('edit-sil-'+s)?.classList.toggle('sel', s===sil));
+    ['skin1','skin2','skin3','skin4'].forEach(s => {
+      const el = document.getElementById('edit-skin-'+s);
+      if(el) { el.classList.toggle('sel', s===skin); el.style.transform = s===skin ? 'scale(1.08)' : ''; el.style.borderColor = s===skin ? 'var(--red)' : 'var(--black4)'; }
+    });
+    ['hair1','hair2','hair3','hair4'].forEach(h => document.getElementById('edit-hair-'+h)?.classList.toggle('sel', h===hair));
+  }
+}
+
+let editSilVal, editSkinVal, editHairVal;
+function editSil(v) {
+  editSilVal = v;
+  ['A','B'].forEach(s => document.getElementById('edit-sil-'+s)?.classList.toggle('sel', s===v));
+  // Prévisualise sur l'avatar principal
+  const items = profile?.active_items || ['couleurs'];
+  const wrap = document.getElementById('avatar-svg');
+  if(wrap) wrap.innerHTML = buildAvatarSVG(items.includes('echarpe'),items.includes('casquette'),items.includes('maillot'),v,editSkinVal||profile?.avatar_skin||'skin1',editHairVal||profile?.avatar_hair||'hair1');
+}
+function editSkin(v) {
+  editSkinVal = v;
+  ['skin1','skin2','skin3','skin4'].forEach(s => {
+    const el = document.getElementById('edit-skin-'+s);
+    if(el){ el.style.borderColor = s===v ? 'var(--red)' : 'var(--black4)'; el.style.transform = s===v ? 'scale(1.08)' : ''; }
+  });
+  const items = profile?.active_items || ['couleurs'];
+  const wrap = document.getElementById('avatar-svg');
+  if(wrap) wrap.innerHTML = buildAvatarSVG(items.includes('echarpe'),items.includes('casquette'),items.includes('maillot'),editSilVal||profile?.avatar_silhouette||'A',v,editHairVal||profile?.avatar_hair||'hair1');
+}
+function editHair(v) {
+  editHairVal = v;
+  ['hair1','hair2','hair3','hair4'].forEach(h => document.getElementById('edit-hair-'+h)?.classList.toggle('sel', h===v));
+  const items = profile?.active_items || ['couleurs'];
+  const wrap = document.getElementById('avatar-svg');
+  if(wrap) wrap.innerHTML = buildAvatarSVG(items.includes('echarpe'),items.includes('casquette'),items.includes('maillot'),editSilVal||profile?.avatar_silhouette||'A',editSkinVal||profile?.avatar_skin||'skin1',v);
+}
+
+async function saveAvatarEdit() {
+  const fields = {};
+  if(editSilVal) fields.avatar_silhouette = editSilVal;
+  if(editSkinVal) fields.avatar_skin = editSkinVal;
+  if(editHairVal) fields.avatar_hair = editHairVal;
+  if(Object.keys(fields).length) await updateProfile(fields);
+  editSilVal = editSkinVal = editHairVal = null;
+  document.getElementById('avatar-edit-panel').style.display = 'none';
+  renderAvatar();
+  showNotif('Avatar mis à jour ✓');
+}
+
+// ── DÉCONNEXION & SUPPRESSION ──────────────────────────────
+async function signOut() {
+  await db.auth.signOut();
+  currentUser = null; profile = null;
+  document.getElementById('navbar').style.display = 'none';
+  showScreen('onboarding');
+}
+
+function confirmDeleteAccount() {
+  document.getElementById('delete-modal').classList.add('show');
+}
+
+async function deleteAccount() {
+  try {
+    // Supprime les données utilisateur
+    await db.from('pouls_votes').delete().eq('user_id', currentUser.id);
+    await db.from('users').delete().eq('id', currentUser.id);
+    // Supprime le compte auth via la fonction SQL
+    await db.rpc('delete_user');
+    await db.auth.signOut();
+    currentUser = null; profile = null;
+    document.getElementById('delete-modal').classList.remove('show');
+    document.getElementById('navbar').style.display = 'none';
+    showScreen('onboarding');
+  } catch(e) {
+    console.error('Delete error:', e);
+    showNotif('Erreur — réessaie');
+  }
+}
+
+// ── XP & PROGRESSION ───────────────────────────────────────
+async function addXP(amount) {
+  if(!profile) return;
+  const prev = getLevel(); await updateProfile({ xp: profile.xp + amount }); const next = getLevel();
+  showNotif(`+${amount} XP ⚡`);
+  if(prev !== next) setTimeout(() => showNotif(`🏆 ${next.name} !`), 1600);
+}
+async function addInteraction() {
+  if(!profile) return;
+  const prev = profile.interactions; await updateProfile({ interactions: prev + 1 });
+  const unlock = UNLOCKABLES.find(u => u.req === prev + 1);
+  if(unlock){ const items=[...(profile.active_items||['couleurs']),unlock.id]; await updateProfile({active_items:items}); setTimeout(()=>showUnlockModal(unlock),900); }
+}
+
+// ── COUNTDOWN ──────────────────────────────────────────────
+function startCountdown() {
+  const target = new Date('2025-06-06T20:00:00');
+  const tick = () => {
+    const diff = target - new Date(); if(diff <= 0) return;
+    const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
+    const m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    const fmt=n=>String(n).padStart(2,'0');
+    [['cd-j',d],['cd-h',h],['cd-m',m],['cd-s',s]].forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.textContent=fmt(v);});
+  };
+  tick(); setInterval(tick,1000);
+}
+
+// ── NOTIFS & MODALS ────────────────────────────────────────
+function showNotif(txt) {
+  const el=document.getElementById('notif'); document.getElementById('notif-txt').textContent=txt;
+  el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2400);
+}
+function showUnlockModal(item) {
+  document.getElementById('m-icon').textContent=item.icon;
+  document.getElementById('m-title').textContent=item.name+' débloqué !';
+  document.getElementById('m-desc').textContent=item.desc+' — Active-le dans Mon Perso.';
+  document.getElementById('unlock-modal').classList.add('show');
+}
+function closeModal() { document.getElementById('unlock-modal').classList.remove('show'); }
+</script>
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("/sw.js")
+      .then(()=>console.log("SW registered"))
+      .catch(e=>console.warn("SW error:",e));
+  });
+}
+</script>
+</body>
+</html>
