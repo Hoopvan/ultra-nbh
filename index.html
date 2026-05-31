@@ -1047,7 +1047,6 @@ async function loadGames() {
   const { data } = await db.from('games')
     .select('*')
     .eq('active', true)
-    .lte('date', today)
     .order('date', { ascending: false });
 
   if (!data) return;
