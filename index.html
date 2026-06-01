@@ -784,6 +784,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 // Remplace ces deux valeurs avec tes vraies clés
 const SUPABASE_URL = "https://adkephbplykqdejhpted.supabase.co";       
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFka2VwaGJwbHlrcWRlamhwdGVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjUyMTAsImV4cCI6MjA5NTc0MTIxMH0.EQ_AZLYxI9hN65Xk_mf--D03q29Zp6h0lncsGeBTBRY";
+
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -802,7 +803,7 @@ const UNLOCKABLES = [
   {id:'couronne',icon:'👑',name:'Couronne',req:100,desc:'Légende de l\'Hermine'}
 ];
 // Jeux chargés depuis Supabase
-let gamesData = { pouls: null, vestiaire: null };
+let gamesData = { pouls: null, vestiaire: null, anecdote: null, nantes_nbh: null, avant_apres: null };
 
 // Palettes
 const SKINS = {skin1:'#f5c89a',skin2:'#d4956a',skin3:'#a0673a',skin4:'#6b3a1f'};
