@@ -266,7 +266,24 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 <!-- ONBOARDING -->
 <div id="screen-onboarding" class="screen">
   <div class="ob-mascot">
-	<img src="/logo-nbh.png" style="width:150px;height:150px;object-fit:contain" alt="NBH">
+    <svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="75" cy="75" r="73" fill="#13131a" stroke="#252530" stroke-width="1"/>
+      <ellipse cx="75" cy="87" rx="30" ry="35" fill="#f0f0f5"/>
+      <ellipse cx="75" cy="58" rx="21" ry="23" fill="#f0f0f5"/>
+      <ellipse cx="56" cy="43" rx="8" ry="11" fill="#f0f0f5" transform="rotate(-15 56 43)"/>
+      <ellipse cx="94" cy="43" rx="8" ry="11" fill="#f0f0f5" transform="rotate(15 94 43)"/>
+      <ellipse cx="55" cy="41" rx="4.5" ry="6.5" fill="#e8192c" transform="rotate(-15 55 41)"/>
+      <ellipse cx="95" cy="41" rx="4.5" ry="6.5" fill="#e8192c" transform="rotate(15 95 41)"/>
+      <circle cx="67" cy="56" r="4" fill="#0a0a0f"/><circle cx="83" cy="56" r="4" fill="#0a0a0f"/>
+      <circle cx="68.5" cy="54.5" r="1.5" fill="white"/><circle cx="84.5" cy="54.5" r="1.5" fill="white"/>
+      <ellipse cx="75" cy="63" rx="3" ry="2.5" fill="#e8192c"/>
+      <ellipse cx="75" cy="90" rx="24" ry="27" fill="#0d1b3e"/>
+      <text x="75" y="96" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="16" fill="white">NBH</text>
+      <ellipse cx="54" cy="113" rx="9" ry="6.5" fill="#f0f0f5" transform="rotate(-20 54 113)"/>
+      <ellipse cx="96" cy="113" rx="9" ry="6.5" fill="#f0f0f5" transform="rotate(20 96 113)"/>
+      <path d="M97 99 Q118 92 121 105 Q124 118 107 115" stroke="#f0f0f5" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="106" r="4" fill="#0a0a0f"/>
+    </svg>
   </div>
   <div class="ob-logo">HOOP<span>.</span></div>
   <div class="ob-sub">Nantes Basket Hermine</div>
@@ -474,11 +491,25 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
           <span class="mission-xp xp-avail" id="mx-vestiaire">+30 XP</span>
         </div>
       </div>
-      <div class="mission-card locked">
+      <div class="mission-card available" id="mc-anecdote" onclick="openGame('anecdote')">
         <div class="mission-card-inner">
-          <div class="mission-icon" style="background:var(--black3)">📅</div>
-          <div class="mission-info"><div class="mission-title">Histoire du Club</div><div class="mission-desc">Un chapitre depuis 1891. Bientôt disponible.</div></div>
-          <span class="mission-xp xp-locked">Bientôt</span>
+          <div class="mission-icon">💬</div>
+          <div class="mission-info"><div class="mission-title">L'Anecdote</div><div class="mission-desc">1 vraie, 2 fausses — sauras-tu faire la différence ?</div></div>
+          <span class="mission-xp xp-avail" id="mx-anecdote">+30 XP</span>
+        </div>
+      </div>
+      <div class="mission-card available" id="mc-nantes-nbh" onclick="openGame('nantes_nbh')">
+        <div class="mission-card-inner">
+          <div class="mission-icon">🏙️</div>
+          <div class="mission-info"><div class="mission-title">Nantes / NBH / Les Deux</div><div class="mission-desc">À toi de trancher !</div></div>
+          <span class="mission-xp xp-avail" id="mx-nantes-nbh">+30 XP</span>
+        </div>
+      </div>
+      <div class="mission-card available" id="mc-avant-apres" onclick="openGame('avant_apres')">
+        <div class="mission-card-inner">
+          <div class="mission-icon">🔄</div>
+          <div class="mission-info"><div class="mission-title">Avant / Après</div><div class="mission-desc">Glisse pour révéler la transformation.</div></div>
+          <span class="mission-xp xp-avail" id="mx-avant-apres">+30 XP</span>
         </div>
       </div>
     </div>
@@ -630,6 +661,90 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
   </div>
 </div>
 
+<!-- GAME ANECDOTE -->
+<div id="game-anecdote" class="game-screen">
+  <div class="game-topbar">
+    <button class="game-back-btn" onclick="closeGame()">←</button>
+    <div><div class="game-title">L'Anecdote</div><div class="game-xp-label">+30 XP à gagner</div></div>
+  </div>
+  <div class="game-scroll">
+    <div style="background:linear-gradient(135deg,var(--black3) 0%,var(--black2) 100%);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:18px;border:1px solid var(--black4)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--white-muted);margin-bottom:10px">À PROPOS DE</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--white)" id="anec-subject">—</div>
+    </div>
+    <div class="v-question" id="anec-question"></div>
+    <div class="answers-list" id="anec-answers"></div>
+    <div class="v-explication" id="anec-expl"></div>
+    <div class="xp-earned-badge" id="anec-xp" style="display:none;text-align:center">+30 XP ⚡</div>
+    <button class="btn-red" id="anec-continue" style="display:none" onclick="closeGame()">RETOUR</button>
+  </div>
+</div>
+
+<!-- GAME NANTES / NBH / LES DEUX -->
+<div id="game-nantes_nbh" class="game-screen">
+  <div class="game-topbar">
+    <button class="game-back-btn" onclick="closeGame()">←</button>
+    <div><div class="game-title">Nantes / NBH / Les Deux</div><div class="game-xp-label">+30 XP à gagner</div></div>
+  </div>
+  <div class="game-scroll">
+    <div style="background:linear-gradient(135deg,var(--navy) 0%,#0a1428 100%);border-radius:var(--radius);padding:24px 20px;text-align:center;margin-bottom:20px;border:1px solid var(--navy-bright)">
+      <div style="font-size:13px;color:var(--white-muted);margin-bottom:10px" id="nnb-context"></div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:var(--white);line-height:1.2" id="nnb-question"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px" id="nnb-buttons"></div>
+    <div id="nnb-result" style="display:none">
+      <div style="background:var(--black3);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--white-muted);line-height:1.6;margin-bottom:16px" id="nnb-expl"></div>
+      <div class="xp-earned-badge" style="text-align:center">+30 XP ⚡</div>
+      <div style="height:16px"></div>
+      <button class="btn-red" onclick="closeGame()">RETOUR</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME AVANT / APRÈS -->
+<div id="game-avant_apres" class="game-screen">
+  <div class="game-topbar">
+    <button class="game-back-btn" onclick="closeGame()">←</button>
+    <div><div class="game-title">Avant / Après</div><div class="game-xp-label">+30 XP à gagner</div></div>
+  </div>
+  <div class="game-scroll">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--white);margin-bottom:4px" id="aa-title">—</div>
+    <div style="font-size:12px;color:var(--white-muted);margin-bottom:16px">Glisse le curseur pour révéler</div>
+
+    <!-- Slider de révélation -->
+    <div id="aa-slider-wrap" style="position:relative;border-radius:var(--radius);overflow:hidden;height:260px;background:var(--black3);margin-bottom:16px;user-select:none">
+      <!-- Image APRÈS (fond) -->
+      <img id="aa-img-apres" src="" alt="Après" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+      <!-- Image AVANT (masquée par clip) -->
+      <div id="aa-clip" style="position:absolute;inset:0;overflow:hidden;width:50%">
+        <img id="aa-img-avant" src="" alt="Avant" style="width:100vw;max-width:430px;height:260px;object-fit:cover"/>
+      </div>
+      <!-- Ligne de séparation -->
+      <div id="aa-line" style="position:absolute;top:0;bottom:0;left:50%;width:3px;background:white;transform:translateX(-50%);pointer-events:none">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.4)">⇄</div>
+      </div>
+      <!-- Labels -->
+      <div style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);border-radius:6px;padding:4px 10px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:white" id="aa-label-avant">Avant</div>
+      <div style="position:absolute;top:10px;right:10px;background:rgba(232,25,44,.7);border-radius:6px;padding:4px 10px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:white" id="aa-label-apres">Après</div>
+      <!-- Zone de touch invisible -->
+      <div id="aa-touch" style="position:absolute;inset:0;cursor:ew-resize"></div>
+    </div>
+
+    <!-- Résultat après exploration -->
+    <div id="aa-result" style="display:none">
+      <div style="background:var(--black3);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--white-muted);line-height:1.6;margin-bottom:16px" id="aa-expl"></div>
+      <div class="xp-earned-badge" style="text-align:center">+30 XP ⚡</div>
+      <div style="height:16px"></div>
+      <button class="btn-red" onclick="closeGame()">RETOUR</button>
+    </div>
+    <!-- Bouton reveal si pas encore exploré -->
+    <div id="aa-cta">
+      <button class="btn-red" id="aa-reveal-btn" onclick="revealAvantApres()" style="opacity:.35;pointer-events:none">J'AI EXPLORÉ ✓</button>
+      <div style="font-size:12px;color:var(--white-muted);text-align:center;margin-top:8px">Glisse d'abord le curseur</div>
+    </div>
+  </div>
+</div>
+
 <nav class="navbar" id="navbar" style="display:none">
   <button class="nav-btn active" id="nav-tribune" onclick="showTab('tribune')"><span class="nav-icon">🏟️</span><span class="nav-label">Tribune</span></button>
   <button class="nav-btn" id="nav-missions" onclick="showTab('missions')"><span class="nav-icon">🎯</span><span class="nav-label">Missions</span></button>
@@ -669,7 +784,6 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 // Remplace ces deux valeurs avec tes vraies clés
 const SUPABASE_URL = "https://adkephbplykqdejhpted.supabase.co";       
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFka2VwaGJwbHlrcWRlamhwdGVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjUyMTAsImV4cCI6MjA5NTc0MTIxMH0.EQ_AZLYxI9hN65Xk_mf--D03q29Zp6h0lncsGeBTBRY";
-
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -870,6 +984,9 @@ function updateUI() {
   const today = new Date().toISOString().split('T')[0];
   if(profile.pouls_date===today) setMissionDone('mc-pouls','mx-pouls');
   if(profile.vestiaire_date===today) setMissionDone('mc-vestiaire','mx-vestiaire');
+  if(profile.anecdote_date===today) setMissionDone('mc-anecdote','mx-anecdote');
+  if(profile.nantes_nbh_date===today) setMissionDone('mc-nantes-nbh','mx-nantes-nbh');
+  if(profile.avant_apres_date===today) setMissionDone('mc-avant-apres','mx-avant-apres');
   const an=document.getElementById('av-name'); if(an) an.textContent=profile.name;
   const ar=document.getElementById('av-rank'); if(ar) ar.textContent=`★ ${lvl.name}`;
   renderAvatar();
@@ -1097,12 +1214,17 @@ async function loadGames() {
   // Prend le jeu le plus récent de chaque type
   gamesData.pouls = data.find(g => g.type === 'pouls') || null;
   gamesData.vestiaire = data.find(g => g.type === 'vestiaire') || null;
+  gamesData.anecdote = data.find(g => g.type === 'anecdote') || null;
+  gamesData.nantes_nbh = data.find(g => g.type === 'nantes_nbh') || null;
+  gamesData.avant_apres = data.find(g => g.type === 'avant_apres') || null;
 
   // Met à jour les infos du Pouls dans l'écran du jeu
   if (gamesData.pouls) {
     const c = gamesData.pouls.content;
     const el = document.getElementById('pouls-match-info-text');
     if (el) el.textContent = `${c.match} · ${c.date_label}`;
+    // Met à jour le countdown avec la date du match
+    if (c.match_datetime) _matchTarget = new Date(c.match_datetime);
   }
 
   // Met à jour les infos du Vestiaire
@@ -1120,10 +1242,15 @@ function openGame(name) {
   document.getElementById('navbar').style.display = 'none';
   document.getElementById('game-'+name).classList.add('active');
   if(name === 'vestiaire') initVestiaire();
+  if(name === 'anecdote') { anecAnswered = false; initAnecdote(); }
+  if(name === 'nantes_nbh') { nnbAnswered = false; initNantesNBH(); }
+  if(name === 'avant_apres') initAvantApres();
 }
 
 function closeGame() {
-  ['pouls','vestiaire'].forEach(g => document.getElementById('game-'+g).classList.remove('active'));
+  ['pouls','vestiaire','anecdote','nantes_nbh','avant_apres'].forEach(g => {
+    const el = document.getElementById('game-'+g); if(el) el.classList.remove('active');
+  });
   document.getElementById('navbar').style.display = 'flex';
   document.getElementById('pouls-vote-ui').style.display = 'block';
   document.getElementById('pouls-result-ui').classList.remove('show');
@@ -1190,7 +1317,145 @@ async function answerVestiaire(idx, correct) {
   updateUI();
 }
 
-// ── ÉDITION AVATAR ─────────────────────────────────────────
+// ── JEU ANECDOTE ───────────────────────────────────────────
+function initAnecdote() {
+  const c = gamesData.anecdote?.content;
+  if (!c) { console.warn('Pas de jeu Anecdote actif'); closeGame(); return; }
+  const subj = document.getElementById('anec-subject'); if(subj) subj.textContent = c.subject || 'Le Club';
+  const q = document.getElementById('anec-question'); if(q) q.innerHTML = c.question;
+  const list = document.getElementById('anec-answers'); if(!list) return;
+  // Mélange les réponses
+  const answers = [...c.answers].sort(() => Math.random() - 0.5);
+  list.innerHTML = answers.map((a,i) => `
+    <button class="answer-btn" id="anec-${i}" onclick="answerAnecdote(${i},${a.correct},this)">
+      <span class="answer-letter">${['A','B','C'][i]}</span>${a.text}
+    </button>`).join('');
+  document.getElementById('anec-expl').style.display = 'none';
+  document.getElementById('anec-xp').style.display = 'none';
+  document.getElementById('anec-continue').style.display = 'none';
+}
+
+let anecAnswered = false;
+async function answerAnecdote(idx, correct, btn) {
+  if(anecAnswered) return; anecAnswered = true;
+  const today = new Date().toISOString().split('T')[0];
+  const c = gamesData.anecdote?.content;
+  document.querySelectorAll('#anec-answers .answer-btn').forEach((b,i) => {
+    b.style.pointerEvents = 'none';
+  });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  // Trouve et colorie la bonne réponse
+  if (!correct) {
+    const allBtns = document.querySelectorAll('#anec-answers .answer-btn');
+    allBtns.forEach(b => { if(b.textContent.trim().includes(c.answers.find(a=>a.correct)?.text?.substring(0,20))) b.classList.add('correct'); });
+  }
+  document.getElementById('anec-expl').textContent = c.explication;
+  document.getElementById('anec-expl').style.display = 'block';
+  document.getElementById('anec-xp').style.display = 'block';
+  document.getElementById('anec-continue').style.display = 'block';
+  await addXP(correct ? 30 : 15); await addInteraction();
+  await updateProfile({ anecdote_date: today });
+  updateUI();
+}
+
+// ── JEU NANTES / NBH / LES DEUX ────────────────────────────
+function initNantesNBH() {
+  const c = gamesData.nantes_nbh?.content;
+  if (!c) { console.warn('Pas de jeu Nantes/NBH actif'); closeGame(); return; }
+  const ctx = document.getElementById('nnb-context'); if(ctx) ctx.textContent = c.context || '';
+  const q = document.getElementById('nnb-question'); if(q) q.textContent = c.question;
+  document.getElementById('nnb-result').style.display = 'none';
+  const btns = document.getElementById('nnb-buttons');
+  if(!btns) return;
+  btns.innerHTML = `
+    <button onclick="answerNantesNBH('nantes','${c.answer}')" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
+      <span style="font-size:28px">🏙️</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)">Nantes</span>
+    </button>
+    <button onclick="answerNantesNBH('nbh','${c.answer}')" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
+      <span style="font-size:28px">🏀</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)">NBH</span>
+    </button>
+    <button onclick="answerNantesNBH('les_deux','${c.answer}')" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
+      <span style="font-size:28px">❤️</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)">Les Deux</span>
+    </button>`;
+}
+
+let nnbAnswered = false;
+async function answerNantesNBH(choice, correct) {
+  if(nnbAnswered) return; nnbAnswered = true;
+  const today = new Date().toISOString().split('T')[0];
+  const c = gamesData.nantes_nbh?.content;
+  const isCorrect = choice === correct;
+  // Feedback visuel sur les boutons
+  document.querySelectorAll('#nnb-buttons button').forEach(b => {
+    b.style.pointerEvents = 'none'; b.style.opacity = '.4';
+  });
+  const btns = document.querySelectorAll('#nnb-buttons button');
+  const idx = ['nantes','nbh','les_deux'].indexOf(choice);
+  const correctIdx = ['nantes','nbh','les_deux'].indexOf(correct);
+  if(idx >= 0) btns[idx].style.borderColor = isCorrect ? '#1a9e5e' : 'var(--red)';
+  if(!isCorrect && correctIdx >= 0) { btns[correctIdx].style.borderColor = '#1a9e5e'; btns[correctIdx].style.opacity = '1'; }
+  document.getElementById('nnb-expl').textContent = c.explication;
+  document.getElementById('nnb-result').style.display = 'block';
+  await addXP(isCorrect ? 30 : 15); await addInteraction();
+  await updateProfile({ nantes_nbh_date: today });
+  updateUI();
+}
+
+// ── JEU AVANT / APRÈS ──────────────────────────────────────
+let aaExplored = false;
+let aaAnswered = false;
+
+function initAvantApres() {
+  aaExplored = false; aaAnswered = false;
+  const c = gamesData.avant_apres?.content;
+  if (!c) { console.warn('Pas de jeu Avant/Après actif'); closeGame(); return; }
+  document.getElementById('aa-title').textContent = c.title || 'Avant / Après';
+  document.getElementById('aa-label-avant').textContent = c.label_avant || 'Avant';
+  document.getElementById('aa-label-apres').textContent = c.label_apres || 'Après';
+  document.getElementById('aa-img-avant').src = c.image_avant;
+  document.getElementById('aa-img-apres').src = c.image_apres;
+  document.getElementById('aa-result').style.display = 'none';
+  document.getElementById('aa-cta').style.display = 'block';
+  document.getElementById('aa-clip').style.width = '50%';
+  document.getElementById('aa-line').style.left = '50%';
+  const revealBtn = document.getElementById('aa-reveal-btn');
+  revealBtn.style.opacity = '.35'; revealBtn.style.pointerEvents = 'none';
+  const touch = document.getElementById('aa-touch');
+  const wrap = document.getElementById('aa-slider-wrap');
+  function moveSlider(clientX) {
+    const rect = wrap.getBoundingClientRect();
+    let pct = (clientX - rect.left) / rect.width * 100;
+    pct = Math.min(95, Math.max(5, pct));
+    document.getElementById('aa-clip').style.width = pct + '%';
+    document.getElementById('aa-line').style.left = pct + '%';
+    if (!aaExplored && (pct < 20 || pct > 80)) {
+      aaExplored = true;
+      revealBtn.style.opacity = '1'; revealBtn.style.pointerEvents = 'auto';
+    }
+  }
+  let dragging = false;
+  touch.onmousedown = () => dragging = true;
+  window.onmouseup = () => dragging = false;
+  touch.onmousemove = e => { if(dragging) moveSlider(e.clientX); };
+  touch.ontouchstart = e => moveSlider(e.touches[0].clientX);
+  touch.ontouchmove = e => { e.preventDefault(); moveSlider(e.touches[0].clientX); };
+}
+
+async function revealAvantApres() {
+  if(aaAnswered) return; aaAnswered = true;
+  const today = new Date().toISOString().split('T')[0];
+  const c = gamesData.avant_apres?.content;
+  document.getElementById('aa-cta').style.display = 'none';
+  document.getElementById('aa-expl').textContent = c.explication;
+  document.getElementById('aa-result').style.display = 'block';
+  await addXP(30); await addInteraction();
+  await updateProfile({ avant_apres_date: today });
+  updateUI();
+}
+
 function openAvatarEdit() {
   const panel = document.getElementById('avatar-edit-panel');
   const isOpen = panel.style.display !== 'none';
@@ -1293,10 +1558,15 @@ async function addInteraction() {
 }
 
 // ── COUNTDOWN ──────────────────────────────────────────────
+let _matchTarget = new Date('2026-06-06T20:00:00'); // fallback
+
 function startCountdown() {
-  const target = new Date('2025-06-06T20:00:00');
   const tick = () => {
-    const diff = target - new Date(); if(diff <= 0) return;
+    const diff = _matchTarget - new Date();
+    if(diff <= 0) {
+      [['cd-j','00'],['cd-h','00'],['cd-m','00'],['cd-s','00']].forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.textContent=v;});
+      return;
+    }
     const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
     const m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
     const fmt=n=>String(n).padStart(2,'0');
