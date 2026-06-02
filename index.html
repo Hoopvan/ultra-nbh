@@ -1310,23 +1310,29 @@ function openGameReadOnly(name) {
   document.getElementById('navbar').style.display = 'none';
   const screen = document.getElementById('game-'+name);
   if(screen) screen.classList.add('active');
-  // Désactive les interactions
+
+  // Initialise le contenu du jeu
+  if(name === 'vestiaire') { vAnswered = false; initVestiaire(); }
+  if(name === 'anecdote') { anecAnswered = false; initAnecdote(); }
+  if(name === 'nantes_nbh') { nnbAnswered = false; initNantesNBH(); }
+  if(name === 'avant_apres') initAvantApres();
+
+  // Bloque les interactions après init
   setTimeout(() => {
-    screen?.querySelectorAll('button:not(.game-back-btn)').forEach(b => {
-      if(!b.onclick?.toString().includes('closeGame')) {
-        b.style.pointerEvents = 'none'; b.style.opacity = '.5';
-      }
+    screen?.querySelectorAll('.answer-btn, .emotion-btn, #pouls-submit, #aa-reveal-btn, #nnb-buttons button').forEach(b => {
+      b.style.pointerEvents = 'none';
+      b.style.opacity = b.classList.contains('correct') ? '1' : '.5';
     });
-    // Affiche un badge "Déjà fait"
-    const existing = screen?.querySelector('.readonly-badge');
-    if(!existing && screen) {
+    // Badge lecture
+    const scroll = screen?.querySelector('.game-scroll');
+    if(scroll && !scroll.querySelector('.readonly-badge')) {
       const badge = document.createElement('div');
       badge.className = 'readonly-badge';
       badge.style.cssText = 'background:var(--black3);border:1px solid var(--black5);border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;color:var(--white-muted);text-align:center;margin-bottom:12px';
-      badge.textContent = '👁️ Mode lecture — Mission déjà complétée aujourd\'hui';
-      screen.querySelector('.game-scroll')?.prepend(badge);
+      badge.textContent = '👁️ Déjà complétée — consultation uniquement';
+      scroll.prepend(badge);
     }
-  }, 50);
+  }, 100);
 }
 
 // Modal des niveaux
