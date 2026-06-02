@@ -1601,14 +1601,5 @@ function showUnlockModal(item) {
 }
 function closeModal() { document.getElementById('unlock-modal').classList.remove('show'); }
 </script>
-<script>
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("/sw.js")
-      .then(()=>console.log("SW registered"))
-      .catch(e=>console.warn("SW error:",e));
-  });
-}
-</script>
 </body>
 </html>
