@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Hoop NBH">
 <title>Hoop NBH</title>
-<!-- build: 20260602-003 -->
+<!-- build: 20260602-004 --> 
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1057,8 +1057,8 @@ function renderAvatar() {
 
 function buildAvatarSVG(echarpe, casquette, maillot, sil='A', skin='skin1', hair='hair1') {
   const sc = SKINS[skin] || '#f5c89a';
-  const hasNBHColors = items.includes('couleurs');
-  const bodyColor = maillot ? '#0d1b3e' : (hasNBHColors ? '#1c1c26' : '#e8e8e8');
+  const hasNBHColors = echarpe || casquette || maillot || true; // couleurs visibles dès le début, items gérés via paramètres
+  const bodyColor = maillot ? '#0d1b3e' : '#1c1c26';
   const hc = '#2a1a0a';
 
   // ── VISAGE : A = masculin (mâchoire carrée), B = féminin (ovale) ──
