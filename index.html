@@ -8,7 +8,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Hoop NBH">
 <title>Hoop NBH</title>
-<!-- build: 20260602-004 --> 
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1034,21 +1033,24 @@ function updateUI() {
 }
 
 function setMissionDone(cardId, xpId, gameType) {
-  const mc=document.getElementById(cardId);
-  if(mc){
-    mc.className='mission-card done';
-    if(gameType) mc.setAttribute('onclick', `openGameReadOnly('${gameType}')`);
-    mc.style.cursor='pointer'; mc.style.opacity='.6';
+  const mc = document.getElementById(cardId);
+  if(mc) {
+    mc.className = 'mission-card';
+    mc.style.opacity = '.6';
+    mc.style.borderColor = 'var(--black4)';
+    mc.style.cursor = 'pointer';
+    mc.setAttribute('onclick', gameType ? `openGameReadOnly('${gameType}')` : '');
   }
-  const mx=document.getElementById(xpId); if(mx){ mx.textContent='Fait ✓'; mx.className='mission-xp xp-done'; }
+  const mx = document.getElementById(xpId);
+  if(mx){ mx.textContent = 'Fait ✓'; mx.className = 'mission-xp xp-done'; }
 }
 
 // ── AVATAR ─────────────────────────────────────────────────
 function renderAvatar() {
   const wrap = document.getElementById('avatar-svg'); if(!wrap) return;
-  const items = profile?.active_items || ['couleurs'];
+  const worn = profile?.worn_items || [];
   wrap.innerHTML = buildAvatarSVG(
-    items.includes('echarpe'), items.includes('casquette'), items.includes('maillot'),
+    worn.includes('echarpe'), worn.includes('casquette'), worn.includes('maillot'),
     profile?.avatar_silhouette || 'A',
     profile?.avatar_skin || 'skin1',
     profile?.avatar_hair || 'hair1'
@@ -1150,35 +1152,45 @@ function miniAvatarSVG(p) {
 
 function renderEquip() {
   const grid = document.getElementById('equip-grid'); if(!grid) return;
-  const items = profile?.active_items || [];
+  const owned = profile?.active_items || [];
+  const worn = profile?.worn_items || [];
   const coins = profile?.coins || 0;
+
   grid.innerHTML = UNLOCKABLES.map(u => {
-    const owned = items.includes(u.id);
-    const active = owned && (profile?.active_items || []).includes(u.id);
+    const isOwned = owned.includes(u.id);
+    const isWorn = worn.includes(u.id);
     const canAfford = coins >= u.cost;
-    return `<div class="equip-item ${owned?'unlocked':'locked-eq'} ${active?'active-eq':''}"
-      onclick="${owned ? `toggleEquip('${u.id}')` : canAfford ? `buyItem('${u.id}')` : ''}">
-      <div class="equip-icon">${u.icon}</div>
-      <div class="equip-name">${u.name}</div>
-      ${owned
-        ? `<div style="font-size:9px;color:var(--red);margin-top:2px">${active?'✓ Actif':'Tap pour activer'}</div>`
-        : `<div class="equip-req">${u.cost} 🐾</div><div class="lock-badge">${canAfford?'🛒':'🔒'}</div>`}
-    </div>`;
+
+    if (isOwned) {
+      return `<div class="equip-item unlocked ${isWorn ? 'active-eq' : ''}" onclick="toggleWorn('${u.id}')">
+        <div class="equip-icon">${u.icon}</div>
+        <div class="equip-name">${u.name}</div>
+        <div style="font-size:9px;color:${isWorn ? 'var(--red)' : 'var(--white-muted)'};margin-top:2px">${isWorn ? '✓ Porté' : 'Tap pour porter'}</div>
+      </div>`;
+    } else {
+      return `<div class="equip-item locked-eq" onclick="${canAfford ? `buyItem('${u.id}')` : ''}"
+        style="${canAfford ? 'cursor:pointer;opacity:1;border-color:rgba(245,166,35,.3)' : ''}">
+        <div class="equip-icon">${u.icon}</div>
+        <div class="equip-name">${u.name}</div>
+        <div class="equip-req">${u.cost} 🐾 ${canAfford ? '🛒' : '🔒'}</div>
+      </div>`;
+    }
   }).join('');
 }
 
-async function toggleEquip(id) {
+async function toggleWorn(id) {
   if (!profile) return;
-  const items = [...(profile.active_items || ['couleurs'])];
-  const idx = items.indexOf(id);
-  if(idx > -1) items.splice(idx, 1); else items.push(id);
-  await updateProfile({ active_items: items });
+  const worn = [...(profile.worn_items || [])];
+  const idx = worn.indexOf(id);
+  if (idx > -1) worn.splice(idx, 1);
+  else worn.push(id);
+  await updateProfile({ worn_items: worn });
   renderAvatar(); renderEquip();
 }
 
 function renderNextUnlocks() {
   const wrap = document.getElementById('next-unlocks'); if(!wrap) return;
-  const items = profile?.active_items || [];
+  const items = profile?.worn_items || [];
   const coins = profile?.coins || 0;
   const next = UNLOCKABLES.filter(u => !items.includes(u.id)).slice(0, 3);
   if(!next.length){ wrap.innerHTML='<div style="font-size:13px;color:var(--red);padding:0 0 4px">🏆 Tout débloqué !</div>'; return; }
@@ -1573,7 +1585,7 @@ function editSil(v) {
   editSilVal = v;
   ['A','B'].forEach(s => document.getElementById('edit-sil-'+s)?.classList.toggle('sel', s===v));
   // Prévisualise sur l'avatar principal
-  const items = profile?.active_items || ['couleurs'];
+  const items = profile?.worn_items || [];
   const wrap = document.getElementById('avatar-svg');
   if(wrap) wrap.innerHTML = buildAvatarSVG(items.includes('echarpe'),items.includes('casquette'),items.includes('maillot'),v,editSkinVal||profile?.avatar_skin||'skin1',editHairVal||profile?.avatar_hair||'hair1');
 }
@@ -1583,14 +1595,14 @@ function editSkin(v) {
     const el = document.getElementById('edit-skin-'+s);
     if(el){ el.style.borderColor = s===v ? 'var(--red)' : 'var(--black4)'; el.style.transform = s===v ? 'scale(1.08)' : ''; }
   });
-  const items = profile?.active_items || ['couleurs'];
+  const items = profile?.worn_items || [];
   const wrap = document.getElementById('avatar-svg');
   if(wrap) wrap.innerHTML = buildAvatarSVG(items.includes('echarpe'),items.includes('casquette'),items.includes('maillot'),editSilVal||profile?.avatar_silhouette||'A',v,editHairVal||profile?.avatar_hair||'hair1');
 }
 function editHair(v) {
   editHairVal = v;
   ['hair1','hair2','hair3','hair4'].forEach(h => document.getElementById('edit-hair-'+h)?.classList.toggle('sel', h===v));
-  const items = profile?.active_items || ['couleurs'];
+  const items = profile?.worn_items || [];
   const wrap = document.getElementById('avatar-svg');
   if(wrap) wrap.innerHTML = buildAvatarSVG(items.includes('echarpe'),items.includes('casquette'),items.includes('maillot'),editSilVal||profile?.avatar_silhouette||'A',editSkinVal||profile?.avatar_skin||'skin1',v);
 }
@@ -1643,10 +1655,14 @@ async function buyItem(id) {
   if (!item) return;
   const coins = profile.coins || 0;
   if (coins < item.cost) { showNotif('Pas assez de 🐾 Hermines'); return; }
-  const items = [...(profile.active_items || []), id];
-  await updateProfile({ coins: coins - item.cost, active_items: items });
+  const owned = [...(profile.active_items || []), id];
+  const worn = [...(profile.worn_items || []), id];
+  await updateProfile({ coins: coins - item.cost, active_items: owned, worn_items: worn });
   showNotif(`${item.icon} ${item.name} débloqué !`);
-  renderAvatar(); renderEquip();
+  renderAvatar(); renderEquip(); renderNextUnlocks();
+  ['coins-t','coins-m','coins-a'].forEach(elId => {
+    const el = document.getElementById(elId); if(el) el.textContent = profile.coins || 0;
+  });
 }
 async function addXP(amount) {
   if(!profile) return;
