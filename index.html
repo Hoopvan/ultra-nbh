@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Hoop NBH">
 <title>Hoop NBH</title>
+<!-- build: 20260602-003 -->
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -265,30 +266,13 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 
 <!-- ONBOARDING -->
 <div id="screen-onboarding" class="screen">
-  <div class="ob-mascot">
-    <svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="75" cy="75" r="73" fill="#13131a" stroke="#252530" stroke-width="1"/>
-      <ellipse cx="75" cy="87" rx="30" ry="35" fill="#f0f0f5"/>
-      <ellipse cx="75" cy="58" rx="21" ry="23" fill="#f0f0f5"/>
-      <ellipse cx="56" cy="43" rx="8" ry="11" fill="#f0f0f5" transform="rotate(-15 56 43)"/>
-      <ellipse cx="94" cy="43" rx="8" ry="11" fill="#f0f0f5" transform="rotate(15 94 43)"/>
-      <ellipse cx="55" cy="41" rx="4.5" ry="6.5" fill="#e8192c" transform="rotate(-15 55 41)"/>
-      <ellipse cx="95" cy="41" rx="4.5" ry="6.5" fill="#e8192c" transform="rotate(15 95 41)"/>
-      <circle cx="67" cy="56" r="4" fill="#0a0a0f"/><circle cx="83" cy="56" r="4" fill="#0a0a0f"/>
-      <circle cx="68.5" cy="54.5" r="1.5" fill="white"/><circle cx="84.5" cy="54.5" r="1.5" fill="white"/>
-      <ellipse cx="75" cy="63" rx="3" ry="2.5" fill="#e8192c"/>
-      <ellipse cx="75" cy="90" rx="24" ry="27" fill="#0d1b3e"/>
-      <text x="75" y="96" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="16" fill="white">NBH</text>
-      <ellipse cx="54" cy="113" rx="9" ry="6.5" fill="#f0f0f5" transform="rotate(-20 54 113)"/>
-      <ellipse cx="96" cy="113" rx="9" ry="6.5" fill="#f0f0f5" transform="rotate(20 96 113)"/>
-      <path d="M97 99 Q118 92 121 105 Q124 118 107 115" stroke="#f0f0f5" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <circle cx="121" cy="106" r="4" fill="#0a0a0f"/>
-    </svg>
+  <div class="ob-mascot" style="display:flex;align-items:center;justify-content:center">
+    <img src="/logo-nbh.png" style="width:150px;height:150px;object-fit:contain" alt="NBH"/>
   </div>
   <div class="ob-logo">HOOP<span>.</span></div>
   <div class="ob-sub">Nantes Basket Hermine</div>
-  <div class="ob-tagline">Deviens<br><em>l'Hermine</em><br>de Nantes</div>
-  <p class="ob-desc">Joue, progresse, appartiens.<br>L'app qui fait grandir ta relation avec le club.</p>
+  <div class="ob-tagline">Bien plus que<br>des <em>matchs</em></div>
+  <p class="ob-desc">Découvrez, participez et vivez<br>l'expérience NBH au quotidien.</p>
   <button class="btn-red" onclick="signInWithGoogle()">CONNEXION AVEC GOOGLE</button>
   <button onclick="startDemoMode()" style="margin-top:12px;background:transparent;color:var(--white-muted);border:1px solid var(--black4);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;padding:12px;cursor:pointer;width:100%;display:none" id="demo-btn">
     MODE DÉMO (local uniquement)
@@ -413,7 +397,10 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 <div id="screen-tribune" class="screen">
   <div class="topbar">
     <div class="topbar-logo">HOOP<span>.</span></div>
-    <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-t">0</span><span class="xp-chip-label">XP</span></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="xp-chip"><span style="font-size:13px">🐾</span><span class="xp-chip-val" id="coins-t">0</span></div>
+      <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-t">0</span><span class="xp-chip-label">XP</span></div>
+    </div>
   </div>
   <div class="screen-scroll">
     <div class="tribune-hero">
@@ -458,7 +445,10 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 <div id="screen-missions" class="screen">
   <div class="topbar">
     <div class="topbar-logo">HOOP<span>.</span></div>
-    <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-m">0</span><span class="xp-chip-label">XP</span></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="xp-chip"><span style="font-size:13px">🐾</span><span class="xp-chip-val" id="coins-m">0</span></div>
+      <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-m">0</span><span class="xp-chip-label">XP</span></div>
+    </div>
   </div>
   <div class="screen-scroll">
     <div class="missions-header">
@@ -467,7 +457,10 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
     </div>
     <div style="height:10px"></div>
     <div class="xp-bar-wrap">
-      <div class="xp-bar-header"><span class="xp-bar-level" id="m-lvl-label">Niveau 1 — Curieux</span><span class="xp-bar-pts" id="m-lvl-pts"></span></div>
+      <div class="xp-bar-header">
+        <span class="xp-bar-level" id="m-lvl-label" onclick="showLevelsModal()" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px">Niveau 1 — Curieux ⓘ</span>
+        <span class="xp-bar-pts" id="m-lvl-pts"></span>
+      </div>
       <div class="xp-bar-track"><div class="xp-bar-fill" id="m-xp-bar" style="width:0%"></div></div>
     </div>
     <div style="height:12px"></div>
@@ -529,7 +522,10 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 <div id="screen-avatar" class="screen">
   <div class="topbar">
     <div class="topbar-logo">HOOP<span>.</span></div>
-    <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-a">0</span><span class="xp-chip-label">XP</span></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="xp-chip"><span style="font-size:13px">🐾</span><span class="xp-chip-val" id="coins-a">0</span></div>
+      <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-a">0</span><span class="xp-chip-label">XP</span></div>
+    </div>
   </div>
   <div class="screen-scroll">
     <div class="avatar-header">
@@ -602,7 +598,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
     <!-- PARAMÈTRES -->
     <div class="section-label">Paramètres</div>
     <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
-      <button onclick="signOut()" style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white-muted);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
+      <button onclick="signOut()" style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
         <span style="font-size:18px">🚪</span> Se déconnecter
       </button>
       <button onclick="confirmDeleteAccount()" style="background:rgba(232,25,44,.08);border:1px solid rgba(232,25,44,.2);border-radius:var(--radius-sm);padding:14px 16px;color:var(--red);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
@@ -763,6 +759,37 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
   </div>
 </div>
 
+<!-- MODAL NIVEAUX -->
+<div class="modal-overlay" id="levels-modal">
+  <div class="modal">
+    <div class="modal-pill"></div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--white);margin-bottom:16px">Les niveaux</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+      <div id="lvl-row-Curieux" style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;border:1px solid var(--black4)">
+        <span style="font-size:20px">👀</span>
+        <div style="flex:1"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white)">Curieux</div><div style="font-size:11px;color:var(--white-muted)">0 — 100 XP</div></div>
+      </div>
+      <div id="lvl-row-Supporter" style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;border:1px solid var(--black4)">
+        <span style="font-size:20px">👏</span>
+        <div style="flex:1"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white)">Supporter</div><div style="font-size:11px;color:var(--white-muted)">100 — 300 XP</div></div>
+      </div>
+      <div id="lvl-row-Fidèle" style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;border:1px solid var(--black4)">
+        <span style="font-size:20px">❤️</span>
+        <div style="flex:1"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white)">Fidèle</div><div style="font-size:11px;color:var(--white-muted)">300 — 600 XP</div></div>
+      </div>
+      <div id="lvl-row-Ultras" style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;border:1px solid var(--black4)">
+        <span style="font-size:20px">🔥</span>
+        <div style="flex:1"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white)">Ultras</div><div style="font-size:11px;color:var(--white-muted)">600 — 1000 XP</div></div>
+      </div>
+      <div id="lvl-row-Légende" style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;border:1px solid var(--black4)">
+        <span style="font-size:20px">👑</span>
+        <div style="flex:1"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white)">Légende</div><div style="font-size:11px;color:var(--white-muted)">1000+ XP</div></div>
+      </div>
+    </div>
+    <button class="btn-red" onclick="document.getElementById('levels-modal').classList.remove('show')">FERMER</button>
+  </div>
+</div>
+
 <!-- MODAL SUPPRESSION -->
 <div class="modal-overlay" id="delete-modal">
   <div class="modal">
@@ -795,12 +822,12 @@ const LEVELS = [
   {name:'Légende',min:1000,max:9999}
 ];
 const UNLOCKABLES = [
-  {id:'couleurs',icon:'🔵',name:'Couleurs NBH',req:0,desc:'Les couleurs du club'},
-  {id:'echarpe',icon:'🧣',name:'Écharpe',req:5,desc:'L\'écharpe officielle de l\'Hermine'},
-  {id:'casquette',icon:'🧢',name:'Casquette',req:15,desc:'La casquette bleue marine'},
-  {id:'maillot',icon:'👕',name:'Maillot',req:30,desc:'Le maillot domicile du club'},
-  {id:'badge',icon:'🏅',name:'Badge Fondateur',req:50,desc:'Membre fondateur de la communauté'},
-  {id:'couronne',icon:'👑',name:'Couronne',req:100,desc:'Légende de l\'Hermine'}
+  {id:'couleurs',icon:'🎨',name:'Couleurs NBH',cost:50,desc:'Les couleurs officielles du club sur ton avatar'},
+  {id:'echarpe',icon:'🧣',name:'Écharpe',cost:80,desc:'L\'écharpe officielle de l\'Hermine'},
+  {id:'casquette',icon:'🧢',name:'Casquette',cost:120,desc:'La casquette bleue marine'},
+  {id:'maillot',icon:'👕',name:'Maillot',cost:200,desc:'Le maillot domicile du club'},
+  {id:'badge',icon:'🏅',name:'Badge Fondateur',cost:300,desc:'Membre fondateur de la communauté'},
+  {id:'couronne',icon:'👑',name:'Couronne',cost:500,desc:'Légende de l\'Hermine'}
 ];
 // Jeux chargés depuis Supabase
 let gamesData = { pouls: null, vestiaire: null, anecdote: null, nantes_nbh: null, avant_apres: null };
@@ -971,6 +998,7 @@ function updateUI() {
   const lvlIdx = LEVELS.indexOf(lvl) + 1;
   const pct = Math.min(100, Math.round((profile.xp - lvl.min) / (lvl.max - lvl.min) * 100));
   ['xp-t','xp-m','xp-a'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=profile.xp; });
+  ['coins-t','coins-m','coins-a'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=profile.coins||0; });
   const mn=document.getElementById('m-fan-name'); if(mn) mn.textContent=profile.name;
   const md=document.getElementById('m-date');
   if(md){ const d=new Date(); md.textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}); }
@@ -993,11 +1021,11 @@ function updateUI() {
   if(mcNnb) mcNnb.style.display = gamesData.nantes_nbh ? '' : 'none';
   if(mcAa) mcAa.style.display = gamesData.avant_apres ? '' : 'none';
 
-  if(profile.pouls_date===today) setMissionDone('mc-pouls','mx-pouls');
-  if(profile.vestiaire_date===today) setMissionDone('mc-vestiaire','mx-vestiaire');
-  if(profile.anecdote_date===today) setMissionDone('mc-anecdote','mx-anecdote');
-  if(profile.nantes_nbh_date===today) setMissionDone('mc-nantes-nbh','mx-nantes-nbh');
-  if(profile.avant_apres_date===today) setMissionDone('mc-avant-apres','mx-avant-apres');
+  if(profile.pouls_date===today) setMissionDone('mc-pouls','mx-pouls','pouls');
+  if(profile.vestiaire_date===today) setMissionDone('mc-vestiaire','mx-vestiaire','vestiaire');
+  if(profile.anecdote_date===today) setMissionDone('mc-anecdote','mx-anecdote','anecdote');
+  if(profile.nantes_nbh_date===today) setMissionDone('mc-nantes-nbh','mx-nantes-nbh','nantes_nbh');
+  if(profile.avant_apres_date===today) setMissionDone('mc-avant-apres','mx-avant-apres','avant_apres');
   const an=document.getElementById('av-name'); if(an) an.textContent=profile.name;
   const ar=document.getElementById('av-rank'); if(ar) ar.textContent=`★ ${lvl.name}`;
   renderAvatar();
@@ -1005,8 +1033,13 @@ function updateUI() {
   renderNextUnlocks();
 }
 
-function setMissionDone(cardId, xpId) {
-  const mc=document.getElementById(cardId); if(mc) mc.className='mission-card done';
+function setMissionDone(cardId, xpId, gameType) {
+  const mc=document.getElementById(cardId);
+  if(mc){
+    mc.className='mission-card done';
+    if(gameType) mc.setAttribute('onclick', `openGameReadOnly('${gameType}')`);
+    mc.style.cursor='pointer'; mc.style.opacity='.6';
+  }
   const mx=document.getElementById(xpId); if(mx){ mx.textContent='Fait ✓'; mx.className='mission-xp xp-done'; }
 }
 
@@ -1024,8 +1057,9 @@ function renderAvatar() {
 
 function buildAvatarSVG(echarpe, casquette, maillot, sil='A', skin='skin1', hair='hair1') {
   const sc = SKINS[skin] || '#f5c89a';
-  const hc = '#2a1a0a'; // hair color
-  const bodyColor = maillot ? '#0d1b3e' : '#1c1c26';
+  const hasNBHColors = items.includes('couleurs');
+  const bodyColor = maillot ? '#0d1b3e' : (hasNBHColors ? '#1c1c26' : '#e8e8e8');
+  const hc = '#2a1a0a';
 
   // ── VISAGE : A = masculin (mâchoire carrée), B = féminin (ovale) ──
   const faceSVG = sil === 'B'
@@ -1116,16 +1150,19 @@ function miniAvatarSVG(p) {
 
 function renderEquip() {
   const grid = document.getElementById('equip-grid'); if(!grid) return;
-  const items = profile?.active_items || ['couleurs'];
-  const interactions = profile?.interactions || 0;
+  const items = profile?.active_items || [];
+  const coins = profile?.coins || 0;
   grid.innerHTML = UNLOCKABLES.map(u => {
-    const unlocked = interactions >= u.req;
-    const active = items.includes(u.id);
-    return `<div class="equip-item ${unlocked?'unlocked':'locked-eq'} ${active?'active-eq':''}"
-      onclick="${unlocked && u.id!=='couleurs' ? `toggleEquip('${u.id}')` : ''}">
+    const owned = items.includes(u.id);
+    const active = owned && (profile?.active_items || []).includes(u.id);
+    const canAfford = coins >= u.cost;
+    return `<div class="equip-item ${owned?'unlocked':'locked-eq'} ${active?'active-eq':''}"
+      onclick="${owned ? `toggleEquip('${u.id}')` : canAfford ? `buyItem('${u.id}')` : ''}">
       <div class="equip-icon">${u.icon}</div>
       <div class="equip-name">${u.name}</div>
-      ${!unlocked ? `<div class="equip-req">${u.req} actions</div><div class="lock-badge">🔒</div>` : ''}
+      ${owned
+        ? `<div style="font-size:9px;color:var(--red);margin-top:2px">${active?'✓ Actif':'Tap pour activer'}</div>`
+        : `<div class="equip-req">${u.cost} 🐾</div><div class="lock-badge">${canAfford?'🛒':'🔒'}</div>`}
     </div>`;
   }).join('');
 }
@@ -1141,18 +1178,19 @@ async function toggleEquip(id) {
 
 function renderNextUnlocks() {
   const wrap = document.getElementById('next-unlocks'); if(!wrap) return;
-  const interactions = profile?.interactions || 0;
-  const next = UNLOCKABLES.filter(u => interactions < u.req).slice(0, 3);
+  const items = profile?.active_items || [];
+  const coins = profile?.coins || 0;
+  const next = UNLOCKABLES.filter(u => !items.includes(u.id)).slice(0, 3);
   if(!next.length){ wrap.innerHTML='<div style="font-size:13px;color:var(--red);padding:0 0 4px">🏆 Tout débloqué !</div>'; return; }
   wrap.innerHTML = next.map(u => {
-    const pct = Math.min(100, Math.round(interactions / u.req * 100));
+    const pct = Math.min(100, Math.round(coins / u.cost * 100));
     return `<div class="next-unlock-row">
       <div style="font-size:22px;flex-shrink:0">${u.icon}</div>
       <div class="next-unlock-info">
         <div class="next-unlock-name">${u.name}</div>
         <div class="next-unlock-bar"><div class="next-unlock-fill" style="width:${pct}%"></div></div>
       </div>
-      <div class="next-unlock-count">${interactions}/${u.req}</div>
+      <div class="next-unlock-count">${coins}/${u.cost} 🐾</div>
     </div>`;
   }).join('');
 }
@@ -1251,6 +1289,45 @@ async function loadGames() {
     const name = document.getElementById('v-name'); if(name) name.textContent = c.name;
     const pos = document.getElementById('v-pos'); if(pos) pos.textContent = c.pos;
     const q = document.getElementById('v-question-text'); if(q) q.innerHTML = c.question;
+  }
+}
+
+// Mode lecture seule — voir une mission déjà faite sans pouvoir la refaire
+function openGameReadOnly(name) {
+  TABS.forEach(t => document.getElementById('screen-'+t).classList.remove('active'));
+  document.getElementById('navbar').style.display = 'none';
+  const screen = document.getElementById('game-'+name);
+  if(screen) screen.classList.add('active');
+  // Désactive les interactions
+  setTimeout(() => {
+    screen?.querySelectorAll('button:not(.game-back-btn)').forEach(b => {
+      if(!b.onclick?.toString().includes('closeGame')) {
+        b.style.pointerEvents = 'none'; b.style.opacity = '.5';
+      }
+    });
+    // Affiche un badge "Déjà fait"
+    const existing = screen?.querySelector('.readonly-badge');
+    if(!existing && screen) {
+      const badge = document.createElement('div');
+      badge.className = 'readonly-badge';
+      badge.style.cssText = 'background:var(--black3);border:1px solid var(--black5);border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;color:var(--white-muted);text-align:center;margin-bottom:12px';
+      badge.textContent = '👁️ Mode lecture — Mission déjà complétée aujourd\'hui';
+      screen.querySelector('.game-scroll')?.prepend(badge);
+    }
+  }, 50);
+}
+
+// Modal des niveaux
+function showLevelsModal() {
+  const modal = document.getElementById('levels-modal');
+  if(modal) {
+    // Surbrillance du niveau actuel
+    const lvl = getLevel();
+    ['Curieux','Supporter','Fidèle','Ultras','Légende'].forEach(n => {
+      const row = document.getElementById('lvl-row-'+n);
+      if(row) row.style.borderColor = n === lvl.name ? 'var(--red)' : 'var(--black4)';
+    });
+    modal.classList.add('show');
   }
 }
 
@@ -1560,18 +1637,28 @@ async function deleteAccount() {
   }
 }
 
-// ── XP & PROGRESSION ───────────────────────────────────────
+async function buyItem(id) {
+  if (!profile) return;
+  const item = UNLOCKABLES.find(u => u.id === id);
+  if (!item) return;
+  const coins = profile.coins || 0;
+  if (coins < item.cost) { showNotif('Pas assez de 🐾 Hermines'); return; }
+  const items = [...(profile.active_items || []), id];
+  await updateProfile({ coins: coins - item.cost, active_items: items });
+  showNotif(`${item.icon} ${item.name} débloqué !`);
+  renderAvatar(); renderEquip();
+}
 async function addXP(amount) {
   if(!profile) return;
-  const prev = getLevel(); await updateProfile({ xp: profile.xp + amount }); const next = getLevel();
-  showNotif(`+${amount} XP ⚡`);
+  const prev = getLevel();
+  await updateProfile({ xp: profile.xp + amount, coins: (profile.coins || 0) + amount });
+  const next = getLevel();
+  showNotif(`+${amount} XP ⚡  +${amount} 🐾`);
   if(prev !== next) setTimeout(() => showNotif(`🏆 ${next.name} !`), 1600);
 }
 async function addInteraction() {
   if(!profile) return;
-  const prev = profile.interactions; await updateProfile({ interactions: prev + 1 });
-  const unlock = UNLOCKABLES.find(u => u.req === prev + 1);
-  if(unlock){ const items=[...(profile.active_items||['couleurs']),unlock.id]; await updateProfile({active_items:items}); setTimeout(()=>showUnlockModal(unlock),900); }
+  await updateProfile({ interactions: (profile.interactions || 0) + 1 });
 }
 
 // ── COUNTDOWN ──────────────────────────────────────────────
