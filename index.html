@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Hoop NBH">
-<title>Ultra NBH </title>
+<title>Hoop NBH</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -983,6 +983,16 @@ function updateUI() {
   const sm=document.getElementById('s-missions'); if(sm) sm.textContent=profile.interactions;
   const ss=document.getElementById('s-streak'); if(ss) ss.textContent=profile.streak;
   const today = new Date().toISOString().split('T')[0];
+  // Affiche/masque les cartes selon les jeux disponibles aujourd'hui
+  const mcVest = document.getElementById('mc-vestiaire');
+  const mcAnec = document.getElementById('mc-anecdote');
+  const mcNnb = document.getElementById('mc-nantes-nbh');
+  const mcAa = document.getElementById('mc-avant-apres');
+  if(mcVest) mcVest.style.display = gamesData.vestiaire ? '' : 'none';
+  if(mcAnec) mcAnec.style.display = gamesData.anecdote ? '' : 'none';
+  if(mcNnb) mcNnb.style.display = gamesData.nantes_nbh ? '' : 'none';
+  if(mcAa) mcAa.style.display = gamesData.avant_apres ? '' : 'none';
+
   if(profile.pouls_date===today) setMissionDone('mc-pouls','mx-pouls');
   if(profile.vestiaire_date===today) setMissionDone('mc-vestiaire','mx-vestiaire');
   if(profile.anecdote_date===today) setMissionDone('mc-anecdote','mx-anecdote');
@@ -1212,12 +1222,14 @@ async function loadGames() {
 
   if (!data) return;
 
-  // Prend le jeu le plus récent de chaque type
-  gamesData.pouls = data.find(g => g.type === 'pouls') || null;
-  gamesData.vestiaire = data.find(g => g.type === 'vestiaire') || null;
-  gamesData.anecdote = data.find(g => g.type === 'anecdote') || null;
-  gamesData.nantes_nbh = data.find(g => g.type === 'nantes_nbh') || null;
-  gamesData.avant_apres = data.find(g => g.type === 'avant_apres') || null;
+  // Prend le jeu du jour pour chaque type
+  // Pour le pouls : prend le plus récent (permanent tant qu'un match approche)
+  gamesData.pouls = data.find(g => g.type === 'pouls' && g.date <= today) || null;
+  // Pour les autres : uniquement le jeu daté aujourd'hui
+  gamesData.vestiaire = data.find(g => g.type === 'vestiaire' && g.date === today) || null;
+  gamesData.anecdote = data.find(g => g.type === 'anecdote' && g.date === today) || null;
+  gamesData.nantes_nbh = data.find(g => g.type === 'nantes_nbh' && g.date === today) || null;
+  gamesData.avant_apres = data.find(g => g.type === 'avant_apres' && g.date === today) || null;
 
   // Met à jour les infos du Pouls dans l'écran du jeu
   if (gamesData.pouls) {
