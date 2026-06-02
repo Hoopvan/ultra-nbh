@@ -1152,8 +1152,33 @@ function buildAvatarSVG(echarpe, casquette, maillot, sil='A', skin='skin1', hair
 
 function miniAvatarSVG(p) {
   const sc = SKINS[p?.avatar_skin || 'skin1'] || '#f5c89a';
-  const cap = p?.avatar_silhouette === 'B';
-  return `<svg viewBox="0 0 52 52" fill="none"><ellipse cx="26" cy="30" rx="13" ry="16" fill="${cap?'#0d1b3e':'#1c1c26'}"/><ellipse cx="26" cy="20" rx="10" ry="11" fill="${sc}"/>${cap?`<ellipse cx="26" cy="12" rx="11" ry="5" fill="#0d1b3e"/><rect x="15" y="10" width="22" height="7" rx="2" fill="#0d1b3e"/>`:''}<circle cx="22" cy="19" r="2" fill="#1a1a2e"/><circle cx="30" cy="19" r="2" fill="#1a1a2e"/></svg>`;
+  const worn = p?.worn_items || [];
+  const hasCap = worn.includes('casquette');
+  const hasScarf = worn.includes('echarpe');
+  const hasMaillot = worn.includes('maillot');
+  const hc = '#2a1a0a';
+  const bodyColor = hasMaillot ? '#0d1b3e' : '#1c1c26';
+
+  // Cheveux selon coupe
+  const hairMap = {
+    hair1: `<ellipse cx="26" cy="13" rx="12" ry="7" fill="${hc}"/><ellipse cx="26" cy="11" rx="10" ry="5" fill="${hc}"/>`,
+    hair2: `<ellipse cx="26" cy="12" rx="12" ry="6" fill="${hc}"/><rect x="14" y="13" width="3" height="7" rx="1.5" fill="${hc}" opacity=".6"/><rect x="35" y="13" width="3" height="7" rx="1.5" fill="${hc}" opacity=".6"/>`,
+    hair3: `<ellipse cx="26" cy="13" rx="12" ry="8" fill="${hc}"/><circle cx="26" cy="8" r="5" fill="${hc}"/>`,
+    hair4: `<ellipse cx="26" cy="12" rx="12" ry="6" fill="${hc}"/><path d="M34 13 Q40 17 39 24" stroke="${hc}" stroke-width="3" fill="none" stroke-linecap="round"/>`
+  };
+  const hairSVG = hasCap
+    ? `<ellipse cx="26" cy="12" rx="13" ry="6" fill="#0d1b3e"/><rect x="13" y="9" width="26" height="8" rx="2" fill="#0d1b3e"/><rect x="11" y="15" width="9" height="4" rx="2" fill="#0d1b3e"/>`
+    : (hairMap[p?.avatar_hair || 'hair1'] || hairMap.hair1);
+
+  return `<svg viewBox="0 0 52 52" fill="none">
+    <ellipse cx="26" cy="33" rx="13" ry="15" fill="${bodyColor}"/>
+    ${hasMaillot ? `<text x="26" y="36" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="6" fill="white">NBH</text>` : ''}
+    <ellipse cx="26" cy="21" rx="10" ry="11" fill="${sc}"/>
+    ${hairSVG}
+    ${hasScarf ? `<rect x="16" y="29" width="20" height="5" rx="2.5" fill="#e8192c"/>` : ''}
+    <circle cx="22" cy="20" r="2" fill="#1a1a2e"/>
+    <circle cx="30" cy="20" r="2" fill="#1a1a2e"/>
+  </svg>`;
 }
 
 function renderEquip() {
@@ -1252,7 +1277,7 @@ async function loadCommunityData() {
     }
   }
 
-  const { data: topFans } = await db.from('users').select('name,xp,streak,avatar_silhouette,avatar_skin,avatar_hair').order('xp',{ascending:false}).limit(10);
+  const { data: topFans } = await db.from('users').select('name,xp,streak,avatar_silhouette,avatar_skin,avatar_hair,worn_items').order('xp',{ascending:false}).limit(10);
   if(topFans && topFans.length) {
     const top = topFans[0];
     const fn=document.getElementById('fj-name'); if(fn) fn.textContent=top.name;
