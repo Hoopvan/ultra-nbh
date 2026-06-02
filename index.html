@@ -8,7 +8,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Hoop NBH">
 <title>Hoop NBH</title>
-<!-- build: 20260602-002 -->
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1224,8 +1223,12 @@ async function loadGames() {
   if (!data) return;
 
   // Prend le jeu du jour pour chaque type
-  // Pour le pouls : prend le plus récent (permanent tant qu'un match approche)
-  gamesData.pouls = data.find(g => g.type === 'pouls' && g.date <= today) || null;
+  // Pour le pouls : prend le prochain match à venir (match_datetime dans le futur)
+  const now = new Date().toISOString();
+  const upcomingPouls = data.filter(g => g.type === 'pouls' && g.content?.match_datetime && g.content.match_datetime > now);
+  gamesData.pouls = upcomingPouls.length > 0
+    ? upcomingPouls[upcomingPouls.length - 1] // le plus proche dans le futur
+    : data.find(g => g.type === 'pouls') || null; // fallback sur le plus récent
   // Pour les autres : uniquement le jeu daté aujourd'hui
   gamesData.vestiaire = data.find(g => g.type === 'vestiaire' && g.date === today) || null;
   gamesData.anecdote = data.find(g => g.type === 'anecdote' && g.date === today) || null;
@@ -1601,6 +1604,15 @@ function showUnlockModal(item) {
   document.getElementById('unlock-modal').classList.add('show');
 }
 function closeModal() { document.getElementById('unlock-modal').classList.remove('show'); }
+</script>
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("/sw.js")
+      .then(()=>console.log("SW registered"))
+      .catch(e=>console.warn("SW error:",e));
+  });
+}
 </script>
 </body>
 </html>
