@@ -510,6 +510,34 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
           <span class="mission-xp xp-avail" id="mx-avant-apres">+30 XP</span>
         </div>
       </div>
+      <div class="mission-card available" id="mc-pronostic" onclick="openGame('pronostic')">
+        <div class="mission-card-inner">
+          <div class="mission-icon">🔮</div>
+          <div class="mission-info"><div class="mission-title">Pronostic du match</div><div class="mission-desc">Quel sera le score ce soir ?</div></div>
+          <span class="mission-xp xp-avail" id="mx-pronostic">+25 XP</span>
+        </div>
+      </div>
+      <!-- Boîte mystère — visible uniquement si toutes missions faites -->
+      <div class="mission-card" id="mc-boite" style="display:none" onclick="openGame('boite_mystere')">
+        <div class="mission-card-inner">
+          <div class="mission-icon" style="background:linear-gradient(135deg,#f5a623,#e85d04)">🎁</div>
+          <div class="mission-info">
+            <div class="mission-title" style="color:#f5a623">Boîte Mystère</div>
+            <div class="mission-desc">Toutes tes missions sont faites — gratte et découvre !</div>
+          </div>
+          <span class="mission-xp" id="mx-boite" style="background:linear-gradient(135deg,#f5a623,#e85d04);color:white">GRATTER</span>
+        </div>
+      </div>
+      <!-- Résultat pronostic — visible si prono fait hier -->
+      <div class="mission-card" id="mc-prono-result" style="display:none;border-color:rgba(74,158,255,.3)">
+        <div class="mission-card-inner">
+          <div class="mission-icon" style="background:rgba(74,158,255,.15)">📊</div>
+          <div class="mission-info">
+            <div class="mission-title" style="color:#4a9eff">Résultat de ton prono</div>
+            <div class="mission-desc" id="prono-result-desc">Chargement...</div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="section-label">Mes stats</div>
     <div class="stats-grid">
@@ -742,6 +770,91 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
     <div id="aa-cta">
       <button class="btn-red" id="aa-reveal-btn" onclick="revealAvantApres()" style="opacity:.35;pointer-events:none">J'AI EXPLORÉ ✓</button>
       <div style="font-size:12px;color:var(--white-muted);text-align:center;margin-top:8px">Glisse d'abord le curseur</div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME PRONOSTIC -->
+<div id="game-pronostic" class="game-screen">
+  <div class="game-topbar">
+    <button class="game-back-btn" onclick="closeGame()">←</button>
+    <div><div class="game-title">Pronostic du match</div><div class="game-xp-label">+25 XP à gagner</div></div>
+  </div>
+  <div class="game-scroll">
+    <div style="background:linear-gradient(135deg,var(--navy) 0%,#0a1428 100%);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:20px;border:1px solid var(--navy-bright)">
+      <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(74,158,255,.8);margin-bottom:8px">PRONOSTIC</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--white)" id="prono-match-name">—</div>
+      <div style="font-size:12px;color:var(--white-muted);margin-top:4px" id="prono-date-label"></div>
+    </div>
+
+    <div id="prono-input-ui">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--white);text-align:center;margin-bottom:20px">Quel sera le score final ?</div>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:24px">
+        <div style="text-align:center">
+          <div style="font-size:11px;color:var(--white-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Hermine</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px">
+            <button onclick="adjustScore('home',-1)" style="width:36px;height:36px;background:var(--black3);border:1px solid var(--black5);border-radius:50%;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+            <div id="score-home" style="font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:var(--white);min-width:60px;text-align:center">0</div>
+            <button onclick="adjustScore('home',1)" style="width:36px;height:36px;background:var(--black3);border:1px solid var(--black5);border-radius:50%;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+          </div>
+        </div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:var(--white-muted)">—</div>
+        <div style="text-align:center">
+          <div style="font-size:11px;color:var(--white-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px" id="prono-away-name">Adversaire</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px">
+            <button onclick="adjustScore('away',-1)" style="width:36px;height:36px;background:var(--black3);border:1px solid var(--black5);border-radius:50%;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+            <div id="score-away" style="font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:var(--white);min-width:60px;text-align:center">0</div>
+            <button onclick="adjustScore('away',1)" style="width:36px;height:36px;background:var(--black3);border:1px solid var(--black5);border-radius:50%;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 14px;font-size:12px;color:var(--white-muted);text-align:center;margin-bottom:20px;line-height:1.5">
+        📊 Les résultats seront révélés dans Missions demain après le match
+      </div>
+      <button class="btn-red" onclick="submitPronostic()">VALIDER MON PRONO 🔮</button>
+    </div>
+
+    <div id="prono-done-ui" style="display:none;text-align:center;padding-top:20px">
+      <div style="font-size:64px;margin-bottom:14px">🔮</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--white);margin-bottom:8px">Prono enregistré !</div>
+      <div style="font-size:14px;color:var(--white-muted);margin-bottom:24px;line-height:1.5">Ton prono : <strong id="prono-recap" style="color:var(--white)"></strong><br>Résultats demain dans Missions.</div>
+      <div class="xp-earned-badge">+25 XP ⚡</div>
+      <div style="height:16px"></div>
+      <button class="btn-red" onclick="closeGame()">RETOUR</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME BOÎTE MYSTÈRE -->
+<div id="game-boite_mystere" class="game-screen">
+  <div class="game-topbar">
+    <button class="game-back-btn" onclick="closeGame()">←</button>
+    <div><div class="game-title">Boîte Mystère</div><div class="game-xp-label">Offert par notre partenaire</div></div>
+  </div>
+  <div class="game-scroll">
+    <!-- Logo sponsor -->
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--white-muted);margin-bottom:8px">OFFERT PAR</div>
+      <div id="boite-sponsor-logo" style="height:60px;display:flex;align-items:center;justify-content:center"></div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--white)" id="boite-sponsor-name">—</div>
+    </div>
+
+    <!-- Zone de grattage -->
+    <div id="boite-scratch-ui">
+      <div style="font-size:14px;color:var(--white-muted);text-align:center;margin-bottom:16px">Gratte la boîte pour découvrir ton cadeau !</div>
+      <div id="scratch-container" style="position:relative;border-radius:var(--radius);overflow:hidden;height:200px;margin-bottom:20px;cursor:crosshair">
+        <!-- Image dessous (récompense) -->
+        <div id="scratch-reveal" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--black2);border:1px solid var(--black4)">
+          <div style="font-size:48px" id="scratch-result-icon">🎁</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--white);margin-top:8px" id="scratch-result-title">—</div>
+          <div style="font-size:13px;color:var(--white-muted);margin-top:4px;text-align:center;padding:0 20px" id="scratch-result-desc">—</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--red);margin-top:8px;background:var(--red-dim);padding:6px 16px;border-radius:20px;border:1px solid var(--red)" id="scratch-result-code">—</div>
+        </div>
+        <!-- Canvas de grattage par-dessus -->
+        <canvas id="scratch-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      </div>
+      <div style="font-size:12px;color:var(--white-muted);text-align:center;margin-bottom:16px" id="scratch-hint">Gratte avec le doigt pour révéler</div>
+      <button class="btn-red" id="boite-claim-btn" onclick="claimBoite()" style="display:none">J'AI COMPRIS ✓</button>
     </div>
   </div>
 </div>
@@ -1030,7 +1143,17 @@ function updateUI() {
   if(profile.vestiaire_date===today) setMissionDone('mc-vestiaire','mx-vestiaire','vestiaire');
   if(profile.anecdote_date===today) setMissionDone('mc-anecdote','mx-anecdote','anecdote');
   if(profile.nantes_nbh_date===today) setMissionDone('mc-nantes-nbh','mx-nantes-nbh','nantes_nbh');
+  const mcProno = document.getElementById('mc-pronostic');
+  if(mcProno) mcProno.style.display = gamesData.pronostic ? '' : 'none';
+
+  if(profile.pronostic_date===today) setMissionDone('mc-pronostic','mx-pronostic','pronostic');
   if(profile.avant_apres_date===today) setMissionDone('mc-avant-apres','mx-avant-apres','avant_apres');
+
+  // Boîte mystère — visible uniquement si toutes missions du jour faites
+  checkBoiteAccess();
+
+  // Résultat pronostic d'hier
+  checkPronoResult();
   const an=document.getElementById('av-name'); if(an) an.textContent=profile.name;
   const ar=document.getElementById('av-rank'); if(ar) ar.textContent=`★ ${lvl.name}`;
   renderAvatar();
@@ -1315,6 +1438,8 @@ async function loadGames() {
   gamesData.anecdote = data.find(g => g.type === 'anecdote' && g.date === today) || null;
   gamesData.nantes_nbh = data.find(g => g.type === 'nantes_nbh' && g.date === today) || null;
   gamesData.avant_apres = data.find(g => g.type === 'avant_apres' && g.date === today) || null;
+  gamesData.pronostic = data.find(g => g.type === 'pronostic' && g.date === today) || null;
+  gamesData.boite_mystere = data.find(g => g.type === 'boite_mystere' && g.active) || null;
 
   // Met à jour les infos du Pouls dans l'écran du jeu
   if (gamesData.pouls) {
@@ -1388,10 +1513,12 @@ function openGame(name) {
   if(name === 'anecdote') { anecAnswered = false; initAnecdote(); }
   if(name === 'nantes_nbh') { nnbAnswered = false; initNantesNBH(); }
   if(name === 'avant_apres') initAvantApres();
+  if(name === 'pronostic') initPronostic();
+  if(name === 'boite_mystere') initBoite();
 }
 
 function closeGame() {
-  ['pouls','vestiaire','anecdote','nantes_nbh','avant_apres'].forEach(g => {
+  ['pouls','vestiaire','anecdote','nantes_nbh','avant_apres','pronostic','boite_mystere'].forEach(g => {
     const el = document.getElementById('game-'+g); if(el) el.classList.remove('active');
   });
   document.getElementById('navbar').style.display = 'flex';
@@ -1597,6 +1724,130 @@ async function revealAvantApres() {
   await addXP(30); await addInteraction();
   await updateProfile({ avant_apres_date: today });
   updateUI();
+}
+
+// ── BOÎTE MYSTÈRE ──────────────────────────────────────────
+function checkBoiteAccess() {
+  const boiteCard = document.getElementById('mc-boite');
+  if (!boiteCard || !gamesData.boite_mystere) return;
+  const today = new Date().toISOString().split('T')[0];
+  if (profile?.boite_date === today) { boiteCard.style.display = 'none'; return; }
+  const done = [
+    gamesData.pouls ? profile?.pouls_date === today : null,
+    gamesData.vestiaire ? profile?.vestiaire_date === today : null,
+    gamesData.anecdote ? profile?.anecdote_date === today : null,
+    gamesData.nantes_nbh ? profile?.nantes_nbh_date === today : null,
+    gamesData.avant_apres ? profile?.avant_apres_date === today : null,
+    gamesData.pronostic ? profile?.pronostic_date === today : null,
+  ].filter(v => v !== null);
+  const allDone = done.length > 0 && done.every(v => v === true);
+  boiteCard.style.display = allDone ? '' : 'none';
+}
+
+function initBoite() {
+  const c = gamesData.boite_mystere?.content;
+  if (!c) return;
+  document.getElementById('boite-sponsor-name').textContent = c.sponsor_name || '—';
+  if (c.sponsor_logo) {
+    document.getElementById('boite-sponsor-logo').innerHTML = `<img src="${c.sponsor_logo}" style="max-height:50px;max-width:150px;object-fit:contain">`;
+  }
+  const won = Math.random() < (c.win_probability || 0.3);
+  document.getElementById('scratch-result-icon').textContent = won ? '🏆' : '🎟️';
+  document.getElementById('scratch-result-title').textContent = won ? 'Félicitations !' : 'Pas de chance...';
+  document.getElementById('scratch-result-desc').textContent = won ? c.win_reward : c.lose_reward;
+  document.getElementById('scratch-result-code').textContent = (won ? c.win_code : c.lose_code) || '';
+  document.getElementById('scratch-hint').textContent = 'Gratte avec le doigt pour révéler';
+  document.getElementById('boite-claim-btn').style.display = 'none';
+  const canvas = document.getElementById('scratch-canvas');
+  if(canvas) canvas.style.display = 'block';
+  initScratchCanvas();
+}
+
+function initScratchCanvas() {
+  const canvas = document.getElementById('scratch-canvas');
+  if (!canvas) return;
+  canvas.width = 340; canvas.height = 200;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 340, 200);
+  grad.addColorStop(0, '#f5a623'); grad.addColorStop(1, '#e85d04');
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, 340, 200);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = 'bold 64px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('🎁', 170, 120);
+  let scratching = false;
+  function scratch(x, y) {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath(); ctx.arc(x, y, 30, 0, Math.PI*2); ctx.fill();
+    const d = ctx.getImageData(0,0,340,200).data;
+    let t=0; for(let i=3;i<d.length;i+=4) if(d[i]===0) t++;
+    if(t/(340*200)>0.4){
+      canvas.style.display='none';
+      document.getElementById('scratch-hint').textContent='🎉 Révélé !';
+      document.getElementById('boite-claim-btn').style.display='block';
+    }
+  }
+  canvas.onmousedown=e=>{scratching=true;scratch(e.offsetX,e.offsetY)};
+  canvas.onmouseup=()=>scratching=false;
+  canvas.onmousemove=e=>{if(scratching)scratch(e.offsetX,e.offsetY)};
+  canvas.ontouchstart=e=>{e.preventDefault();const r=canvas.getBoundingClientRect();scratch(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top)};
+  canvas.ontouchmove=e=>{e.preventDefault();const r=canvas.getBoundingClientRect();scratch(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top)};
+}
+
+async function claimBoite() {
+  const today = new Date().toISOString().split('T')[0];
+  await addXP(50); await addInteraction();
+  await updateProfile({ boite_date: today });
+  closeGame(); updateUI();
+}
+
+// ── PRONOSTIC ──────────────────────────────────────────────
+let pronoHome = 0, pronoAway = 0;
+
+function initPronostic() {
+  const c = gamesData.pronostic?.content;
+  if (!c) return;
+  pronoHome = 0; pronoAway = 0;
+  const teams = c.match.split(' vs ');
+  document.getElementById('prono-match-name').textContent = c.match;
+  document.getElementById('prono-date-label').textContent = c.date_label || '';
+  if(teams[1]) document.getElementById('prono-away-name').textContent = teams[1].trim();
+  document.getElementById('score-home').textContent = '0';
+  document.getElementById('score-away').textContent = '0';
+  document.getElementById('prono-input-ui').style.display = 'block';
+  document.getElementById('prono-done-ui').style.display = 'none';
+}
+
+function adjustScore(side, delta) {
+  if(side==='home'){ pronoHome=Math.max(0,pronoHome+delta); document.getElementById('score-home').textContent=pronoHome; }
+  else { pronoAway=Math.max(0,pronoAway+delta); document.getElementById('score-away').textContent=pronoAway; }
+}
+
+async function submitPronostic() {
+  const today = new Date().toISOString().split('T')[0];
+  const score = `${pronoHome}-${pronoAway}`;
+  await addXP(25); await addInteraction();
+  await updateProfile({ pronostic_date: today, pronostic_score: score });
+  document.getElementById('prono-recap').textContent = score;
+  document.getElementById('prono-input-ui').style.display = 'none';
+  document.getElementById('prono-done-ui').style.display = 'block';
+  updateUI();
+}
+
+function checkPronoResult() {
+  const resultCard = document.getElementById('mc-prono-result');
+  if (!resultCard || !profile?.pronostic_date) { if(resultCard) resultCard.style.display='none'; return; }
+  const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
+  if (profile.pronostic_date !== yesterday) { resultCard.style.display='none'; return; }
+  // Cherche le jeu pronostic d'hier avec résultat rempli
+  const allGames = Object.values(gamesData).filter(Boolean);
+  const yesterdayGame = allGames.find(g => g.type==='pronostic' && g.date===yesterday && g.content?.score_domicile_final != null);
+  if (!yesterdayGame) { resultCard.style.display='none'; return; }
+  const c = yesterdayGame.content;
+  const final = `${c.score_domicile_final}-${c.score_exterieur_final}`;
+  const won = profile.pronostic_score === final;
+  const el = document.getElementById('prono-result-desc');
+  if(el) el.textContent = won ? `🎯 Score exact ! ${final} — bravo !` : `Score final : ${final} — ton prono : ${profile.pronostic_score||'?'}`;
+  resultCard.style.display = '';
 }
 
 function openAvatarEdit() {
