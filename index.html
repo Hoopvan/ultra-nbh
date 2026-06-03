@@ -1466,6 +1466,17 @@ function openGameReadOnly(name) {
   if(name === 'anecdote') { anecAnswered = false; initAnecdote(); }
   if(name === 'nantes_nbh') { nnbAnswered = false; initNantesNBH(); }
   if(name === 'avant_apres') initAvantApres();
+  if(name === 'pronostic') {
+    initPronostic();
+    // Affiche le prono déjà soumis au lieu de 75-75
+    if(profile?.pronostic_score) {
+      const [h, a] = profile.pronostic_score.split('-').map(Number);
+      pronoHome = isNaN(h) ? 75 : h;
+      pronoAway = isNaN(a) ? 75 : a;
+      const sh = document.getElementById('score-home'); if(sh) sh.textContent = pronoHome;
+      const sa = document.getElementById('score-away'); if(sa) sa.textContent = pronoAway;
+    }
+  }
 
   // Bloque les interactions après init
   setTimeout(() => {
@@ -1725,7 +1736,17 @@ function checkBoiteAccess() {
   const boiteCard = document.getElementById('mc-boite');
   if (!boiteCard || !gamesData.boite_mystere) return;
   const today = new Date().toISOString().split('T')[0];
-  if (profile?.boite_date === today) { boiteCard.style.display = 'none'; return; }
+
+  // Déjà jouée — carte visible en mode consultation
+  if (profile?.boite_date === today) {
+    boiteCard.style.display = '';
+    boiteCard.setAttribute('onclick', "openBoiteReadOnly()");
+    const xpEl = document.getElementById('mx-boite');
+    if(xpEl){ xpEl.textContent='Voir mon code'; xpEl.style.background='var(--black4)'; xpEl.style.color='var(--white-muted)'; }
+    return;
+  }
+
+  // Pas encore jouée — visible uniquement si toutes missions faites
   const done = [
     gamesData.pouls ? profile?.pouls_date === today : null,
     gamesData.vestiaire ? profile?.vestiaire_date === today : null,
@@ -1736,6 +1757,23 @@ function checkBoiteAccess() {
   ].filter(v => v !== null);
   const allDone = done.length > 0 && done.every(v => v === true);
   boiteCard.style.display = allDone ? '' : 'none';
+  if(allDone) boiteCard.setAttribute('onclick', "openGame('boite_mystere')");
+}
+
+function openBoiteReadOnly() {
+  // Ouvre la boîte en mode consultation — montre le résultat sans canvas de grattage
+  TABS.forEach(t => document.getElementById('screen-'+t).classList.remove('active'));
+  document.getElementById('navbar').style.display = 'none';
+  document.getElementById('game-boite_mystere').classList.add('active');
+  const c = gamesData.boite_mystere?.content;
+  if (!c) return;
+  document.getElementById('boite-sponsor-name').textContent = c.sponsor_name || '—';
+  if (c.sponsor_logo) document.getElementById('boite-sponsor-logo').innerHTML = `<img src="${c.sponsor_logo}" style="max-height:50px;max-width:150px;object-fit:contain">`;
+  // Cache le canvas, révèle directement le résultat
+  const canvas = document.getElementById('scratch-canvas');
+  if(canvas) canvas.style.display = 'none';
+  document.getElementById('scratch-hint').textContent = '👁️ Consultation — déjà gratté aujourd\'hui';
+  document.getElementById('boite-claim-btn').style.display = 'none';
 }
 
 function initBoite() {
