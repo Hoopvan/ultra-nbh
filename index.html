@@ -1817,7 +1817,18 @@ function initScratchCanvas() {
   ctx.font = 'bold 64px sans-serif'; ctx.textAlign = 'center';
   ctx.fillText('🎁', 170, 120);
   let scratching = false;
+  let locked = false;
+
+  async function lockBoite() {
+    if (locked) return;
+    locked = true;
+    const today = new Date().toISOString().split('T')[0];
+    await updateProfile({ boite_date: today });
+    checkBoiteAccess();
+  }
+
   function scratch(x, y) {
+    lockBoite(); // Bloque dès le premier grattage
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath(); ctx.arc(x, y, 30, 0, Math.PI*2); ctx.fill();
     const d = ctx.getImageData(0,0,340,200).data;
@@ -1836,11 +1847,8 @@ function initScratchCanvas() {
 }
 
 async function claimBoite() {
-  const today = new Date().toISOString().split('T')[0];
   const c = gamesData.boite_mystere?.content;
   const isWin = document.getElementById('scratch-result-title')?.textContent === 'Félicitations !';
-
-  // Enregistre le gagnant dans Supabase pour que le club puisse le contacter
   if (isWin && c && !window._demoMode) {
     await db.from('boite_winners').insert({
       user_id: currentUser.id,
@@ -1850,10 +1858,9 @@ async function claimBoite() {
       code: c.win_code || '—'
     });
   }
-
   await addXP(isWin ? 100 : 30);
   await addInteraction();
-  await updateProfile({ boite_date: today });
+  // boite_date déjà sauvegardé au premier grattage
   closeGame(); updateUI();
 }
 
