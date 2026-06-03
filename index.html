@@ -1480,9 +1480,16 @@ function openGameReadOnly(name) {
 
   // Bloque les interactions après init
   setTimeout(() => {
-    screen?.querySelectorAll('.answer-btn, .emotion-btn, #pouls-submit, #aa-reveal-btn, #nnb-buttons button').forEach(b => {
+    screen?.querySelectorAll('button').forEach(b => {
+      const action = b.getAttribute('onclick') || '';
+      const isBack = b.classList.contains('game-back-btn') || action.includes('closeGame');
+      if (!isBack) {
+        b.style.pointerEvents = 'none';
+        b.style.opacity = b.classList.contains('correct') ? '1' : '.5';
+      }
+    });
+    screen?.querySelectorAll('.answer-btn, .emotion-btn').forEach(b => {
       b.style.pointerEvents = 'none';
-      b.style.opacity = b.classList.contains('correct') ? '1' : '.5';
     });
     // Badge lecture
     const scroll = screen?.querySelector('.game-scroll');
