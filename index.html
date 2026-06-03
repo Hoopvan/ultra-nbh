@@ -530,13 +530,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
       </div>
       <!-- Résultat pronostic — visible si prono fait hier -->
       <div class="mission-card" id="mc-prono-result" style="display:none;border-color:rgba(74,158,255,.3)">
-        <div class="mission-card-inner">
-          <div class="mission-icon" style="background:rgba(74,158,255,.15)">📊</div>
-          <div class="mission-info">
-            <div class="mission-title" style="color:#4a9eff">Résultat de ton prono</div>
-            <div class="mission-desc" id="prono-result-desc">Chargement...</div>
-          </div>
-        </div>
+        <div id="prono-result-desc">Chargement...</div>
       </div>
     </div>
     <div class="section-label">Mes stats</div>
@@ -1745,6 +1739,9 @@ function checkBoiteAccess() {
 }
 
 function initBoite() {
+  const today = new Date().toISOString().split('T')[0];
+  // Sécurité : si déjà joué aujourd'hui, ferme immédiatement
+  if (profile?.boite_date === today) { closeGame(); return; }
   const c = gamesData.boite_mystere?.content;
   if (!c) return;
   document.getElementById('boite-sponsor-name').textContent = c.sponsor_name || '—';
@@ -1795,7 +1792,22 @@ function initScratchCanvas() {
 
 async function claimBoite() {
   const today = new Date().toISOString().split('T')[0];
-  await addXP(50); await addInteraction();
+  const c = gamesData.boite_mystere?.content;
+  const isWin = document.getElementById('scratch-result-title')?.textContent === 'Félicitations !';
+
+  // Enregistre le gagnant dans Supabase pour que le club puisse le contacter
+  if (isWin && c && !window._demoMode) {
+    await db.from('boite_winners').insert({
+      user_id: currentUser.id,
+      user_name: profile?.name || '—',
+      sponsor_name: c.sponsor_name || '—',
+      reward: c.win_reward || '—',
+      code: c.win_code || '—'
+    });
+  }
+
+  await addXP(isWin ? 100 : 30);
+  await addInteraction();
   await updateProfile({ boite_date: today });
   closeGame(); updateUI();
 }
@@ -1806,13 +1818,13 @@ let pronoHome = 0, pronoAway = 0;
 function initPronostic() {
   const c = gamesData.pronostic?.content;
   if (!c) return;
-  pronoHome = 0; pronoAway = 0;
+  pronoHome = 75; pronoAway = 75;
   const teams = c.match.split(' vs ');
   document.getElementById('prono-match-name').textContent = c.match;
   document.getElementById('prono-date-label').textContent = c.date_label || '';
   if(teams[1]) document.getElementById('prono-away-name').textContent = teams[1].trim();
-  document.getElementById('score-home').textContent = '0';
-  document.getElementById('score-away').textContent = '0';
+  document.getElementById('score-home').textContent = '75';
+  document.getElementById('score-away').textContent = '75';
   document.getElementById('prono-input-ui').style.display = 'block';
   document.getElementById('prono-done-ui').style.display = 'none';
 }
@@ -1825,6 +1837,18 @@ function adjustScore(side, delta) {
 async function submitPronostic() {
   const today = new Date().toISOString().split('T')[0];
   const score = `${pronoHome}-${pronoAway}`;
+  const matchId = gamesData.pronostic?.content?.match_id || 'unknown';
+
+  // Sauvegarde dans pronostic_votes pour le classement
+  if (!window._demoMode) {
+    await db.from('pronostic_votes').insert({
+      user_id: currentUser.id,
+      user_name: profile?.name || '—',
+      match_id: matchId,
+      score: score
+    });
+  }
+
   await addXP(25); await addInteraction();
   await updateProfile({ pronostic_date: today, pronostic_score: score });
   document.getElementById('prono-recap').textContent = score;
@@ -1833,21 +1857,78 @@ async function submitPronostic() {
   updateUI();
 }
 
-function checkPronoResult() {
+async function checkPronoResult() {
   const resultCard = document.getElementById('mc-prono-result');
   if (!resultCard || !profile?.pronostic_date) { if(resultCard) resultCard.style.display='none'; return; }
   const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
   if (profile.pronostic_date !== yesterday) { resultCard.style.display='none'; return; }
+
   // Cherche le jeu pronostic d'hier avec résultat rempli
-  const allGames = Object.values(gamesData).filter(Boolean);
-  const yesterdayGame = allGames.find(g => g.type==='pronostic' && g.date===yesterday && g.content?.score_domicile_final != null);
+  const { data: games } = await db.from('games')
+    .select('*').eq('type','pronostic').eq('date', yesterday);
+  const yesterdayGame = games?.find(g => g.content?.score_domicile_final != null);
   if (!yesterdayGame) { resultCard.style.display='none'; return; }
+
   const c = yesterdayGame.content;
-  const final = `${c.score_domicile_final}-${c.score_exterieur_final}`;
-  const won = profile.pronostic_score === final;
-  const el = document.getElementById('prono-result-desc');
-  if(el) el.textContent = won ? `🎯 Score exact ! ${final} — bravo !` : `Score final : ${final} — ton prono : ${profile.pronostic_score||'?'}`;
+  const finalScore = `${c.score_domicile_final}-${c.score_exterieur_final}`;
+  const [fh, fa] = finalScore.split('-').map(Number);
+
+  // Charge tous les votes de ce match
+  const { data: votes } = await db.from('pronostic_votes')
+    .select('user_name, score, user_id')
+    .eq('match_id', c.match_id || yesterdayGame.content.match_id);
+
+  if (!votes || !votes.length) { resultCard.style.display='none'; return; }
+
+  // Calcule l'écart pour chaque vote
+  const ranked = votes.map(v => {
+    const [vh, va] = v.score.split('-').map(Number);
+    const ecart = Math.abs(vh - fh) + Math.abs(va - fa);
+    return { ...v, ecart, exact: ecart === 0 };
+  }).sort((a, b) => a.ecart - b.ecart);
+
+  const myRank = ranked.findIndex(v => v.user_id === currentUser?.id) + 1;
+  const myVote = ranked.find(v => v.user_id === currentUser?.id);
+  const top3 = ranked.slice(0, 3);
+
+  // Construit l'affichage
+  const medals = ['🥇','🥈','🥉'];
+  let html = `<div style="padding:12px 16px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:4px">Résultats du prono</div>
+    <div style="font-size:12px;color:var(--white-muted);margin-bottom:12px">Score final : <strong style="color:var(--white)">${finalScore}</strong> · ${votes.length} participants</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">`;
+
+  top3.forEach((v, i) => {
+    const isMe = v.user_id === currentUser?.id;
+    html += `<div style="display:flex;align-items:center;gap:10px;background:${isMe?'var(--red-dim)':'var(--black3)'};border-radius:var(--radius-sm);padding:8px 12px;border:1px solid ${isMe?'var(--red)':'var(--black4)'}">
+      <span style="font-size:18px">${medals[i]}</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:var(--white)">${v.user_name}${isMe?' (toi)':''}</div>
+        <div style="font-size:11px;color:var(--white-muted)">Prono : ${v.score} · écart : ${v.ecart} pts${v.exact?' · 🎯 Score exact':''}</div>
+      </div>
+    </div>`;
+  });
+
+  html += `</div>`;
+
+  // Mon rang si hors top 3
+  if (myRank > 3 && myVote) {
+    html += `<div style="background:var(--red-dim);border:1px solid var(--red);border-radius:var(--radius-sm);padding:8px 12px;display:flex;align-items:center;gap:10px">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--red)">#${myRank}</span>
+      <div style="flex:1">
+        <div style="font-size:13px;color:var(--white)">Ton rang · Prono : ${myVote.score}</div>
+        <div style="font-size:11px;color:var(--white-muted)">Écart : ${myVote.ecart} pts sur ${votes.length} participants</div>
+      </div>
+    </div>`;
+  }
+
+  html += `</div>`;
+
+  const descEl = document.getElementById('prono-result-desc');
+  if (descEl) descEl.innerHTML = html;
   resultCard.style.display = '';
+  resultCard.style.cursor = 'default';
+  resultCard.removeAttribute('onclick');
 }
 
 function openAvatarEdit() {
