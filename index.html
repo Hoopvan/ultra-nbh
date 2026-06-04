@@ -1124,7 +1124,12 @@ function updateCreatePreview() {
 }
 
 async function submitProfile() {
-  if (window._demoMode) { profile.name = newName; profile.avatar_silhouette = newSil; profile.avatar_skin = newSkin; profile.avatar_hair = newHair; showMain(); return; }
+  if (window._demoMode) {
+    profile.name = newName; profile.avatar_silhouette = newSil;
+    profile.avatar_skin = newSkin; profile.avatar_hair = newHair;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    showMain(); return;
+  }
   const { data, error } = await db.from('users').insert({
     id: currentUser.id,
     name: newName,
@@ -1156,19 +1161,40 @@ async function updateProfile(fields) {
 // ── NAVIGATION ─────────────────────────────────────────────
 function showScreen(name) {
   document.getElementById('screen-loading').classList.remove('active');
-  ['onboarding','name','create-avatar','tribune','missions','avatar','tuto'].forEach(s => {
-    document.getElementById('screen-'+s)?.classList.remove('active');
-  });
-  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+name)?.classList.add('active');
 }
 
 function showMain() {
   document.getElementById('screen-loading').classList.remove('active');
-  document.getElementById('navbar').style.display = 'flex';
-  // Affiche le tuto uniquement à la première visite
   let tutoDone = false;
   try { tutoDone = localStorage.getItem('hoop_tuto_done') === '1'; } catch(e) {}
-  if (!tutoDone) { showTuto(); return; }
+  if (!tutoDone) {
+    document.getElementById('navbar').style.display = 'none';
+    showTuto();
+    return;
+  }
+  document.getElementById('navbar').style.display = 'flex';
+  showTab('tribune');
+}
+
+function showTuto() {
+  // Cache absolument tout
+  document.querySelectorAll('.screen, .game-screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = '';
+  });
+  document.getElementById('navbar').style.display = 'none';
+  document.getElementById('screen-tuto').classList.add('active');
+  tutoStep = 1;
+  updateTutoStep();
+}
+
+function skipTuto() {
+  try { localStorage.setItem('hoop_tuto_done', '1'); } catch(e) {}
+  // Cache le tuto proprement avant d'afficher l'app
+  document.getElementById('screen-tuto').classList.remove('active');
+  document.getElementById('navbar').style.display = 'flex';
   showTab('tribune');
 }
 
