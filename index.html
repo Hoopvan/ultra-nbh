@@ -431,7 +431,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
       <div class="tuto-slide" id="tuto-3">
         <div style="font-size:72px;margin-bottom:20px">🎯</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:12px">Les <span style="color:var(--red)">Missions</span></div>
-        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:16px">Chaque jour de nouveaux défis t'attendent. Anecdotes, pronostics, questions sur Nantes et le NBH... Et si tu complètes tout, une <strong style="color:#f5a623">Boîte Mystère 🎁</strong> te réserve une surprise offerte par nos partenaires.</p>
+        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:16px">Chaque jour de nouveaux défis t'attendent. Anecdotes, pronostics, questions sur Nantes et le NBH... Et si tu complètes toutes tes missions du jour, une <strong style="color:#f5a623">Boîte Mystère 🎁</strong> peut apparaître avec une surprise de nos partenaires. Mais rien n'est garanti...</p>
         <div style="display:flex;gap:8px">
           <div style="flex:1;background:var(--black3);border-radius:var(--radius-sm);padding:12px 10px;text-align:center;border:1px solid rgba(232,25,44,.3)">
             <div style="font-size:22px">⚡</div>
@@ -468,11 +468,11 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
         <div class="tuto-dot" id="dot-4"></div>
       </div>
       <!-- Boutons -->
-      <div style="display:flex;gap:10px">
-        <button id="tuto-prev" onclick="prevTuto()" style="display:none;flex:1;background:transparent;color:var(--white-muted);border:1px solid var(--black4);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;padding:14px;cursor:pointer">
+      <div style="display:flex;gap:10px;align-items:center">
+        <button id="tuto-prev" onclick="prevTuto()" style="display:none;background:transparent;color:var(--white);border:1px solid var(--white-mid);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;padding:14px 18px;cursor:pointer;white-space:nowrap">
           ← RETOUR
         </button>
-        <button id="tuto-skip" onclick="skipTuto()" style="flex:1;background:transparent;color:var(--white-muted);border:1px solid var(--black4);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;padding:14px;cursor:pointer">
+        <button id="tuto-skip" onclick="skipTuto()" style="flex:1;background:transparent;color:var(--white);border:1px solid var(--white-mid);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;padding:14px;cursor:pointer">
           PASSER
         </button>
         <button id="tuto-next" onclick="nextTuto()" class="btn-red" style="flex:2">
