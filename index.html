@@ -469,6 +469,9 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
       </div>
       <!-- Boutons -->
       <div style="display:flex;gap:10px">
+        <button id="tuto-prev" onclick="prevTuto()" style="display:none;flex:1;background:transparent;color:var(--white-muted);border:1px solid var(--black4);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;padding:14px;cursor:pointer">
+          ← RETOUR
+        </button>
         <button id="tuto-skip" onclick="skipTuto()" style="flex:1;background:transparent;color:var(--white-muted);border:1px solid var(--black4);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;padding:14px;cursor:pointer">
           PASSER
         </button>
@@ -1127,7 +1130,6 @@ async function submitProfile() {
   if (window._demoMode) {
     profile.name = newName; profile.avatar_silhouette = newSil;
     profile.avatar_skin = newSkin; profile.avatar_hair = newHair;
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     showMain(); return;
   }
   const { data, error } = await db.from('users').insert({
@@ -1160,49 +1162,69 @@ async function updateProfile(fields) {
 
 // ── NAVIGATION ─────────────────────────────────────────────
 function showScreen(name) {
-  document.getElementById('screen-loading').classList.remove('active');
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-'+name)?.classList.add('active');
+  // Cache TOUS les écrans sans exception
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  // Affiche uniquement le bon
+  const target = document.getElementById('screen-'+name);
+  if (target) {
+    target.style.display = 'flex';
+    target.classList.add('active');
+  }
+  // Navbar toujours cachée sur les écrans hors app
+  const appScreens = ['tribune','missions','avatar'];
+  document.getElementById('navbar').style.display = appScreens.includes(name) ? 'flex' : 'none';
 }
 
 function showMain() {
-  document.getElementById('screen-loading').classList.remove('active');
   let tutoDone = false;
   try { tutoDone = localStorage.getItem('hoop_tuto_done') === '1'; } catch(e) {}
-  if (!tutoDone) {
-    document.getElementById('navbar').style.display = 'none';
-    showTuto();
-    return;
-  }
-  document.getElementById('navbar').style.display = 'flex';
+  if (!tutoDone) { showTuto(); return; }
   showTab('tribune');
 }
 
 function showTuto() {
-  // Cache absolument tout
-  document.querySelectorAll('.screen, .game-screen').forEach(s => {
-    s.classList.remove('active');
-    s.style.display = '';
-  });
-  document.getElementById('navbar').style.display = 'none';
-  document.getElementById('screen-tuto').classList.add('active');
+  showScreen('tuto');
   tutoStep = 1;
   updateTutoStep();
 }
 
 function skipTuto() {
   try { localStorage.setItem('hoop_tuto_done', '1'); } catch(e) {}
-  // Cache le tuto proprement avant d'afficher l'app
-  document.getElementById('screen-tuto').classList.remove('active');
-  document.getElementById('navbar').style.display = 'flex';
   showTab('tribune');
+}
+
+function updateTutoStep() {
+  for (let i = 1; i <= TUTO_STEPS; i++) {
+    const slide = document.getElementById('tuto-'+i);
+    const dot = document.getElementById('dot-'+i);
+    if(slide) { slide.classList.toggle('active', i === tutoStep); }
+    if(dot) { dot.classList.toggle('active', i === tutoStep); }
+  }
+  const nextBtn = document.getElementById('tuto-next');
+  if(nextBtn) nextBtn.textContent = tutoStep === TUTO_STEPS ? "C'EST PARTI ! 🏀" : 'SUIVANT →';
+  const skipBtn = document.getElementById('tuto-skip');
+  if(skipBtn) skipBtn.style.display = tutoStep === TUTO_STEPS ? 'none' : 'block';
+  const prevBtn = document.getElementById('tuto-prev');
+  if(prevBtn) prevBtn.style.display = tutoStep > 1 ? 'block' : 'none';
 }
 
 const TABS = ['tribune','missions','avatar'];
 function showTab(tab) {
-  TABS.forEach(t => {
-    document.getElementById('screen-'+t).classList.toggle('active', t===tab);
-    document.getElementById('nav-'+t).classList.toggle('active', t===tab);
+  // Cache tous les écrans proprement
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  // Affiche le bon onglet
+  const target = document.getElementById('screen-'+tab);
+  if(target) { target.style.display = 'flex'; target.classList.add('active'); }
+  document.getElementById('navbar').style.display = 'flex';
+  // Active le bon bouton nav
+  ['tribune','missions','avatar'].forEach(t => {
+    document.getElementById('nav-'+t)?.classList.toggle('active', t===tab);
   });
   updateUI();
   if (tab === 'tribune') loadCommunityData();
