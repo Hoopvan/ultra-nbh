@@ -2014,9 +2014,17 @@ function openBoiteReadOnly() {
   if (!c) return;
   document.getElementById('boite-sponsor-name').textContent = c.sponsor_name || '—';
   if (c.sponsor_logo) document.getElementById('boite-sponsor-logo').innerHTML = `<img src="${c.sponsor_logo}" style="max-height:50px;max-width:150px;object-fit:contain">`;
-  // Cache le canvas, révèle directement le résultat
+  // Cache le canvas, révèle directement le résultat persisté côté serveur
+  // (voir users.boite_last_result dans supabase/03_boite_result_persistence.sql)
   const canvas = document.getElementById('scratch-canvas');
   if(canvas) canvas.style.display = 'none';
+  const r = profile?.boite_last_result;
+  if (r) {
+    document.getElementById('scratch-result-icon').textContent = r.won ? '🏆' : '🎟️';
+    document.getElementById('scratch-result-title').textContent = r.won ? 'Félicitations !' : 'Pas de chance...';
+    document.getElementById('scratch-result-desc').textContent = r.reward || '';
+    document.getElementById('scratch-result-code').textContent = r.code || '';
+  }
   document.getElementById('scratch-hint').textContent = '👁️ Déjà gratté aujourd\'hui';
   document.getElementById('boite-claim-btn').style.display = 'none';
 }
@@ -2042,8 +2050,8 @@ async function initBoite() {
   // ou à falsifier depuis le navigateur.
   if (window._demoMode) {
     const won = Math.random() < (c.win_probability || 0.3);
-    _boiteResult = { won, reward: won ? c.win_reward : c.lose_reward, code: (won ? c.win_code : c.lose_code) || '' };
-    profile = { ...profile, xp: profile.xp + (won ? 100 : 30), coins: (profile.coins||0) + (won ? 100 : 30), interactions: (profile.interactions||0) + 1, boite_date: today };
+    _boiteResult = { won, reward: won ? c.win_reward : c.lose_reward, code: (won ? c.win_code : c.lose_code) || '', sponsor_name: c.sponsor_name };
+    profile = { ...profile, xp: profile.xp + (won ? 100 : 30), coins: (profile.coins||0) + (won ? 100 : 30), interactions: (profile.interactions||0) + 1, boite_date: today, boite_last_result: _boiteResult };
   } else {
     const { data, error } = await db.rpc('open_boite_mystere');
     if (error) {
