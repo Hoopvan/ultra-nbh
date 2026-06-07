@@ -44,3 +44,7 @@ The app is a single-page app with a manual screen-router — no virtual DOM, no 
 - All user-facing copy is in French; keep new copy consistent in tone (casual, exclamation-heavy, emoji use in mission titles/labels).
 - New daily mission types follow the existing `init*()` / `answer*()` / `openGameReadOnly()` pattern and are driven by rows in the Supabase `games` table rather than hardcoded content — check how existing types (`vestiaire`, `anecdote`, `nantes_nbh`, `avant_apres`, `pronostic`) read their `content` JSON before adding a new one.
 - `window._demoMode` short-circuits Supabase calls in several places — when touching profile/XP/mission-completion code paths, verify the demo-mode branch still works.
+
+## Communication
+- Always explain in French what you are about to do and why before executing any command
+- Keep explanations short and clear

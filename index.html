@@ -1681,12 +1681,27 @@ function selectEmotion(btn, emoji, label) {
 
 async function submitPouls() {
   if(!selEmotion || !profile) return;
-  const today = new Date().toISOString().split('T')[0];
   const matchId = gamesData.pouls?.content?.match_id || 'match-inconnu';
-  if (!window._demoMode) {
-    await db.from('pouls_votes').insert({ user_id: currentUser.id, emotion: selEmotion.label, match_id: matchId });
+  const prevLevel = getLevel();
+
+  if (window._demoMode) {
+    const today = new Date().toISOString().split('T')[0];
+    profile = { ...profile, xp: profile.xp + 20, coins: (profile.coins || 0) + 20, interactions: (profile.interactions || 0) + 1, pouls_date: today };
+  } else {
+    // Le serveur valide (auth, émotion, anti double-vote) et applique XP/pièces —
+    // voir supabase/01_submit_pouls_vote.sql. Le client ne fait que demander.
+    const { data, error } = await db.rpc('submit_pouls_vote', { p_match_id: matchId, p_emotion: selEmotion.label });
+    if (error) {
+      showNotif(error.message?.includes('ALREADY_VOTED_TODAY') ? 'Tu as déjà voté aujourd\'hui !' : 'Oups, le vote n\'a pas pu être enregistré.');
+      return;
+    }
+    profile = data;
   }
-  await addXP(20); await addInteraction(); await updateProfile({ pouls_date: today });
+
+  showNotif(`+20 XP ⚡  +20 🐾`);
+  const nextLevel = getLevel();
+  if (prevLevel !== nextLevel) setTimeout(() => showNotif(`🏆 ${nextLevel.name} !`), 1600);
+
   const { data: votes } = await db.from('pouls_votes').select('emotion').eq('match_id', matchId);
   let pct = 0;
   if(votes && votes.length){ const same=votes.filter(v=>v.emotion===selEmotion.label).length; pct=Math.round(same/votes.length*100); }
@@ -1713,7 +1728,6 @@ function initVestiaire() {
 
 async function answerVestiaire(idx, correct) {
   if(vAnswered) return; vAnswered = true;
-  const today = new Date().toISOString().split('T')[0];
   const c = gamesData.vestiaire?.content;
   if (!c) return;
   c.answers.forEach((a,i) => {
@@ -1726,7 +1740,24 @@ async function answerVestiaire(idx, correct) {
   document.getElementById('v-expl').style.display = 'block';
   document.getElementById('v-xp').style.display = 'block';
   document.getElementById('v-continue').style.display = 'block';
-  await addXP(correct ? 30 : 15); await addInteraction(); await updateProfile({ vestiaire_date: today });
+
+  // Le serveur revérifie indépendamment si la réponse est correcte (voir
+  // supabase/02_migrate_missions.sql) — le client ne décide plus du gain XP.
+  const prevLevel = getLevel();
+  let xpGain;
+  if (window._demoMode) {
+    xpGain = correct ? 30 : 15;
+    const today = new Date().toISOString().split('T')[0];
+    profile = { ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, vestiaire_date: today };
+  } else {
+    const { data, error } = await db.rpc('submit_vestiaire_answer', { p_answer_index: idx });
+    if (error) { showNotif('Oups, réponse non enregistrée.'); return; }
+    profile = data.profile;
+    xpGain = data.correct ? 30 : 15;
+  }
+  showNotif(`+${xpGain} XP ⚡  +${xpGain} 🐾`);
+  const nextLevel = getLevel();
+  if (prevLevel !== nextLevel) setTimeout(() => showNotif(`🏆 ${nextLevel.name} !`), 1600);
   updateUI();
 }
 
@@ -1737,9 +1768,9 @@ function initAnecdote() {
   const subj = document.getElementById('anec-subject'); if(subj) subj.textContent = c.subject || 'Le Club';
   const q = document.getElementById('anec-question'); if(q) q.innerHTML = c.question;
   const list = document.getElementById('anec-answers'); if(!list) return;
-  // Mélange les réponses
-  const answers = [...c.answers].sort(() => Math.random() - 0.5);
-  list.innerHTML = answers.map((a,i) => `
+  // Mélange les réponses (gardé en mémoire pour identifier le choix par son texte côté serveur)
+  anecShuffledAnswers = [...c.answers].sort(() => Math.random() - 0.5);
+  list.innerHTML = anecShuffledAnswers.map((a,i) => `
     <button class="answer-btn" id="anec-${i}" onclick="answerAnecdote(${i},${a.correct},this)">
       <span class="answer-letter">${['A','B','C'][i]}</span>${a.text}
     </button>`).join('');
@@ -1749,9 +1780,9 @@ function initAnecdote() {
 }
 
 let anecAnswered = false;
+let anecShuffledAnswers = [];
 async function answerAnecdote(idx, correct, btn) {
   if(anecAnswered) return; anecAnswered = true;
-  const today = new Date().toISOString().split('T')[0];
   const c = gamesData.anecdote?.content;
   document.querySelectorAll('#anec-answers .answer-btn').forEach((b,i) => {
     b.style.pointerEvents = 'none';
@@ -1766,8 +1797,24 @@ async function answerAnecdote(idx, correct, btn) {
   document.getElementById('anec-expl').style.display = 'block';
   document.getElementById('anec-xp').style.display = 'block';
   document.getElementById('anec-continue').style.display = 'block';
-  await addXP(correct ? 30 : 15); await addInteraction();
-  await updateProfile({ anecdote_date: today });
+
+  // Le serveur retrouve la réponse choisie par son texte (l'ordre est mélangé
+  // côté client) et revérifie indépendamment si elle est correcte.
+  const prevLevel = getLevel();
+  let xpGain;
+  if (window._demoMode) {
+    xpGain = correct ? 30 : 15;
+    const today = new Date().toISOString().split('T')[0];
+    profile = { ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, anecdote_date: today };
+  } else {
+    const { data, error } = await db.rpc('submit_anecdote_answer', { p_answer_text: anecShuffledAnswers[idx]?.text });
+    if (error) { showNotif('Oups, réponse non enregistrée.'); return; }
+    profile = data.profile;
+    xpGain = data.correct ? 30 : 15;
+  }
+  showNotif(`+${xpGain} XP ⚡  +${xpGain} 🐾`);
+  const nextLevel = getLevel();
+  if (prevLevel !== nextLevel) setTimeout(() => showNotif(`🏆 ${nextLevel.name} !`), 1600);
   updateUI();
 }
 
@@ -1798,7 +1845,6 @@ function initNantesNBH() {
 let nnbAnswered = false;
 async function answerNantesNBH(choice, correct) {
   if(nnbAnswered) return; nnbAnswered = true;
-  const today = new Date().toISOString().split('T')[0];
   const c = gamesData.nantes_nbh?.content;
   const isCorrect = choice === correct;
   // Feedback visuel sur les boutons
@@ -1812,8 +1858,23 @@ async function answerNantesNBH(choice, correct) {
   if(!isCorrect && correctIdx >= 0) { btns[correctIdx].style.borderColor = '#1a9e5e'; btns[correctIdx].style.opacity = '1'; }
   document.getElementById('nnb-expl').textContent = c.explication;
   document.getElementById('nnb-result').style.display = 'block';
-  await addXP(isCorrect ? 30 : 15); await addInteraction();
-  await updateProfile({ nantes_nbh_date: today });
+
+  // Le serveur revérifie indépendamment le choix par rapport à la bonne réponse.
+  const prevLevel = getLevel();
+  let xpGain;
+  if (window._demoMode) {
+    xpGain = isCorrect ? 30 : 15;
+    const today = new Date().toISOString().split('T')[0];
+    profile = { ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, nantes_nbh_date: today };
+  } else {
+    const { data, error } = await db.rpc('submit_nantes_nbh_answer', { p_choice: choice });
+    if (error) { showNotif('Oups, réponse non enregistrée.'); return; }
+    profile = data.profile;
+    xpGain = data.correct ? 30 : 15;
+  }
+  showNotif(`+${xpGain} XP ⚡  +${xpGain} 🐾`);
+  const nextLevel = getLevel();
+  if (prevLevel !== nextLevel) setTimeout(() => showNotif(`🏆 ${nextLevel.name} !`), 1600);
   updateUI();
 }
 
@@ -1859,13 +1920,23 @@ function initAvantApres() {
 
 async function revealAvantApres() {
   if(aaAnswered) return; aaAnswered = true;
-  const today = new Date().toISOString().split('T')[0];
   const c = gamesData.avant_apres?.content;
   document.getElementById('aa-cta').style.display = 'none';
   document.getElementById('aa-expl').textContent = c.explication;
   document.getElementById('aa-result').style.display = 'block';
-  await addXP(30); await addInteraction();
-  await updateProfile({ avant_apres_date: today });
+
+  const prevLevel = getLevel();
+  if (window._demoMode) {
+    const today = new Date().toISOString().split('T')[0];
+    profile = { ...profile, xp: profile.xp + 30, coins: (profile.coins||0) + 30, interactions: (profile.interactions||0) + 1, avant_apres_date: today };
+  } else {
+    const { data, error } = await db.rpc('claim_avant_apres');
+    if (error) { showNotif('Oups, le gain n\'a pas pu être enregistré.'); return; }
+    profile = data;
+  }
+  showNotif(`+30 XP ⚡  +30 🐾`);
+  const nextLevel = getLevel();
+  if (prevLevel !== nextLevel) setTimeout(() => showNotif(`🏆 ${nextLevel.name} !`), 1600);
   updateUI();
 }
 
@@ -1950,7 +2021,12 @@ function openBoiteReadOnly() {
   document.getElementById('boite-claim-btn').style.display = 'none';
 }
 
-function initBoite() {
+// Résultat décidé par le serveur pour la session de grattage en cours
+// (voir open_boite_mystere dans supabase/02_migrate_missions.sql) — le
+// client ne fait plus que rejouer l'animation sur ce résultat figé.
+let _boiteResult = null;
+
+async function initBoite() {
   const today = new Date().toISOString().split('T')[0];
   // Sécurité : si déjà joué aujourd'hui, ferme immédiatement
   if (profile?.boite_date === today) { closeGame(); return; }
@@ -1960,11 +2036,30 @@ function initBoite() {
   if (c.sponsor_logo) {
     document.getElementById('boite-sponsor-logo').innerHTML = `<img src="${c.sponsor_logo}" style="max-height:50px;max-width:150px;object-fit:contain">`;
   }
-  const won = Math.random() < (c.win_probability || 0.3);
+
+  // Le tirage au sort, l'enregistrement du gagnant et le verrouillage de la
+  // mission du jour se font atomiquement côté serveur — impossible à rejouer
+  // ou à falsifier depuis le navigateur.
+  if (window._demoMode) {
+    const won = Math.random() < (c.win_probability || 0.3);
+    _boiteResult = { won, reward: won ? c.win_reward : c.lose_reward, code: (won ? c.win_code : c.lose_code) || '' };
+    profile = { ...profile, xp: profile.xp + (won ? 100 : 30), coins: (profile.coins||0) + (won ? 100 : 30), interactions: (profile.interactions||0) + 1, boite_date: today };
+  } else {
+    const { data, error } = await db.rpc('open_boite_mystere');
+    if (error) {
+      showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà gratté aujourd\'hui !' : 'Oups, impossible d\'ouvrir la boîte.');
+      closeGame();
+      return;
+    }
+    _boiteResult = data;
+    profile = data.profile;
+  }
+
+  const won = _boiteResult.won;
   document.getElementById('scratch-result-icon').textContent = won ? '🏆' : '🎟️';
   document.getElementById('scratch-result-title').textContent = won ? 'Félicitations !' : 'Pas de chance...';
-  document.getElementById('scratch-result-desc').textContent = won ? c.win_reward : c.lose_reward;
-  document.getElementById('scratch-result-code').textContent = (won ? c.win_code : c.lose_code) || '';
+  document.getElementById('scratch-result-desc').textContent = _boiteResult.reward || '';
+  document.getElementById('scratch-result-code').textContent = _boiteResult.code || '';
   document.getElementById('scratch-hint').textContent = 'Gratte avec le doigt pour révéler';
   document.getElementById('boite-claim-btn').style.display = 'none';
   const canvas = document.getElementById('scratch-canvas');
@@ -1984,18 +2079,10 @@ function initScratchCanvas() {
   ctx.font = 'bold 64px sans-serif'; ctx.textAlign = 'center';
   ctx.fillText('🎁', 170, 120);
   let scratching = false;
-  let locked = false;
-
-  async function lockBoite() {
-    if (locked) return;
-    locked = true;
-    const today = new Date().toISOString().split('T')[0];
-    await updateProfile({ boite_date: today });
-    checkBoiteAccess();
-  }
 
   function scratch(x, y) {
-    lockBoite(); // Bloque dès le premier grattage
+    // Le verrouillage de la mission du jour est désormais fait par le serveur
+    // dès l'ouverture de la boîte (open_boite_mystere) — voir initBoite().
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath(); ctx.arc(x, y, 30, 0, Math.PI*2); ctx.fill();
     const d = ctx.getImageData(0,0,340,200).data;
@@ -2013,21 +2100,9 @@ function initScratchCanvas() {
   canvas.ontouchmove=e=>{e.preventDefault();const r=canvas.getBoundingClientRect();scratch(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top)};
 }
 
-async function claimBoite() {
-  const c = gamesData.boite_mystere?.content;
-  const isWin = document.getElementById('scratch-result-title')?.textContent === 'Félicitations !';
-  if (isWin && c && !window._demoMode) {
-    await db.from('boite_winners').insert({
-      user_id: currentUser.id,
-      user_name: profile?.name || '—',
-      sponsor_name: c.sponsor_name || '—',
-      reward: c.win_reward || '—',
-      code: c.win_code || '—'
-    });
-  }
-  await addXP(isWin ? 100 : 30);
-  await addInteraction();
-  // boite_date déjà sauvegardé au premier grattage
+function claimBoite() {
+  // Le résultat, l'enregistrement du gagnant, l'XP et le verrouillage du jour
+  // ont déjà été décidés et appliqués par le serveur à l'ouverture (initBoite).
   closeGame(); updateUI();
 }
 
@@ -2054,22 +2129,26 @@ function adjustScore(side, delta) {
 }
 
 async function submitPronostic() {
-  const today = new Date().toISOString().split('T')[0];
   const score = `${pronoHome}-${pronoAway}`;
-  const matchId = gamesData.pronostic?.content?.match_id || 'unknown';
 
-  // Sauvegarde dans pronostic_votes pour le classement
-  if (!window._demoMode) {
-    await db.from('pronostic_votes').insert({
-      user_id: currentUser.id,
-      user_name: profile?.name || '—',
-      match_id: matchId,
-      score: score
-    });
+  // Le serveur enregistre le pronostic, applique l'XP et verrouille la
+  // mission du jour de façon atomique (voir supabase/02_migrate_missions.sql).
+  const prevLevel = getLevel();
+  if (window._demoMode) {
+    const today = new Date().toISOString().split('T')[0];
+    profile = { ...profile, xp: profile.xp + 25, coins: (profile.coins||0) + 25, interactions: (profile.interactions||0) + 1, pronostic_date: today, pronostic_score: score };
+  } else {
+    const { data, error } = await db.rpc('submit_pronostic', { p_score_home: pronoHome, p_score_away: pronoAway });
+    if (error) {
+      showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà pronostiqué aujourd\'hui !' : 'Oups, le pronostic n\'a pas pu être enregistré.');
+      return;
+    }
+    profile = data.profile;
   }
+  showNotif(`+25 XP ⚡  +25 🐾`);
+  const nextLevel = getLevel();
+  if (prevLevel !== nextLevel) setTimeout(() => showNotif(`🏆 ${nextLevel.name} !`), 1600);
 
-  await addXP(25); await addInteraction();
-  await updateProfile({ pronostic_date: today, pronostic_score: score });
   document.getElementById('prono-recap').textContent = score;
   document.getElementById('prono-input-ui').style.display = 'none';
   document.getElementById('prono-done-ui').style.display = 'block';
@@ -2241,28 +2320,32 @@ async function buyItem(id) {
   if (!profile) return;
   const item = UNLOCKABLES.find(u => u.id === id);
   if (!item) return;
-  const coins = profile.coins || 0;
-  if (coins < item.cost) { showNotif('Pas assez de 🐾 Hermines'); return; }
-  const owned = [...(profile.active_items || []), id];
-  const worn = [...(profile.worn_items || []), id];
-  await updateProfile({ coins: coins - item.cost, active_items: owned, worn_items: worn });
+
+  // Le serveur revérifie le coût, le solde de pièces et la possession
+  // (catalogue répliqué dans buy_unlockable — voir supabase/02_migrate_missions.sql).
+  if (window._demoMode) {
+    const coins = profile.coins || 0;
+    if (coins < item.cost) { showNotif('Pas assez de 🐾 Hermines'); return; }
+    const owned = [...(profile.active_items || []), id];
+    const worn = [...(profile.worn_items || []), id];
+    profile = { ...profile, coins: coins - item.cost, active_items: owned, worn_items: worn };
+  } else {
+    const { data, error } = await db.rpc('buy_unlockable', { p_item_id: id });
+    if (error) {
+      const msg = error.message?.includes('NOT_ENOUGH_COINS') ? 'Pas assez de 🐾 Hermines'
+        : error.message?.includes('ALREADY_OWNED') ? 'Tu possèdes déjà cet objet !'
+        : 'Oups, achat impossible.';
+      showNotif(msg);
+      return;
+    }
+    profile = data;
+  }
+
   showNotif(`${item.icon} ${item.name} débloqué !`);
   renderAvatar(); renderEquip(); renderNextUnlocks();
   ['coins-t','coins-m','coins-a'].forEach(elId => {
     const el = document.getElementById(elId); if(el) el.textContent = profile.coins || 0;
   });
-}
-async function addXP(amount) {
-  if(!profile) return;
-  const prev = getLevel();
-  await updateProfile({ xp: profile.xp + amount, coins: (profile.coins || 0) + amount });
-  const next = getLevel();
-  showNotif(`+${amount} XP ⚡  +${amount} 🐾`);
-  if(prev !== next) setTimeout(() => showNotif(`🏆 ${next.name} !`), 1600);
-}
-async function addInteraction() {
-  if(!profile) return;
-  await updateProfile({ interactions: (profile.interactions || 0) + 1 });
 }
 
 // ── COUNTDOWN ──────────────────────────────────────────────
