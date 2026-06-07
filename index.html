@@ -1132,16 +1132,12 @@ async function submitProfile() {
     profile.avatar_skin = newSkin; profile.avatar_hair = newHair;
     showMain(); return;
   }
-  const { data, error } = await db.from('users').insert({
-    id: currentUser.id,
-    name: newName,
-    xp: 0, interactions: 0, streak: 1,
-    last_play: new Date().toISOString().split('T')[0],
-    active_items: ['couleurs'],
-    avatar_silhouette: newSil,
-    avatar_skin: newSkin,
-    avatar_hair: newHair
-  }).select().single();
+  // Le serveur fixe les valeurs de départ (xp/coins/streak...) — le client
+  // ne fait que proposer le nom et l'apparence (voir create_profile dans
+  // supabase/04_lock_down_users_table.sql).
+  const { data, error } = await db.rpc('create_profile', {
+    p_name: newName, p_silhouette: newSil, p_skin: newSkin, p_hair: newHair
+  });
   if (data) { profile = data; showMain(); }
   else console.error('Insert error:', error);
 }
@@ -1149,9 +1145,17 @@ async function submitProfile() {
 async function checkStreak() {
   if (!profile) return;
   const today = new Date().toISOString().split('T')[0];
-  const diff = Math.floor((new Date(today) - new Date(profile.last_play)) / 86400000);
-  if (diff === 1) await updateProfile({ streak: profile.streak + 1, last_play: today });
-  else if (diff > 1) await updateProfile({ streak: 1, last_play: today });
+  if (profile.last_play === today) return;
+  // Le serveur revalide la progression du streak à partir de sa propre date
+  // (voir update_streak dans supabase/04_lock_down_users_table.sql).
+  if (window._demoMode) {
+    const diff = Math.floor((new Date(today) - new Date(profile.last_play)) / 86400000);
+    if (diff === 1) profile = { ...profile, streak: profile.streak + 1, last_play: today };
+    else if (diff > 1) profile = { ...profile, streak: 1, last_play: today };
+    return;
+  }
+  const { data, error } = await db.rpc('update_streak');
+  if (!error && data) profile = data;
 }
 
 async function updateProfile(fields) {
