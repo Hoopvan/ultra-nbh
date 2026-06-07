@@ -2007,9 +2007,15 @@ function checkBoiteAccess() {
 
 function openBoiteReadOnly() {
   // Ouvre la boîte en mode consultation — montre le résultat sans canvas de grattage
-  TABS.forEach(t => document.getElementById('screen-'+t).classList.remove('active'));
+  TABS.forEach(t => {
+    const s = document.getElementById('screen-'+t);
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
   document.getElementById('navbar').style.display = 'none';
-  document.getElementById('game-boite_mystere').classList.add('active');
+  const screen = document.getElementById('game-boite_mystere');
+  screen.style.display = 'flex';
+  screen.classList.add('active');
   const c = gamesData.boite_mystere?.content;
   if (!c) return;
   document.getElementById('boite-sponsor-name').textContent = c.sponsor_name || '—';
