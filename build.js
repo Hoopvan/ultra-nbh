@@ -8,7 +8,7 @@ const path = require('path');
 const ROOT = __dirname;
 const OUT = path.join(ROOT, 'dist');
 
-const ASSETS = ['manifest.json', 'sw.js', '_headers', 'icon-192.png', 'icon-512.png', 'logo-nbh.png', 'content'];
+const ASSETS = ['style.css', 'manifest.json', 'sw.js', '_headers', 'icon-192.png', 'icon-512.png', 'logo-nbh.png', 'content'];
 
 function copyRecursive(src, dest) {
   const stat = fs.statSync(src);
@@ -31,9 +31,12 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
-let html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-html = html.replace(/\{\{SUPABASE_URL\}\}/g, SUPABASE_URL).replace(/\{\{SUPABASE_ANON_KEY\}\}/g, SUPABASE_ANON_KEY);
+const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 fs.writeFileSync(path.join(OUT, 'index.html'), html);
+
+let appJs = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
+appJs = appJs.replace(/\{\{SUPABASE_URL\}\}/g, SUPABASE_URL).replace(/\{\{SUPABASE_ANON_KEY\}\}/g, SUPABASE_ANON_KEY);
+fs.writeFileSync(path.join(OUT, 'app.js'), appJs);
 
 for (const asset of ASSETS) {
   const src = path.join(ROOT, asset);
