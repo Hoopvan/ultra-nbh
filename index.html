@@ -1156,6 +1156,7 @@ async function checkStreak() {
   }
   const { data, error } = await db.rpc('update_streak');
   if (!error && data) profile = data;
+  else if (error) console.error('update_streak error:', error);
 }
 
 async function updateProfile(fields) {
