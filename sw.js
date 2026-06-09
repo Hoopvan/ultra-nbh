@@ -1,9 +1,10 @@
-const CACHE = 'hoop-nbh-v7';
+const CACHE = 'hoop-nbh-v8';
 const ASSETS = [
   '/',
   '/index.html',
   '/style.css',
-  '/app.js',
+  '/js/main.js',
+  '/js/config.js',
   '/manifest.json'
 ];
 

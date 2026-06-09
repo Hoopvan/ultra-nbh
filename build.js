@@ -1,6 +1,5 @@
 // Build de production pour Vercel : injecte les variables d'environnement
-// SUPABASE_URL / SUPABASE_ANON_KEY (définies dans Project Settings > Environment
-// Variables) dans index.html, et copie les assets statiques dans dist/.
+// SUPABASE_URL / SUPABASE_ANON_KEY dans js/config.js, et copie tout dans dist/.
 
 const fs = require('fs');
 const path = require('path');
@@ -31,12 +30,16 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
+// index.html
 const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 fs.writeFileSync(path.join(OUT, 'index.html'), html);
 
-let appJs = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
-appJs = appJs.replace(/\{\{SUPABASE_URL\}\}/g, SUPABASE_URL).replace(/\{\{SUPABASE_ANON_KEY\}\}/g, SUPABASE_ANON_KEY);
-fs.writeFileSync(path.join(OUT, 'app.js'), appJs);
+// js/ — copie tout, puis substitue les credentials dans config.js
+copyRecursive(path.join(ROOT, 'js'), path.join(OUT, 'js'));
+const configPath = path.join(OUT, 'js', 'config.js');
+let configJs = fs.readFileSync(configPath, 'utf8');
+configJs = configJs.replace(/\{\{SUPABASE_URL\}\}/g, SUPABASE_URL).replace(/\{\{SUPABASE_ANON_KEY\}\}/g, SUPABASE_ANON_KEY);
+fs.writeFileSync(configPath, configJs);
 
 for (const asset of ASSETS) {
   const src = path.join(ROOT, asset);

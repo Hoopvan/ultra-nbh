@@ -1,4 +1,5 @@
 .env
 index-local.html
 app-local.js
+js-local/
 dist
