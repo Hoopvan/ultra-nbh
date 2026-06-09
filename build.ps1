@@ -9,18 +9,18 @@ foreach ($line in $env_content) {
 Write-Host "URL: $SUPABASE_URL"
 Write-Host "KEY: $SUPABASE_ANON_KEY"
 
-# Génère js-local/config.js avec les credentials substitués (gitignorée).
-# Les autres modules dans js/ restent servis tels quels.
-New-Item -ItemType Directory -Force -Path js-local | Out-Null
-$configContent = Get-Content js/config.js -Raw
+# Copie js/ -> js-local/ et substitue les credentials dans config.js
+if (Test-Path js-local) { Remove-Item -Recurse -Force js-local }
+Copy-Item -Recurse js js-local
+
+$configContent = Get-Content js-local/config.js -Raw
 $configContent = $configContent -replace '\{\{SUPABASE_URL\}\}', $SUPABASE_URL
 $configContent = $configContent -replace '\{\{SUPABASE_ANON_KEY\}\}', $SUPABASE_ANON_KEY
 Set-Content js-local/config.js $configContent
 
-# index-local.html : import map qui redirige /js/config.js → /js-local/config.js
+# index-local.html : pointe sur /js-local/main.js au lieu de /js/main.js
 $content = Get-Content index.html -Raw
-$importMap = '<script type="importmap">{"imports":{"/js/config.js":"/js-local/config.js"}}</script>'
-$content = $content -replace '(<script type="module")', "$importMap`n`$1"
+$content = $content -replace '/js/main\.js', '/js-local/main.js'
 Set-Content index-local.html $content
 
 Write-Host "Build OK - ouvre index-local.html avec un serveur local"
