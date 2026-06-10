@@ -46,7 +46,7 @@ export function startDemoMode() {
     id: 'demo-user-local',
     name: 'Fan Demo',
     xp: 150,
-    coins: 200,
+    coins: 1000,
     interactions: 8,
     streak: 3,
     last_play: new Date().toISOString().split('T')[0],

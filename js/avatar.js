@@ -12,34 +12,37 @@ import { profile, demoMode, setProfile } from './state.js';
 import { updateProfile } from './profile.js';
 import { showNotif } from './utils.js';
 
-// ── Overlays SVG NBH (coordonnées pour viewBox 0 0 280 280 de DiceBear) ──────
-// Note : coordonnées approximatives, à ajuster après visualisation
+// ── Overlays SVG NBH — coordonnées calées sur le SVG DiceBear avataaars v8
+// Structure : viewBox 0 0 280 280, avatar dans <g transform="translate(8)">
+// Face : centre x=140 y=92 r=56 | yeux y≈112 | sourcils y≈102 | col y≈185
+
 const OVERLAY_ECHARPE = `
 <g opacity="0.95">
-  <rect x="104" y="163" width="72" height="15" rx="7.5" fill="#e8192c"/>
-  <rect x="108" y="175" width="13" height="25" rx="5" fill="#e8192c"/>
-  <rect x="159" y="175" width="13" height="20" rx="5" fill="#e8192c"/>
-  <rect x="104" y="169" width="72" height="3" fill="white" opacity="0.25"/>
-  <text x="140" y="174" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="7" fill="white">HERMINE</text>
+  <rect x="100" y="178" width="80" height="24" rx="12" fill="#e8192c"/>
+  <rect x="100" y="187" width="80" height="4" fill="white" opacity="0.35"/>
+  <rect x="104" y="198" width="22" height="52" rx="9" fill="#e8192c"/>
+  <rect x="154" y="198" width="22" height="40" rx="9" fill="#e8192c"/>
+  <rect x="104" y="216" width="22" height="4" fill="white" opacity="0.3"/>
+  <text x="140" y="193" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="1">HERMINE</text>
 </g>`;
 
 const OVERLAY_CASQUETTE = `
 <g opacity="0.97">
-  <path d="M82,110 Q82,48 140,48 Q198,48 198,110 L198,116 Q140,111 82,116 Z" fill="#0d1b3e"/>
-  <rect x="82" y="110" width="116" height="7" fill="#0b1e42"/>
-  <path d="M82,117 Q64,124 58,133 Q76,126 90,121 Z" fill="#0b1e42"/>
-  <circle cx="140" cy="50" r="4" fill="#1a3060"/>
-  <text x="146" y="93" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="15" fill="#e8192c">NBH</text>
+  <path d="M78,82 Q72,28 140,8 Q208,28 202,82 Z" fill="#0d1b3e"/>
+  <rect x="72" y="80" width="136" height="7" rx="3" fill="#0b1e42"/>
+  <path d="M72,87 L208,87 Q222,95 212,106 L72,106 Z" fill="#0b1e42"/>
+  <circle cx="140" cy="10" r="4" fill="#1a3060"/>
+  <text x="140" y="64" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="16" fill="#e8192c">NBH</text>
 </g>`;
 
 const OVERLAY_BANDEAU = `
 <g opacity="0.95">
-  <rect x="92" y="94" width="96" height="14" rx="7" fill="#e8192c"/>
-  <rect x="92" y="100" width="96" height="3" fill="white" opacity="0.25"/>
+  <rect x="84" y="70" width="112" height="17" rx="8.5" fill="#e8192c"/>
+  <rect x="84" y="77" width="112" height="3" fill="white" opacity="0.25"/>
 </g>`;
 
 const OVERLAY_MAILLOT = `
-<text x="140" y="220" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="20" fill="white" opacity="0.85">NBH</text>`;
+<text x="140" y="258" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="24" fill="white" opacity="0.85">NBH</text>`;
 
 // ── Génération avatar via API HTTP DiceBear ───────────────────────────────────
 
