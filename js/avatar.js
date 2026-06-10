@@ -134,13 +134,13 @@ export function renderEquip() {
     const canAfford = coins >= u.cost;
 
     if (isOwned) {
-      return `<div class="equip-item unlocked ${isWorn ? 'active-eq' : ''}" onclick="toggleWorn('${u.id}')">
+      return `<div class="equip-item unlocked ${isWorn ? 'active-eq' : ''}" data-toggle-item="${u.id}">
         <div class="equip-icon">${u.icon}</div>
         <div class="equip-name">${u.name}</div>
         <div style="font-size:9px;color:${isWorn ? 'var(--red)' : 'var(--white-muted)'};margin-top:2px">${isWorn ? '✓ Porté' : 'Tap pour porter'}</div>
       </div>`;
     } else {
-      return `<div class="equip-item locked-eq" onclick="${canAfford ? `buyItem('${u.id}')` : ''}"
+      return `<div class="equip-item locked-eq" ${canAfford ? `data-buy-item="${u.id}"` : ''}
         style="${canAfford ? 'cursor:pointer;opacity:1;border-color:rgba(245,166,35,.3)' : ''}">
         <div class="equip-icon">${u.icon}</div>
         <div class="equip-name">${u.name}</div>
