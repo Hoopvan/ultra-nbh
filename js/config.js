@@ -11,14 +11,69 @@ export const LEVELS = [
 ];
 
 export const UNLOCKABLES = [
-  {id:'couleurs',icon:'🎨',name:'Couleurs NBH',cost:50,desc:'Les couleurs officielles du club sur ton avatar'},
-  {id:'echarpe',icon:'🧣',name:'Écharpe',cost:80,desc:'L\'écharpe officielle de l\'Hermine'},
-  {id:'casquette',icon:'🧢',name:'Casquette',cost:120,desc:'La casquette bleue marine'},
-  {id:'maillot',icon:'👕',name:'Maillot',cost:200,desc:'Le maillot domicile du club'},
-  {id:'badge',icon:'🏅',name:'Badge Fondateur',cost:300,desc:'Membre fondateur de la communauté'},
-  {id:'couronne',icon:'👑',name:'Couronne',cost:500,desc:'Légende de l\'Hermine'}
+  {id:'couleurs',  icon:'🎨', name:'Couleurs NBH',  cost:50,  desc:'Tenue aux couleurs du club'},
+  {id:'echarpe',   icon:'🧣', name:'Écharpe',       cost:80,  desc:'L\'écharpe officielle de l\'Hermine'},
+  {id:'casquette', icon:'🧢', name:'Casquette',     cost:120, desc:'La casquette bleue marine NBH'},
+  {id:'lunettes',  icon:'🕶️', name:'Lunettes',      cost:150, desc:'Style assuré en tribune'},
+  {id:'maillot',   icon:'👕', name:'Maillot',       cost:200, desc:'Le maillot domicile du club'},
+  {id:'bandeau',   icon:'🎽', name:'Bandeau',       cost:250, desc:'Bandeau NBH sur le front'},
 ];
 
-export const SKINS = {skin1:'#f5c89a',skin2:'#d4956a',skin3:'#a0673a',skin4:'#6b3a1f'};
+export const AVATAR_SKINS = [
+  {id:'light',     label:'Clair',  color:'#f5c89a'},
+  {id:'tanned',    label:'Doré',   color:'#d4956a'},
+  {id:'brown',     label:'Brun',   color:'#a0673a'},
+  {id:'darkBrown', label:'Foncé',  color:'#6b3a1f'},
+];
+
+export const AVATAR_TOPS = [
+  {id:'shortFlat',   label:'Court plat'},
+  {id:'sides',       label:'Rasé côtés'},
+  {id:'theCaesar',   label:'César'},
+  {id:'dreads01',    label:'Dreads'},
+  {id:'bigHair',     label:'Volume'},
+  {id:'bob',         label:'Carré'},
+  {id:'curly',       label:'Frisé long'},
+  {id:'straight02',  label:'Lisse'},
+  {id:'hijab',       label:'Hijab'},
+  {id:'shavedSides', label:'Rasé'},
+];
+
+export const AVATAR_HAIR_COLORS = [
+  {id:'brown',      label:'Brun',  color:'#5a3a1a'},
+  {id:'black',      label:'Noir',  color:'#1a1a1a'},
+  {id:'blonde',     label:'Blond', color:'#d4a843'},
+  {id:'red',        label:'Roux',  color:'#b5330a'},
+  {id:'silverGray', label:'Gris',  color:'#aaaaaa'},
+];
+
+export const AVATAR_EYES = [
+  {id:'default',   label:'Neutre'},
+  {id:'happy',     label:'Heureux 😊'},
+  {id:'surprised', label:'Étonné 😲'},
+  {id:'eyeRoll',   label:'Au ciel 🙄'},
+];
+
+export const AVATAR_MOUTHS = [
+  {id:'smile',   label:'Sourire'},
+  {id:'default', label:'Neutre'},
+  {id:'serious', label:'Sérieux'},
+  {id:'twinkle', label:'Malicieux'},
+  {id:'grimace', label:'Grimace'},
+];
+
+export const AVATAR_FACIAL_HAIRS = [
+  {id:'',                label:'Aucune'},
+  {id:'beardLight',      label:'3 jours'},
+  {id:'beardMajestic',   label:'Barbe'},
+  {id:'moustacheMagnum', label:'Moustache'},
+];
+
+export const AVATAR_CLOTHES = [
+  {id:'shirtCrewNeck', label:'T-shirt'},
+  {id:'shirtVNeck',    label:'Col V'},
+  {id:'hoodie',        label:'Hoodie'},
+  {id:'overall',       label:'Salopette'},
+];
 
 export const TABS = ['tribune','missions','avatar'];

@@ -1,9 +1,10 @@
 import { db } from './config.js';
-import { profile, gamesData } from './state.js';
+import { profile, gamesData, demoMode } from './state.js';
 import { miniAvatarSVG } from './avatar.js';
 import { getLevel } from './ui.js';
 
 export async function loadCommunityData() {
+  if (demoMode) return;
   const { count } = await db.from('users').select('*', {count:'exact',head:true});
   const fc = document.getElementById('fans-total'); if (fc) fc.textContent = count || '—';
 
@@ -38,16 +39,18 @@ export async function loadCommunityData() {
     }
   }
 
-  const { data: topFans } = await db.from('users').select('name,xp,streak,avatar_silhouette,avatar_skin,avatar_hair,worn_items').order('xp',{ascending:false}).limit(10);
+  const { data: topFans } = await db.from('users').select('id,name,xp,streak,avatar_skin,avatar_top,avatar_hair_color,avatar_eyes,avatar_mouth,avatar_facial_hair,avatar_clothe,worn_items').order('xp',{ascending:false}).limit(10);
   if (topFans && topFans.length) {
     const top = topFans[0];
     const fn = document.getElementById('fj-name'); if (fn) fn.textContent = top.name;
     const fs = document.getElementById('fj-sub'); if (fs) fs.textContent = `${getLevel().name} · ${top.xp} XP · 🔥 ${top.streak}j`;
-    const fa = document.getElementById('fj-av'); if (fa) { fa.style.cssText = 'width:44px;height:44px'; fa.innerHTML = miniAvatarSVG(top); }
+    const fa = document.getElementById('fj-av');
+    if (fa) { fa.style.cssText = 'width:44px;height:44px'; fa.innerHTML = await miniAvatarSVG(top); }
     const grid = document.getElementById('fans-grid'); if (!grid) return;
+    const avatarSVGs = await Promise.all(topFans.map(f => miniAvatarSVG(f)));
     grid.innerHTML = topFans.map((f,i) => `
       <div class="fan-tile">
-        <div class="fan-tile-avatar ${i<3?'online':''}">${miniAvatarSVG(f)}</div>
+        <div class="fan-tile-avatar ${i<3?'online':''}">${avatarSVGs[i]}</div>
         <div class="fan-tile-name">${f.name.substring(0,8)}</div>
       </div>`).join('');
   }

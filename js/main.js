@@ -3,8 +3,8 @@ import { closeModal } from './utils.js';
 import { showLevelsModal } from './ui.js';
 import { showTab } from './nav.js';
 import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccount, deleteAccount } from './auth.js';
-import { goToAvatarCreate, setSil, setSkin, setHair, submitProfile } from './profile-create.js';
-import { openAvatarEdit, editSil, editSkin, editHair, saveAvatarEdit, toggleWorn, buyItem } from './avatar.js';
+import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-create.js';
+import { openAvatarEdit, setEditParam, saveAvatarEdit, toggleWorn, buyItem } from './avatar.js';
 import { nextTuto, prevTuto, skipTuto } from './tuto.js';
 import { openGame, closeGame } from './games/screens.js';
 import { selectEmotion, submitPouls } from './games/pouls.js';
@@ -19,15 +19,11 @@ function wireEvents() {
 
   // Création profil
   document.getElementById('name-submit-btn').addEventListener('click', goToAvatarCreate);
-  document.getElementById('sil-A').addEventListener('click', () => setSil('A'));
-  document.getElementById('sil-B').addEventListener('click', () => setSil('B'));
-  ['skin1', 'skin2', 'skin3', 'skin4'].forEach(s =>
-    document.getElementById(`skin-${s}`).addEventListener('click', () => setSkin(s))
-  );
-  ['hair1', 'hair2', 'hair3', 'hair4'].forEach(h =>
-    document.getElementById(`hair-${h}`).addEventListener('click', () => setHair(h))
-  );
   document.getElementById('submit-profile-btn').addEventListener('click', submitProfile);
+  document.getElementById('create-av-scroll').addEventListener('click', e => {
+    const btn = e.target.closest('[data-param]');
+    if (btn) setCreateParam(btn.dataset.param, btn.dataset.value);
+  });
 
   // Tuto
   document.getElementById('tuto-prev').addEventListener('click', prevTuto);
@@ -82,15 +78,11 @@ function wireEvents() {
 
   // Édition avatar
   document.getElementById('open-avatar-edit-btn').addEventListener('click', openAvatarEdit);
-  document.getElementById('edit-sil-A').addEventListener('click', () => editSil('A'));
-  document.getElementById('edit-sil-B').addEventListener('click', () => editSil('B'));
-  ['skin1', 'skin2', 'skin3', 'skin4'].forEach(s =>
-    document.getElementById(`edit-skin-${s}`).addEventListener('click', () => editSkin(s))
-  );
-  ['hair1', 'hair2', 'hair3', 'hair4'].forEach(h =>
-    document.getElementById(`edit-hair-${h}`).addEventListener('click', () => editHair(h))
-  );
   document.getElementById('save-avatar-edit-btn').addEventListener('click', saveAvatarEdit);
+  document.getElementById('avatar-edit-content').addEventListener('click', e => {
+    const btn = e.target.closest('[data-param]');
+    if (btn) setEditParam(btn.dataset.param, btn.dataset.value);
+  });
 
   // Équipements (délégation pour items générés dynamiquement)
   document.getElementById('equip-grid').addEventListener('click', e => {
