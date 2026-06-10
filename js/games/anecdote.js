@@ -15,9 +15,13 @@ export function initAnecdote() {
   const list = document.getElementById('anec-answers'); if (!list) return;
   anecShuffledAnswers = [...c.answers].sort(() => Math.random() - 0.5);
   list.innerHTML = anecShuffledAnswers.map((a,i) => `
-    <button class="answer-btn" id="anec-${i}" onclick="answerAnecdote(${i},${a.correct},this)">
+    <button class="answer-btn" id="anec-${i}" data-idx="${i}" data-correct="${a.correct}">
       <span class="answer-letter">${['A','B','C'][i]}</span>${a.text}
     </button>`).join('');
+  list.onclick = e => {
+    const btn = e.target.closest('[data-idx]');
+    if (btn) answerAnecdote(parseInt(btn.dataset.idx), btn.dataset.correct === 'true', btn);
+  };
   document.getElementById('anec-expl').style.display = 'none';
   document.getElementById('anec-xp').style.display = 'none';
   document.getElementById('anec-continue').style.display = 'none';

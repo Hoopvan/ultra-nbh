@@ -11,9 +11,13 @@ export function initVestiaire() {
   if (!c) { console.warn('Pas de jeu Vestiaire actif'); return; }
   const list = document.getElementById('v-answers'); if (!list) return;
   list.innerHTML = c.answers.map((a,i) => `
-    <button class="answer-btn" id="va-${i}" onclick="answerVestiaire(${i},${a.correct})">
+    <button class="answer-btn" id="va-${i}" data-idx="${i}" data-correct="${a.correct}">
       <span class="answer-letter">${['A','B','C'][i]}</span>${a.text}
     </button>`).join('');
+  list.onclick = e => {
+    const btn = e.target.closest('[data-idx]');
+    if (btn) answerVestiaire(parseInt(btn.dataset.idx), btn.dataset.correct === 'true');
+  };
   document.getElementById('v-expl').style.display = 'none';
   document.getElementById('v-xp').style.display = 'none';
   document.getElementById('v-continue').style.display = 'none';

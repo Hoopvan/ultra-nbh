@@ -15,18 +15,22 @@ export function initNantesNBH() {
   const btns = document.getElementById('nnb-buttons');
   if (!btns) return;
   btns.innerHTML = `
-    <button onclick="answerNantesNBH('nantes','${c.answer}')" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
+    <button data-choice="nantes" data-answer="${c.answer}" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
       <span style="font-size:28px">🏙️</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)">Nantes</span>
     </button>
-    <button onclick="answerNantesNBH('nbh','${c.answer}')" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
+    <button data-choice="nbh" data-answer="${c.answer}" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
       <span style="font-size:28px">🏀</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)">NBH</span>
     </button>
-    <button onclick="answerNantesNBH('les_deux','${c.answer}')" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
+    <button data-choice="les_deux" data-answer="${c.answer}" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
       <span style="font-size:28px">❤️</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)">Les Deux</span>
     </button>`;
+  btns.onclick = e => {
+    const btn = e.target.closest('[data-choice]');
+    if (btn) answerNantesNBH(btn.dataset.choice, btn.dataset.answer);
+  };
 }
 
 export async function answerNantesNBH(choice, correct) {
