@@ -27,16 +27,14 @@ export const AVATAR_SKINS = [
 ];
 
 export const AVATAR_TOPS = [
-  {id:'shortFlat',   label:'Court plat'},
-  {id:'sides',       label:'Rasé côtés'},
-  {id:'theCaesar',   label:'César'},
-  {id:'dreads01',    label:'Dreads'},
-  {id:'bigHair',     label:'Volume'},
-  {id:'bob',         label:'Carré'},
-  {id:'curly',       label:'Frisé long'},
-  {id:'straight02',  label:'Lisse'},
-  {id:'hijab',       label:'Hijab'},
-  {id:'shavedSides', label:'Rasé'},
+  {id:'hijab',      label:'Hijab'},
+  {id:'shortFlat',  label:'Court'},
+  {id:'shortCurly', label:'Curly'},
+  {id:'sides',      label:'Rasé'},
+  {id:'theCaesar',  label:'Très court'},
+  {id:'bob',        label:'Carré'},
+  {id:'straight01', label:'Lisse'},
+  {id:'bigHair',    label:'Long'},
 ];
 
 export const AVATAR_HAIR_COLORS = [
