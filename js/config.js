@@ -5,9 +5,11 @@ const { createClient } = supabase;
 export const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export const LEVELS = [
-  {name:'Curieux',min:0,max:100},{name:'Supporter',min:100,max:300},
-  {name:'Fidèle',min:300,max:600},{name:'Ultras',min:600,max:1000},
-  {name:'Légende',min:1000,max:9999}
+  {name:'Curieux',   min:0,    max:100,  reward:null},
+  {name:'Supporter', min:100,  max:300,  reward:'🎁 Tirage au sort mensuel pour gagner une écharpe'},
+  {name:'Fidèle',    min:300,  max:600,  reward:'🎟️ Code promo -20% sur la billetterie'},
+  {name:'Ultras',    min:600,  max:1000, reward:'🛍️ Code promo -20% sur la boutique'},
+  {name:'Légende',   min:1000, max:9999, reward:'🖼️ Poster de l\'équipe dédicacé'},
 ];
 
 export const UNLOCKABLES = [
