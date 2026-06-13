@@ -7,6 +7,12 @@ import { initPronostic } from './pronostic.js';
 import { initBoite } from './boite.js';
 
 export function openGame(name) {
+  const today = new Date().toISOString().split('T')[0];
+  const dateKey = name === 'nantes_nbh' ? 'nantes_nbh_date'
+    : name === 'avant_apres' ? 'avant_apres_date'
+    : `${name}_date`;
+  if (profile?.[dateKey] === today) { openGameReadOnly(name); return; }
+
   document.querySelectorAll('.screen').forEach(s => {
     s.classList.remove('active');
     s.style.display = 'none';

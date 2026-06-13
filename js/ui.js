@@ -2,19 +2,17 @@ import { LEVELS } from './config.js';
 import { profile, gamesData } from './state.js';
 import { renderAvatar, renderEquip, renderNextUnlocks } from './avatar.js';
 
-export function getLevel() {
-  const xp = profile?.xp || 0;
+export function getLevel(xp = profile?.xp || 0) {
   return LEVELS.find(l => xp >= l.min && xp < l.max) || LEVELS[LEVELS.length-1];
 }
 
-export function setMissionDone(cardId, xpId, gameType) {
+export function setMissionDone(cardId, xpId) {
   const mc = document.getElementById(cardId);
   if (mc) {
     mc.className = 'mission-card';
     mc.style.opacity = '.6';
     mc.style.borderColor = 'var(--black4)';
     mc.style.cursor = 'pointer';
-    mc.setAttribute('onclick', gameType ? `openGameReadOnly('${gameType}')` : '');
   }
   const mx = document.getElementById(xpId);
   if (mx) { mx.textContent = 'Fait ✓'; mx.className = 'mission-xp xp-done'; }

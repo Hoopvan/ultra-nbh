@@ -43,7 +43,7 @@ export async function loadCommunityData() {
   if (topFans && topFans.length) {
     const top = topFans[0];
     const fn = document.getElementById('fj-name'); if (fn) fn.textContent = top.name;
-    const fs = document.getElementById('fj-sub'); if (fs) fs.textContent = `${getLevel().name} · ${top.xp} XP · 🔥 ${top.streak}j`;
+    const fs = document.getElementById('fj-sub'); if (fs) fs.textContent = `${getLevel(top.xp).name} · ${top.xp} XP · 🔥 ${top.streak}j`;
     const fa = document.getElementById('fj-av');
     if (fa) { fa.style.cssText = 'width:44px;height:44px'; fa.innerHTML = await miniAvatarSVG(top); }
     const grid = document.getElementById('fans-grid'); if (!grid) return;
