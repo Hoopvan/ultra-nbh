@@ -20,12 +20,14 @@ export function checkBoiteAccess() {
   }
 
   const done = [
-    gamesData.pouls ? profile?.pouls_date === today : null,
-    gamesData.vestiaire ? profile?.vestiaire_date === today : null,
-    gamesData.anecdote ? profile?.anecdote_date === today : null,
-    gamesData.nantes_nbh ? profile?.nantes_nbh_date === today : null,
-    gamesData.avant_apres ? profile?.avant_apres_date === today : null,
-    gamesData.pronostic ? profile?.pronostic_date === today : null,
+    gamesData.pouls         ? profile?.pouls_date         === today : null,
+    gamesData.vestiaire     ? profile?.vestiaire_date     === today : null,
+    gamesData.anecdote      ? profile?.anecdote_date      === today : null,
+    gamesData.nantes_nbh    ? profile?.nantes_nbh_date    === today : null,
+    gamesData.avant_apres   ? profile?.avant_apres_date   === today : null,
+    gamesData.pronostic     ? profile?.pronostic_date     === today : null,
+    gamesData.timeline      ? profile?.timeline_date      === today : null,
+    gamesData.photo_mystere ? profile?.photo_mystere_date === today : null,
   ].filter(v => v !== null);
   const allDone = done.length > 0 && done.every(v => v === true);
   boiteCard.style.display = allDone ? '' : 'none';

@@ -8,6 +8,7 @@ import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-creat
 import { openAvatarEdit, setEditParam, saveAvatarEdit, toggleWorn, buyItem } from './avatar.js';
 import { nextTuto, prevTuto, skipTuto } from './tuto.js';
 import { openGame, closeGame } from './games/screens.js';
+import { submitTimeline } from './games/timeline.js';
 import { selectEmotion, submitPouls } from './games/pouls.js';
 import { revealAvantApres } from './games/avant-apres.js';
 import { adjustScore, submitPronostic } from './games/pronostic.js';
@@ -45,6 +46,8 @@ function wireEvents() {
   document.getElementById('mc-avant-apres').addEventListener('click', () => openGame('avant_apres'));
   document.getElementById('mc-pronostic').addEventListener('click', () => openGame('pronostic'));
   document.getElementById('mc-boite').addEventListener('click', () => openGame('boite_mystere'));
+  document.getElementById('mc-timeline').addEventListener('click', () => openGame('timeline'));
+  document.getElementById('mc-photo-mystere').addEventListener('click', () => openGame('photo_mystere'));
 
   // Fermeture jeux
   document.querySelectorAll('.game-back-btn').forEach(btn => btn.addEventListener('click', closeGame));
@@ -54,6 +57,8 @@ function wireEvents() {
   document.getElementById('nnb-result-back').addEventListener('click', closeGame);
   document.getElementById('aa-result-back').addEventListener('click', closeGame);
   document.getElementById('prono-done-back').addEventListener('click', closeGame);
+  document.getElementById('tl-continue').addEventListener('click', closeGame);
+  document.getElementById('pm-continue').addEventListener('click', closeGame);
 
   // Jeu Pouls
   document.querySelectorAll('.emotion-btn').forEach(btn =>
@@ -76,6 +81,7 @@ function wireEvents() {
 
   // Boîte Mystère
   document.getElementById('boite-claim-btn').addEventListener('click', claimBoite);
+  document.getElementById('tl-submit').addEventListener('click', submitTimeline);
 
   // Édition avatar
   document.getElementById('open-avatar-edit-btn').addEventListener('click', openAvatarEdit);

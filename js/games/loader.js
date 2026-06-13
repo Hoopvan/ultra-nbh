@@ -25,6 +25,8 @@ export async function loadGames() {
   gamesData.avant_apres = data.find(g => g.type === 'avant_apres' && g.date === today) || null;
   gamesData.pronostic = data.find(g => g.type === 'pronostic' && g.date === today) || null;
   gamesData.boite_mystere = data.find(g => g.type === 'boite_mystere' && g.active) || null;
+  gamesData.timeline      = data.find(g => g.type === 'timeline'      && g.date === today) || null;
+  gamesData.photo_mystere = data.find(g => g.type === 'photo_mystere' && g.date === today) || null;
 
   if (gamesData.pouls) {
     const c = gamesData.pouls.content;

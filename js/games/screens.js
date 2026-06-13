@@ -5,6 +5,8 @@ import { initNantesNBH } from './nantes-nbh.js';
 import { initAvantApres } from './avant-apres.js';
 import { initPronostic } from './pronostic.js';
 import { initBoite, openBoiteReadOnly } from './boite.js';
+import { initTimeline, submitTimeline } from './timeline.js';
+import { initPhotoMystere } from './photo-mystere.js';
 
 export function openGame(name) {
   const today = new Date().toISOString().split('T')[0];
@@ -25,12 +27,14 @@ export function openGame(name) {
   const gameScreen = document.getElementById('game-'+name);
   if (gameScreen) { gameScreen.style.display = 'flex'; gameScreen.classList.add('active'); }
 
-  if (name === 'vestiaire') initVestiaire();
-  if (name === 'anecdote') initAnecdote();
-  if (name === 'nantes_nbh') initNantesNBH();
-  if (name === 'avant_apres') initAvantApres();
-  if (name === 'pronostic') initPronostic();
+  if (name === 'vestiaire')    initVestiaire();
+  if (name === 'anecdote')     initAnecdote();
+  if (name === 'nantes_nbh')   initNantesNBH();
+  if (name === 'avant_apres')  initAvantApres();
+  if (name === 'pronostic')    initPronostic();
   if (name === 'boite_mystere') initBoite();
+  if (name === 'timeline')     initTimeline();
+  if (name === 'photo_mystere') initPhotoMystere();
 }
 
 export function closeGame() {
@@ -55,10 +59,12 @@ export function openGameReadOnly(name) {
   const screen = document.getElementById('game-'+name);
   if (screen) { screen.style.display = 'flex'; screen.classList.add('active'); }
 
-  if (name === 'vestiaire') initVestiaire();
-  if (name === 'anecdote') initAnecdote();
-  if (name === 'nantes_nbh') initNantesNBH();
-  if (name === 'avant_apres') initAvantApres();
+  if (name === 'vestiaire')    initVestiaire();
+  if (name === 'anecdote')     initAnecdote();
+  if (name === 'nantes_nbh')   initNantesNBH();
+  if (name === 'avant_apres')  initAvantApres();
+  if (name === 'timeline')     initTimeline();
+  if (name === 'photo_mystere') initPhotoMystere();
   if (name === 'pronostic') {
     initPronostic();
     if (profile?.pronostic_score) {

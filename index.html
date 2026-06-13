@@ -340,6 +340,20 @@
           <span class="mission-xp xp-avail" id="mx-pronostic">+25 XP</span>
         </div>
       </div>
+      <div class="mission-card available" id="mc-timeline" style="display:none">
+        <div class="mission-card-inner">
+          <div class="mission-icon">⏳</div>
+          <div class="mission-info"><div class="mission-title">La Timeline</div><div class="mission-desc">Remets ces événements dans le bon ordre.</div></div>
+          <span class="mission-xp xp-avail" id="mx-timeline">+30 XP</span>
+        </div>
+      </div>
+      <div class="mission-card available" id="mc-photo-mystere" style="display:none">
+        <div class="mission-card-inner">
+          <div class="mission-icon">📸</div>
+          <div class="mission-info"><div class="mission-title">Photo Mystère</div><div class="mission-desc">Devine avant que la photo se révèle !</div></div>
+          <span class="mission-xp xp-avail" id="mx-photo-mystere">+50 XP</span>
+        </div>
+      </div>
       <!-- Boîte mystère — visible uniquement si toutes missions faites -->
       <div class="mission-card" id="mc-boite" style="display:none">
         <div class="mission-card-inner">
@@ -567,6 +581,45 @@
       <button class="btn-red" id="aa-reveal-btn" style="opacity:.35;pointer-events:none">J'AI EXPLORÉ ✓</button>
       <div style="font-size:12px;color:var(--white-muted);text-align:center;margin-top:8px">Glisse d'abord le curseur</div>
     </div>
+  </div>
+</div>
+
+<!-- GAME TIMELINE -->
+<div id="game-timeline" class="game-screen">
+  <div class="game-topbar">
+    <button class="game-back-btn">←</button>
+    <div><div class="game-title">La Timeline</div><div class="game-xp-label">+30 XP à gagner</div></div>
+  </div>
+  <div class="game-scroll">
+    <div style="background:linear-gradient(135deg,var(--navy) 0%,#0a1428 100%);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:16px;border:1px solid var(--navy-bright)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--white-muted);margin-bottom:8px">DU PLUS ANCIEN AU PLUS RÉCENT</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white)" id="tl-question">Remets ces événements dans le bon ordre</div>
+    </div>
+    <div style="font-size:12px;color:var(--white-muted);text-align:center;margin-bottom:14px">Tape les événements dans l'ordre chronologique</div>
+    <div id="tl-events" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
+    <div id="tl-result" style="display:none"></div>
+    <div class="xp-earned-badge" id="tl-xp" style="display:none;text-align:center">+30 XP ⚡</div>
+    <button class="btn-red" id="tl-submit" style="display:none;margin-bottom:12px">VALIDER L'ORDRE</button>
+    <button class="btn-red" id="tl-continue" style="display:none">RETOUR</button>
+  </div>
+</div>
+
+<!-- GAME PHOTO MYSTÈRE -->
+<div id="game-photo_mystere" class="game-screen">
+  <div class="game-topbar">
+    <button class="game-back-btn">←</button>
+    <div><div class="game-title">Photo Mystère</div><div class="game-xp-label">Jusqu'à +50 XP</div></div>
+  </div>
+  <div class="game-scroll">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px" id="pm-question">Qui est-ce ?</div>
+    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:12px" id="pm-stage-label">Indice 1 / 3 — Bonne réponse = +50 XP 🔥</div>
+    <div style="border-radius:var(--radius);overflow:hidden;margin-bottom:16px;background:var(--black3)">
+      <img id="pm-img" src="" alt="" style="width:100%;display:block;transition:filter .6s ease">
+    </div>
+    <div class="answers-list" id="pm-answers"></div>
+    <div class="v-explication" id="pm-expl" style="display:none"></div>
+    <div class="xp-earned-badge" id="pm-xp" style="display:none;text-align:center">+50 XP ⚡</div>
+    <button class="btn-red" id="pm-continue" style="display:none">RETOUR</button>
   </div>
 </div>
 

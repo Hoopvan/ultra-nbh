@@ -154,6 +154,49 @@ INSERT INTO public.games (type, date, active, content) VALUES (
 -- UPDATE public.games SET active = false WHERE type = 'boite_mystere' AND active = true;
 
 
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 8. TIMELINE — remettre des événements dans l'ordre chronologique
+-- ─────────────────────────────────────────────────────────────────────────────
+-- events : tableau d'objets {id (int unique), text, year}
+-- Le serveur trie par year pour déterminer le bon ordre.
+-- 30 XP si ordre parfait, 15 XP sinon.
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'timeline',
+  '2026-06-15',                          -- ← date du jour
+  true,
+  '{
+    "question": "Remets ces moments NBH dans l'\''ordre chronologique",
+    "events": [
+      {"id": 1, "text": "Fondation du club",              "year": 1987},
+      {"id": 2, "text": "Première montée en Pro B",       "year": 1999},
+      {"id": 3, "text": "Rénovation de la Trocardière",   "year": 2012},
+      {"id": 4, "text": "Changement de nom en NBH",       "year": 2018}
+    ],
+    "explication": "Quatre étapes clés de l'\''histoire du club !"
+  }'::jsonb
+);
+
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 9. PHOTO MYSTÈRE — deviner avant que la photo se révèle
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 3 stages de révélation (blur fort → moyen → net). XP dégressif : 50 / 30 / 15.
+-- options : 3 ou 4 choix (dont la bonne réponse). Mélangés côté client.
+-- answer  : doit correspondre EXACTEMENT à l'une des options.
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'photo_mystere',
+  '2026-06-15',                          -- ← date du jour
+  true,
+  '{
+    "question":   "Quel joueur NBH se cache derrière cette photo ?",
+    "image_url":  "https://...",          -- ← URL de la photo (hébergée publiquement)
+    "options":    ["Jean Dupont", "Pierre Martin", "Marc Leblanc", "Karim Diallo"],
+    "answer":     "Jean Dupont",          -- ← doit correspondre exactement à une option
+    "explication":"Jean Dupont, notre meneur titulaire depuis 2022 !"
+  }'::jsonb
+);
+
+
 -- =============================================================================
 -- UTILITAIRES
 -- =============================================================================

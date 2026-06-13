@@ -43,22 +43,28 @@ export function updateUI() {
 
   const mcVest = document.getElementById('mc-vestiaire');
   const mcAnec = document.getElementById('mc-anecdote');
-  const mcNnb = document.getElementById('mc-nantes-nbh');
-  const mcAa = document.getElementById('mc-avant-apres');
-  if (mcVest) mcVest.style.display = gamesData.vestiaire ? '' : 'none';
-  if (mcAnec) mcAnec.style.display = gamesData.anecdote ? '' : 'none';
-  if (mcNnb) mcNnb.style.display = gamesData.nantes_nbh ? '' : 'none';
-  if (mcAa) mcAa.style.display = gamesData.avant_apres ? '' : 'none';
+  const mcNnb  = document.getElementById('mc-nantes-nbh');
+  const mcAa   = document.getElementById('mc-avant-apres');
+  const mcTl   = document.getElementById('mc-timeline');
+  const mcPm   = document.getElementById('mc-photo-mystere');
+  if (mcVest) mcVest.style.display = gamesData.vestiaire     ? '' : 'none';
+  if (mcAnec) mcAnec.style.display = gamesData.anecdote      ? '' : 'none';
+  if (mcNnb)  mcNnb.style.display  = gamesData.nantes_nbh    ? '' : 'none';
+  if (mcAa)   mcAa.style.display   = gamesData.avant_apres   ? '' : 'none';
+  if (mcTl)   mcTl.style.display   = gamesData.timeline      ? '' : 'none';
+  if (mcPm)   mcPm.style.display   = gamesData.photo_mystere ? '' : 'none';
 
   const mcProno = document.getElementById('mc-pronostic');
   if (mcProno) mcProno.style.display = gamesData.pronostic ? '' : 'none';
 
-  if (profile.pouls_date === today) setMissionDone('mc-pouls','mx-pouls','pouls');
-  if (profile.vestiaire_date === today) setMissionDone('mc-vestiaire','mx-vestiaire','vestiaire');
-  if (profile.anecdote_date === today) setMissionDone('mc-anecdote','mx-anecdote','anecdote');
-  if (profile.nantes_nbh_date === today) setMissionDone('mc-nantes-nbh','mx-nantes-nbh','nantes_nbh');
-  if (profile.pronostic_date === today) setMissionDone('mc-pronostic','mx-pronostic','pronostic');
-  if (profile.avant_apres_date === today) setMissionDone('mc-avant-apres','mx-avant-apres','avant_apres');
+  if (profile.pouls_date         === today) setMissionDone('mc-pouls',        'mx-pouls');
+  if (profile.vestiaire_date     === today) setMissionDone('mc-vestiaire',    'mx-vestiaire');
+  if (profile.anecdote_date      === today) setMissionDone('mc-anecdote',     'mx-anecdote');
+  if (profile.nantes_nbh_date    === today) setMissionDone('mc-nantes-nbh',   'mx-nantes-nbh');
+  if (profile.pronostic_date     === today) setMissionDone('mc-pronostic',    'mx-pronostic');
+  if (profile.avant_apres_date   === today) setMissionDone('mc-avant-apres',  'mx-avant-apres');
+  if (profile.timeline_date      === today) setMissionDone('mc-timeline',     'mx-timeline');
+  if (profile.photo_mystere_date === today) setMissionDone('mc-photo-mystere','mx-photo-mystere');
 
   const an = document.getElementById('av-name'); if (an) an.textContent = profile.name;
   const ar = document.getElementById('av-rank'); if (ar) ar.textContent = `★ ${lvl.name}`;
