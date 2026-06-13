@@ -24,7 +24,6 @@ export async function loadOrCreateProfile() {
     await loadGames();
     await loadCommunityData();
     showMain();
-    subscribeToPush();
   } else {
     showScreen('name');
   }
