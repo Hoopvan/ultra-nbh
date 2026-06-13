@@ -139,7 +139,7 @@ function initInstallUI() {
 }
 
 function wireInstall() {
-  document.getElementById('install-btn').addEventListener('click', triggerInstall);
+  document.getElementById('install-btn')?.addEventListener('click', triggerInstall);
   document.getElementById('tuto-install-btn')?.addEventListener('click', triggerInstall);
 }
 
@@ -155,8 +155,8 @@ async function triggerInstall() {
 }
 
 window.onload = () => {
+  initAuth(); // en premier — critique pour le callback OAuth
   startCountdown();
-  initInstallUI();
 
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     const btn = document.getElementById('demo-btn');
@@ -164,6 +164,5 @@ window.onload = () => {
   }
 
   wireEvents();
-  wireInstall();
-  initAuth();
+  try { initInstallUI(); wireInstall(); } catch(e) { console.warn('install UI error', e); }
 };
