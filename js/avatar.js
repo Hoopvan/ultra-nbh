@@ -90,9 +90,16 @@ export async function buildAvatarSVG(p, size = 280) {
   } catch { return FALLBACK_SVG; }
 }
 
+const _miniCache = {};
+
 export async function miniAvatarSVG(p) {
-  try { return await fetchDicebear(p, 52); }
-  catch { return FALLBACK_SVG; }
+  const key = p?.id;
+  if (key && _miniCache[key]) return _miniCache[key];
+  try {
+    const svg = await fetchDicebear(p, 52);
+    if (key) _miniCache[key] = svg;
+    return svg;
+  } catch { return FALLBACK_SVG; }
 }
 
 export async function renderAvatar() {
@@ -262,6 +269,7 @@ export async function saveAvatarEdit() {
     avatar_facial_hair: editParams.facialHair,
     avatar_clothe:      editParams.clothe,
   });
+  delete _miniCache[profile?.id];
   editParams = {};
   document.getElementById('avatar-edit-panel').style.display = 'none';
   renderAvatar();

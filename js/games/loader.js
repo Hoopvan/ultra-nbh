@@ -4,9 +4,11 @@ import { setMatchTarget } from '../utils.js';
 
 export async function loadGames() {
   const today = new Date().toISOString().split('T')[0];
+  const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
   const { data } = await db.from('games')
     .select('*')
     .eq('active', true)
+    .or(`date.gte.${weekAgo},type.eq.boite_mystere`)
     .order('date', { ascending: false });
 
   if (!data) return;
