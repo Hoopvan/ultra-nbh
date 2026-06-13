@@ -107,8 +107,56 @@ function wireEvents() {
   );
 }
 
+// Gestion installation PWA
+let deferredInstallPrompt = null;
+
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+
+function isInStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+}
+
+function initInstallUI() {
+  if (isInStandaloneMode()) return; // déjà installée
+
+  if (isIOS()) {
+    document.getElementById('install-ios-hint').style.display = 'block';
+    document.getElementById('tuto-install-ios').style.display = 'block';
+    return;
+  }
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+
+    const btn = document.getElementById('install-btn');
+    if (btn) { btn.style.display = 'flex'; }
+    const tutoBtn = document.getElementById('tuto-install-android');
+    if (tutoBtn) tutoBtn.style.display = 'block';
+  });
+}
+
+function wireInstall() {
+  document.getElementById('install-btn').addEventListener('click', triggerInstall);
+  document.getElementById('tuto-install-btn')?.addEventListener('click', triggerInstall);
+}
+
+async function triggerInstall() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  if (outcome === 'accepted') {
+    document.getElementById('install-btn').style.display = 'none';
+    document.getElementById('tuto-install-android').style.display = 'none';
+  }
+  deferredInstallPrompt = null;
+}
+
 window.onload = () => {
   startCountdown();
+  initInstallUI();
 
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     const btn = document.getElementById('demo-btn');
@@ -116,5 +164,6 @@ window.onload = () => {
   }
 
   wireEvents();
+  wireInstall();
   initAuth();
 };

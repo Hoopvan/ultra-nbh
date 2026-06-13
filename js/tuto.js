@@ -1,5 +1,5 @@
 let tutoStep = 1;
-const TUTO_STEPS = 4;
+const TUTO_STEPS = 5;
 
 export function initTuto() {
   tutoStep = 1;

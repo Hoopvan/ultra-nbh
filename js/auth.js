@@ -8,7 +8,10 @@ import { subscribeToPush } from './push.js';
 
 export async function signInWithGoogle() {
   const { error } = await db.auth.signInWithOAuth({
-    provider: 'google', options: { redirectTo: window.location.href }
+    provider: 'google', options: {
+      redirectTo: window.location.href,
+      queryParams: { prompt: 'select_account' }
+    }
   });
   if (error) document.getElementById('auth-error').classList.add('show');
 }

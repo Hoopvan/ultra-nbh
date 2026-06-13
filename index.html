@@ -137,6 +137,22 @@
         </div>
       </div>
 
+      <!-- Slide 5 -->
+      <div class="tuto-slide" id="tuto-5">
+        <div style="font-size:72px;margin-bottom:20px">📲</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:12px">Installe <span style="color:var(--red)">l'app</span></div>
+        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:16px">Ajoute Hoop NBH sur ton écran d'accueil pour recevoir les notifications de match et accéder à l'app en un tap — même sans connexion.</p>
+        <div id="tuto-install-android" style="display:none">
+          <button id="tuto-install-btn" class="btn-red" style="width:100%;margin-bottom:12px">📲 INSTALLER L'APP</button>
+        </div>
+        <div id="tuto-install-ios" style="display:none;background:var(--black3);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--black5);font-size:13px;color:var(--white-muted);line-height:1.7">
+          Sur iPhone : appuie sur <strong style="color:var(--white)">Partager</strong> dans Safari puis <strong style="color:var(--white)">"Sur l'écran d'accueil"</strong>.
+        </div>
+        <div style="background:var(--black3);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--black5);font-size:13px;color:var(--white-muted);line-height:1.5;margin-top:12px">
+          Tu peux aussi installer l'app plus tard depuis <strong style="color:var(--white)">Ton Perso → Paramètres</strong>.
+        </div>
+      </div>
+
     </div>
 
     <!-- Indicateurs + navigation -->
@@ -147,6 +163,7 @@
         <div class="tuto-dot" id="dot-2"></div>
         <div class="tuto-dot" id="dot-3"></div>
         <div class="tuto-dot" id="dot-4"></div>
+        <div class="tuto-dot" id="dot-5"></div>
       </div>
       <!-- Boutons -->
       <div style="display:flex;gap:10px;align-items:center">
@@ -355,6 +372,12 @@
     <!-- PARAMÈTRES -->
     <div class="section-label">Paramètres</div>
     <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
+      <button id="install-btn" style="display:none;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:none;align-items:center;gap:10px">
+        <span style="font-size:18px">📲</span> Installer l'app
+      </button>
+      <div id="install-ios-hint" style="display:none;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white-muted);font-family:'Barlow',sans-serif;font-size:13px;line-height:1.6">
+        📲 Pour installer : appuie sur <strong style="color:var(--white)">Partager</strong> dans Safari puis <strong style="color:var(--white)">"Sur l'écran d'accueil"</strong>.
+      </div>
       <button id="signout-btn" style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
         <span style="font-size:18px">🚪</span> Se déconnecter
       </button>
