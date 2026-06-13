@@ -20,6 +20,7 @@ export function initVestiaire() {
   };
   document.getElementById('v-expl').style.display = 'none';
   document.getElementById('v-xp').style.display = 'none';
+  document.getElementById('v-insta-link').style.display = 'none';
   document.getElementById('v-continue').style.display = 'none';
 }
 
@@ -36,6 +37,11 @@ export async function answerVestiaire(idx, correct) {
   document.getElementById('v-expl').textContent = c.explication;
   document.getElementById('v-expl').style.display = 'block';
   document.getElementById('v-xp').style.display = 'block';
+  const instaLink = document.getElementById('v-insta-link');
+  if (c.instagram_url) {
+    instaLink.href = c.instagram_url;
+    instaLink.style.display = 'flex';
+  }
   document.getElementById('v-continue').style.display = 'block';
 
   const prevLevel = getLevel();

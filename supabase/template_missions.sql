@@ -46,7 +46,8 @@ INSERT INTO public.games (type, date, active, content) VALUES (
       {"text": "24 points", "correct": true},  -- ← mettre correct:true sur la bonne réponse
       {"text": "8 points",  "correct": false}
     ],
-    "explication": "Jean Dupont a terminé meilleur marqueur avec 24 points et 6 passes décisives !"
+    "explication":    "Jean Dupont a terminé meilleur marqueur avec 24 points et 6 passes décisives !",
+    "instagram_url":  "https://www.instagram.com/p/xxxxxxxxxxxxx/"  -- ← optionnel : lien vers le post insta du joueur/match (supprimer la ligne si inutile)
   }'::jsonb
 );
 
