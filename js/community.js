@@ -1,7 +1,9 @@
-import { db } from './config.js';
+import { db, LEVELS } from './config.js';
 import { profile, gamesData, demoMode } from './state.js';
 import { miniAvatarSVG } from './avatar.js';
 import { getLevel } from './ui.js';
+
+const MEDALS = ['🥇', '🥈', '🥉'];
 
 export async function loadCommunityData() {
   if (demoMode) return;
@@ -48,10 +50,18 @@ export async function loadCommunityData() {
     if (fa) { fa.style.cssText = 'width:44px;height:44px'; fa.innerHTML = await miniAvatarSVG(top); }
     const grid = document.getElementById('fans-grid'); if (!grid) return;
     const avatarSVGs = await Promise.all(topFans.map(f => miniAvatarSVG(f)));
-    grid.innerHTML = topFans.map((f,i) => `
-      <div class="fan-tile">
-        <div class="fan-tile-avatar ${i<3?'online':''}">${avatarSVGs[i]}</div>
-        <div class="fan-tile-name">${f.name.substring(0,8)}</div>
-      </div>`).join('');
+    grid.innerHTML = topFans.map((f, i) => {
+      const badge = i < 3
+        ? `<span style="position:absolute;bottom:-3px;right:-3px;font-size:15px;line-height:1;filter:drop-shadow(0 1px 2px #000)">${MEDALS[i]}</span>`
+        : `<span style="position:absolute;bottom:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--black3);border:1.5px solid var(--black5);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--white-muted);font-family:'Barlow Condensed',sans-serif">${LEVELS.indexOf(getLevel(f.xp)) + 1}</span>`;
+      return `
+        <div class="fan-tile">
+          <div style="position:relative;width:52px;height:52px">
+            <div class="fan-tile-avatar">${avatarSVGs[i]}</div>
+            ${badge}
+          </div>
+          <div class="fan-tile-name">${f.name.substring(0, 8)}</div>
+        </div>`;
+    }).join('');
   }
 }
