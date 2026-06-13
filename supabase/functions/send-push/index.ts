@@ -4,15 +4,15 @@ import webpush from 'npm:web-push';
 const VAPID_PUBLIC_KEY  = Deno.env.get('VAPID_PUBLIC_KEY')!;
 const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY')!;
 const VAPID_SUBJECT     = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:hoopvan.vw@gmail.com';
-const SERVICE_ROLE_KEY  = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const PUSH_SECRET       = Deno.env.get('PUSH_SECRET')!;
+const SERVICE_ROLE_KEY  = Deno.env.get('SB_SERVICE_ROLE_KEY')!;
 const SUPABASE_URL      = Deno.env.get('SUPABASE_URL')!;
 
 webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
 Deno.serve(async (req) => {
-  // Seules les requêtes avec la service role key sont autorisées
   const auth = req.headers.get('Authorization') ?? '';
-  if (auth !== `Bearer ${SERVICE_ROLE_KEY}`) {
+  if (auth !== `Bearer ${PUSH_SECRET}`) {
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -21,12 +21,16 @@ Deno.serve(async (req) => {
   };
 
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
-  const { data: subs } = await supabase
+  const { data: subs, error: dbError } = await supabase
     .from('push_subscriptions')
     .select('endpoint, p256dh, auth');
 
+  if (dbError) {
+    return new Response(JSON.stringify({ error: dbError.message, code: dbError.code }), { status: 500 });
+  }
+
   if (!subs?.length) {
-    return new Response(JSON.stringify({ sent: 0, failed: 0 }), { status: 200 });
+    return new Response(JSON.stringify({ sent: 0, failed: 0, note: 'no subscriptions' }), { status: 200 });
   }
 
   const payload = JSON.stringify({ title, body, url: url ?? '/' });

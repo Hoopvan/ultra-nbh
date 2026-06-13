@@ -38,3 +38,6 @@ END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.save_push_subscription(text, text, text) TO authenticated;
+
+-- service_role a besoin d'un GRANT explicite même avec bypass RLS
+GRANT SELECT, DELETE ON public.push_subscriptions TO service_role;
