@@ -48,6 +48,7 @@ export async function submitPronostic() {
 }
 
 export async function checkPronoResult() {
+  if (demoMode) return;
   const resultCard = document.getElementById('mc-prono-result');
   if (!resultCard || !profile?.pronostic_date) { if (resultCard) resultCard.style.display = 'none'; return; }
   const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
@@ -61,7 +62,7 @@ export async function checkPronoResult() {
   const finalScore = `${c.score_domicile_final}-${c.score_exterieur_final}`;
   const [fh, fa] = finalScore.split('-').map(Number);
 
-  const { data: votes } = await db.from('pronostic_votes').select('user_name, score, user_id').eq('match_id', c.match_id || yesterdayGame.content.match_id);
+  const { data: votes } = await db.from('pronostic_votes').select('user_name, score, user_id').eq('match_id', c.match_id || 'unknown');
   if (!votes || !votes.length) { resultCard.style.display = 'none'; return; }
 
   const ranked = votes.map(v => {
