@@ -95,7 +95,7 @@ export async function submitTimeline() {
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, timeline_date: today });
     result = { correct: isCorrect, xp_gain: xpGain, correct_order: correctOrder };
   } else {
-    const { data, error } = await db.rpc('submit_timeline_answer', { p_order: JSON.stringify(tlSelection) });
+    const { data, error } = await db.rpc('submit_timeline_answer', { p_order: tlSelection });
     if (error) { showNotif('Oups, réponse non enregistrée.'); tlAnswered = false; return; }
     setProfile(data.profile);
     result = data;
