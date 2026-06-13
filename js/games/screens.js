@@ -4,14 +4,18 @@ import { initAnecdote } from './anecdote.js';
 import { initNantesNBH } from './nantes-nbh.js';
 import { initAvantApres } from './avant-apres.js';
 import { initPronostic } from './pronostic.js';
-import { initBoite } from './boite.js';
+import { initBoite, openBoiteReadOnly } from './boite.js';
 
 export function openGame(name) {
   const today = new Date().toISOString().split('T')[0];
-  const dateKey = name === 'nantes_nbh' ? 'nantes_nbh_date'
-    : name === 'avant_apres' ? 'avant_apres_date'
+  const dateKey = name === 'nantes_nbh'    ? 'nantes_nbh_date'
+    : name === 'avant_apres'  ? 'avant_apres_date'
+    : name === 'boite_mystere' ? 'boite_date'
     : `${name}_date`;
-  if (profile?.[dateKey] === today) { openGameReadOnly(name); return; }
+  if (profile?.[dateKey] === today) {
+    if (name === 'boite_mystere') { openBoiteReadOnly(); return; }
+    openGameReadOnly(name); return;
+  }
 
   document.querySelectorAll('.screen').forEach(s => {
     s.classList.remove('active');

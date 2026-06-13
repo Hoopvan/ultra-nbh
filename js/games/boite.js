@@ -14,7 +14,6 @@ export function checkBoiteAccess() {
 
   if (profile?.boite_date === today) {
     boiteCard.style.display = '';
-    boiteCard.setAttribute('onclick', 'openBoiteReadOnly()');
     const xpEl = document.getElementById('mx-boite');
     if (xpEl) { xpEl.textContent = 'Voir mon code'; xpEl.style.background = 'var(--black4)'; xpEl.style.color = 'var(--white-muted)'; }
     return;
@@ -30,7 +29,6 @@ export function checkBoiteAccess() {
   ].filter(v => v !== null);
   const allDone = done.length > 0 && done.every(v => v === true);
   boiteCard.style.display = allDone ? '' : 'none';
-  if (allDone) boiteCard.setAttribute('onclick', "openGame('boite_mystere')");
 }
 
 export function openBoiteReadOnly() {
