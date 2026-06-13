@@ -26,6 +26,24 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
+// Push notifications
+self.addEventListener('push', e => {
+  const data = e.data?.json() ?? {};
+  e.waitUntil(
+    self.registration.showNotification(data.title || 'Hoop NBH 🏀', {
+      body: data.body || '',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      data: { url: data.url || '/' }
+    })
+  );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.openWindow(e.notification.data?.url || '/'));
+});
+
 // Fetch — réseau d'abord, cache en fallback
 self.addEventListener('fetch', e => {
   // Ne pas intercepter les requêtes Supabase

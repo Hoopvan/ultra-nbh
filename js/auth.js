@@ -4,6 +4,7 @@ import { updateProfile } from './profile.js';
 import { loadCommunityData } from './community.js';
 import { loadGames } from './games/loader.js';
 import { showScreen, showMain } from './nav.js';
+import { subscribeToPush } from './push.js';
 
 export async function signInWithGoogle() {
   const { error } = await db.auth.signInWithOAuth({
@@ -20,6 +21,7 @@ export async function loadOrCreateProfile() {
     await loadGames();
     await loadCommunityData();
     showMain();
+    subscribeToPush();
   } else {
     showScreen('name');
   }
