@@ -42,7 +42,7 @@ const OVERLAY_BANDEAU = `
 </g>`;
 
 const OVERLAY_MAILLOT = `
-<text x="140" y="258" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="24" fill="white" opacity="0.85">NBH</text>`;
+<text x="140" y="298" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="24" fill="white" opacity="0.85">NBH</text>`;
 
 // ── Génération avatar via API HTTP DiceBear ───────────────────────────────────
 
