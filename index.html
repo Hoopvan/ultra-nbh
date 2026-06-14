@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0a0a0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -156,7 +156,7 @@
     </div>
 
     <!-- Indicateurs + navigation -->
-    <div style="padding:20px 28px 40px;flex-shrink:0">
+    <div style="padding:20px 28px max(40px, calc(20px + env(safe-area-inset-bottom, 0px)));flex-shrink:0">
       <!-- Points de progression -->
       <div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px" id="tuto-dots">
         <div class="tuto-dot active" id="dot-1"></div>
