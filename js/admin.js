@@ -23,6 +23,7 @@ window._adminSave        = saveMission;
 window._adminToggle      = toggleMissionActive;
 window._adminDelete      = deleteMission;
 window._adminUpdateDate  = updateMissionDate;
+window._adminUploadImage = uploadImage;
 
 // ── Init ───────────────────────────────────────────────────────────────────
 
@@ -133,6 +134,38 @@ function buildForm(type) {
   </div>`;
 }
 
+// ── Upload image → Supabase Storage ───────────────────────────────────────
+
+async function uploadImage(fileInput, urlInputId) {
+  const file = fileInput.files[0];
+  if (!file) return;
+  const previewEl = document.getElementById(urlInputId + '-preview');
+  const urlEl     = document.getElementById(urlInputId);
+  if (previewEl) previewEl.innerHTML = '<span style="font-size:12px;color:var(--white-muted)">⏳ Envoi en cours...</span>';
+
+  const ext  = file.name.split('.').pop().toLowerCase();
+  const path = `${CURRENT_ORG_ID}/${Date.now()}.${ext}`;
+  const { error } = await db.storage.from('mission-images').upload(path, file, { cacheControl: '31536000', upsert: false });
+
+  if (error) {
+    if (previewEl) previewEl.innerHTML = `<span style="font-size:12px;color:var(--red)">Erreur : ${error.message}</span>`;
+    return;
+  }
+  const { data } = db.storage.from('mission-images').getPublicUrl(path);
+  if (urlEl) urlEl.value = data.publicUrl;
+  if (previewEl) previewEl.innerHTML = `<img src="${data.publicUrl}" style="max-width:100%;max-height:90px;border-radius:8px;object-fit:cover;margin-top:4px">`;
+}
+
+function imageField(id, label, optional = false) {
+  return `<div class="admin-field">
+    <label>${label}${optional ? ' <span style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span>' : ''}</label>
+    <input type="file" accept="image/*" id="af-file-${id}" style="display:none" onchange="window._adminUploadImage(this,'af-${id}')">
+    <button type="button" class="admin-img-btn" onclick="document.getElementById('af-file-${id}').click()">📷 Choisir depuis la galerie</button>
+    <div id="af-${id}-preview"></div>
+    <input type="url" id="af-${id}" placeholder="ou colle une URL directement" style="margin-top:6px">
+  </div>`;
+}
+
 function matchFields() {
   return `
     <div class="admin-field"><label>Match</label><input type="text" id="af-match" placeholder="NBH vs Adversaire"></div>
@@ -204,14 +237,14 @@ function typeFields(type) {
           <div class="admin-field" style="flex:1;margin-bottom:0"><label>Label Avant</label><input type="text" id="af-label-avant" placeholder="Années 90"></div>
           <div class="admin-field" style="flex:1;margin-bottom:0"><label>Label Après</label><input type="text" id="af-label-apres" placeholder="Aujourd'hui"></div>
         </div>
-        <div class="admin-field"><label>URL image Avant</label><input type="url" id="af-image-avant" placeholder="https://..."></div>
-        <div class="admin-field"><label>URL image Après</label><input type="url" id="af-image-apres" placeholder="https://..."></div>
+        ${imageField('image-avant', 'Image Avant')}
+        ${imageField('image-apres', 'Image Après')}
         <div class="admin-field"><label>Explication</label><textarea id="af-explication" rows="2"></textarea></div>`;
 
     case 'boite_mystere':
       return `
         <div class="admin-field"><label>Sponsor</label><input type="text" id="af-sponsor" placeholder="Décathlon Nantes"></div>
-        <div class="admin-field"><label>URL logo sponsor (optionnel)</label><input type="url" id="af-sponsor-logo" placeholder="https://..."></div>
+        ${imageField('sponsor-logo', 'Logo sponsor', true)}
         <div class="admin-field"><label>Probabilité de gain (0.0 → 1.0)</label><input type="number" id="af-prob" value="0.2" min="0" max="1" step="0.05"></div>
         <div class="admin-field"><label>Message gagnant</label><input type="text" id="af-win-reward" placeholder="10% de réduction sur tout le rayon basket"></div>
         <div class="admin-field"><label>Code gagnant (optionnel)</label><input type="text" id="af-win-code" placeholder="HOOPWIN10"></div>
@@ -231,7 +264,7 @@ function typeFields(type) {
     case 'photo_mystere':
       return `
         <div class="admin-field"><label>Question</label><textarea id="af-question" rows="2" placeholder="Quel joueur se cache derrière cette photo ?"></textarea></div>
-        <div class="admin-field"><label>URL de la photo</label><input type="url" id="af-image-url" placeholder="https://..."></div>
+        ${imageField('image-url', 'Photo mystère')}
         ${[1,2,3,4].map(i => `<div class="admin-field"><label>Option ${i}</label><input type="text" id="af-opt-${i}" placeholder="Choix ${i}"></div>`).join('')}
         <div class="admin-field"><label>Bonne réponse (copie exacte d'une option)</label><input type="text" id="af-answer" placeholder="Nom exact de la bonne réponse"></div>
         <div class="admin-field"><label>Explication</label><textarea id="af-explication" rows="2"></textarea></div>`;
