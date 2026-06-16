@@ -21,7 +21,7 @@ function copyRecursive(src, dest) {
   }
 }
 
-const { SUPABASE_URL, SUPABASE_ANON_KEY } = process.env;
+const { SUPABASE_URL, SUPABASE_ANON_KEY, ORG_SLUG = 'nbh' } = process.env;
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('SUPABASE_URL et SUPABASE_ANON_KEY doivent être définies dans les variables d\'environnement.');
   process.exit(1);
@@ -38,7 +38,10 @@ fs.writeFileSync(path.join(OUT, 'index.html'), html);
 copyRecursive(path.join(ROOT, 'js'), path.join(OUT, 'js'));
 const configPath = path.join(OUT, 'js', 'config.js');
 let configJs = fs.readFileSync(configPath, 'utf8');
-configJs = configJs.replace(/\{\{SUPABASE_URL\}\}/g, SUPABASE_URL).replace(/\{\{SUPABASE_ANON_KEY\}\}/g, SUPABASE_ANON_KEY);
+configJs = configJs
+  .replace(/\{\{SUPABASE_URL\}\}/g, SUPABASE_URL)
+  .replace(/\{\{SUPABASE_ANON_KEY\}\}/g, SUPABASE_ANON_KEY)
+  .replace(/\{\{ORG_SLUG\}\}/g, ORG_SLUG);
 fs.writeFileSync(configPath, configJs);
 
 for (const asset of ASSETS) {
