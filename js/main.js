@@ -3,8 +3,9 @@ import { closeModal } from './utils.js';
 import { showLevelsModal } from './ui.js';
 import { showTab } from './nav.js';
 import { loadOrgConfig } from './config.js';
+import { demoMode } from './state.js';
 import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccount, deleteAccount } from './auth.js';
-import { subscribeToPush } from './push.js';
+import { subscribeToPush, unsubscribeFromPush, isPushSubscribed } from './push.js';
 import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-create.js';
 import { openAvatarEdit, setEditParam, saveAvatarEdit, toggleWorn, buyItem } from './avatar.js';
 import { nextTuto, prevTuto, skipTuto } from './tuto.js';
@@ -146,17 +147,49 @@ function initInstallUI() {
   });
 }
 
-function wireNotifBtn() {
+async function wireNotifBtn() {
   const btn = document.getElementById('notif-btn');
   if (!btn) return;
-  if (!('Notification' in window) || !('PushManager' in window)) {
-    btn.style.display = 'none'; return;
-  }
-  if (Notification.permission === 'granted') { btn.textContent = '🔔 Notifications activées'; btn.disabled = true; }
+
+  const pushSupported = 'Notification' in window && 'PushManager' in window;
+
+  const setSubscribed = () => {
+    btn.innerHTML = '<span style="font-size:18px">🔕</span> Désactiver les notifications';
+    btn.style.opacity = '0.7';
+    btn.disabled = false;
+  };
+  const setUnsubscribed = () => {
+    btn.innerHTML = '<span style="font-size:18px">🔔</span> Activer les notifications';
+    btn.style.opacity = '';
+    btn.disabled = false;
+  };
+  const setBlocked = () => {
+    btn.innerHTML = '<span style="font-size:18px">🔕</span> Notifications bloquées';
+    btn.style.opacity = '0.5';
+    btn.disabled = true;
+  };
+  const setUnavailable = () => {
+    btn.innerHTML = '<span style="font-size:18px">🔔</span> Notifications (compte requis)';
+    btn.style.opacity = '0.4';
+    btn.disabled = true;
+  };
+
+  if (!pushSupported) { setUnavailable(); return; }
+  if (Notification.permission === 'denied') { setBlocked(); return; }
+  if (await isPushSubscribed()) setSubscribed(); else setUnsubscribed();
+
   btn.addEventListener('click', async () => {
-    await subscribeToPush();
-    if (Notification.permission === 'granted') { btn.textContent = '🔔 Notifications activées'; btn.disabled = true; }
-    else if (Notification.permission === 'denied') { btn.textContent = '🔕 Notifications bloquées'; btn.disabled = true; }
+    if (demoMode) { setUnavailable(); return; }
+    btn.disabled = true;
+    if (await isPushSubscribed()) {
+      await unsubscribeFromPush();
+      setUnsubscribed();
+    } else {
+      await subscribeToPush();
+      if (Notification.permission === 'granted') setSubscribed();
+      else if (Notification.permission === 'denied') setBlocked();
+      else setUnsubscribed();
+    }
   });
 }
 
@@ -187,5 +220,5 @@ window.onload = async () => {
   }
 
   wireEvents();
-  try { initInstallUI(); wireInstall(); wireNotifBtn(); } catch(e) { console.warn('install UI error', e); }
+  try { initInstallUI(); wireInstall(); await wireNotifBtn(); } catch(e) { console.warn('install UI error', e); }
 };

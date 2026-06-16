@@ -1,5 +1,5 @@
 import { db } from './config.js';
-import { demoMode } from './state.js';
+import { demoMode, currentUser } from './state.js';
 
 const VAPID_PUBLIC_KEY = 'BIHp75U4mGIkrrA18sYGwIFQTxJUiBg_Y7uJsHC9lWZlI8ERYQRz3oqwcwLlLQtBtqoAF_NYGbZ_k1mBIVovIOM';
 
@@ -28,4 +28,23 @@ export async function subscribeToPush() {
 
   const { endpoint, keys: { p256dh, auth } } = sub.toJSON();
   await db.rpc('save_push_subscription', { p_endpoint: endpoint, p_p256dh: p256dh, p_auth: auth });
+}
+
+export async function unsubscribeFromPush() {
+  if (demoMode) return;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  if (sub) {
+    await db.from('push_subscriptions').delete().eq('user_id', currentUser.id);
+    await sub.unsubscribe();
+  }
+}
+
+export async function isPushSubscribed() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false;
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  return !!sub && Notification.permission === 'granted';
 }
