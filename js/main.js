@@ -1,7 +1,7 @@
 import { startCountdown } from './utils.js';
 import { closeModal } from './utils.js';
 import { showLevelsModal } from './ui.js';
-import { showTab } from './nav.js';
+import { showTab, showScreen } from './nav.js';
 import { loadOrgConfig } from './config.js';
 import { demoMode } from './state.js';
 import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccount, deleteAccount } from './auth.js';
@@ -10,6 +10,7 @@ import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-creat
 import { openAvatarEdit, setEditParam, saveAvatarEdit, toggleWorn, buyItem } from './avatar.js';
 import { nextTuto, prevTuto, skipTuto } from './tuto.js';
 import { openGame, closeGame } from './games/screens.js';
+import { initAdmin } from './admin.js';
 import { submitTimeline } from './games/timeline.js';
 import { selectEmotion, submitPouls } from './games/pouls.js';
 import { revealAvantApres } from './games/avant-apres.js';
@@ -100,6 +101,13 @@ function wireEvents() {
     const buyEl = e.target.closest('[data-buy-item]');
     if (buyEl) buyItem(buyEl.dataset.buyItem);
   });
+
+  // Admin
+  document.getElementById('admin-btn').addEventListener('click', () => {
+    showScreen('admin');
+    initAdmin();
+  });
+  document.getElementById('admin-back-btn').addEventListener('click', () => showTab('avatar'));
 
   // Paramètres
   document.getElementById('signout-btn').addEventListener('click', signOut);

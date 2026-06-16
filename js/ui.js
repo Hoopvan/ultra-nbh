@@ -1,6 +1,7 @@
 import { LEVELS } from './config.js';
 import { profile, gamesData } from './state.js';
 import { renderAvatar, renderEquip, renderNextUnlocks } from './avatar.js';
+import { isAdmin } from './admin.js';
 
 export function getLevel(xp = profile?.xp || 0) {
   return LEVELS.find(l => xp >= l.min && xp < l.max) || LEVELS[LEVELS.length-1];
@@ -68,6 +69,9 @@ export function updateUI() {
 
   const an = document.getElementById('av-name'); if (an) an.textContent = profile.name;
   const ar = document.getElementById('av-rank'); if (ar) ar.textContent = `★ ${lvl.name}`;
+
+  const adminBtn = document.getElementById('admin-btn');
+  if (adminBtn) adminBtn.style.display = isAdmin() ? 'flex' : 'none';
 
   renderAvatar();
   renderEquip();

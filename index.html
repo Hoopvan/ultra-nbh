@@ -437,6 +437,9 @@
       <div id="install-ios-hint" style="display:none;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white-muted);font-family:'Barlow',sans-serif;font-size:13px;line-height:1.6">
         📲 Pour installer : appuie sur <strong style="color:var(--white)">Partager</strong> dans Safari puis <strong style="color:var(--white)">"Sur l'écran d'accueil"</strong>.
       </div>
+      <button id="admin-btn" style="display:none;background:var(--red-dim);border:1px solid var(--red-mid);border-radius:var(--radius-sm);padding:14px 16px;color:var(--red);font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;align-items:center;gap:10px">
+        <span style="font-size:18px">⚙️</span> Gestion des missions
+      </button>
       <button id="signout-btn" style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
         <span style="font-size:18px">🚪</span> Se déconnecter
       </button>
@@ -445,6 +448,23 @@
       </button>
     </div>
     <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- ADMIN CMS -->
+<div id="screen-admin" class="screen">
+  <div class="admin-header">
+    <button id="admin-back-btn" class="admin-back">←</button>
+    <div class="admin-title">Administration</div>
+  </div>
+  <div class="screen-scroll">
+    <div style="padding:0 16px 20px">
+      <div class="section-label">Missions récentes & à venir</div>
+      <div id="admin-mission-list"></div>
+      <div class="section-label" style="margin-top:20px">Créer une mission</div>
+      <div id="admin-type-grid" class="admin-type-grid"></div>
+      <div id="admin-form-area"></div>
+    </div>
   </div>
 </div>
 
