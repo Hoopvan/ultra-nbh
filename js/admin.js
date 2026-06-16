@@ -34,13 +34,13 @@ export async function initAdmin() {
 // ── Liste des missions ─────────────────────────────────────────────────────
 
 async function loadMissionList() {
+  const today = new Date().toISOString().split('T')[0];
   const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
 
   const { data } = await db.from('games')
     .select('id, type, date, active, content')
     .eq('org_id', CURRENT_ORG_ID)
-    .or(`date.gte.${weekAgo},type.eq.boite_mystere`)
-    .order('date', { ascending: false });
+    .or(`date.gte.${weekAgo},type.eq.boite_mystere`);
 
   const el = document.getElementById('admin-mission-list');
   if (!el) return;
@@ -50,11 +50,34 @@ async function loadMissionList() {
     return;
   }
 
+  const rank = m => {
+    if (m.date === today) return 0;
+    if (m.type === 'boite_mystere') return 1;
+    if (m.date > today) return 2;
+    return 3;
+  };
+  data.sort((a, b) => {
+    const ra = rank(a), rb = rank(b);
+    if (ra !== rb) return ra - rb;
+    if (!a.date || !b.date) return 0;
+    if (ra === 2) return a.date < b.date ? -1 : 1;
+    return a.date > b.date ? -1 : 1;
+  });
+
+  const GROUP_LABELS = ['Aujourd\'hui', 'Permanentes', 'À venir', 'Passées'];
+  let lastRank = -1;
+
   el.innerHTML = data.map(m => {
+    const r = rank(m);
+    const separator = r !== lastRank
+      ? `<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--white-muted);margin:${lastRank === -1 ? '4' : '10'}px 0 4px">${GROUP_LABELS[r]}</div>`
+      : '';
+    lastRank = r;
+
     const label = TYPES[m.type] || m.type;
-    const preview = (m.content?.match || m.content?.question || m.content?.sponsor_name || m.content?.title || '').substring(0, 32);
+    const preview = (m.content?.match || m.content?.question || m.content?.sponsor_name || m.content?.title || '').substring(0, 30);
     const dateStr = m.type === 'boite_mystere' ? '∞' : m.date;
-    return `<div class="admin-row">
+    return `${separator}<div class="admin-row">
       <div class="admin-row-info">
         <span class="admin-row-date">${dateStr}</span>
         <span class="admin-row-type">${label}</span>
@@ -110,20 +133,21 @@ function buildForm(type) {
 function matchFields() {
   return `
     <div class="admin-field"><label>Match</label><input type="text" id="af-match" placeholder="NBH vs Adversaire"></div>
-    <div class="admin-field-row">
-      <div class="admin-field" style="flex:1;margin-bottom:0"><label>Label date</label><input type="text" id="af-date-label" placeholder="Dimanche 15 juin"></div>
-      <div class="admin-field" style="flex:1;margin-bottom:0"><label>Match ID (unique)</label><input type="text" id="af-match-id" placeholder="nbh-vs-adv-YYYYMMDD"></div>
-    </div>
-    <div class="admin-field"><label>Date/heure du match</label><input type="datetime-local" id="af-match-datetime"></div>`;
+    <div class="admin-field"><label>Label date</label><input type="text" id="af-date-label" placeholder="Dimanche 15 juin"></div>
+    <div class="admin-field"><label>Match ID (unique)</label><input type="text" id="af-match-id" placeholder="nbh-vs-adv-YYYYMMDD"></div>
+    <div class="admin-field"><label>Date/heure du match</label><input type="datetime-local" id="af-match-datetime" style="min-width:0"></div>`;
 }
 
 function quizFields() {
   return `
     <div class="admin-field"><label>Question</label><textarea id="af-question" rows="3"></textarea></div>
     ${[0,1,2].map(i => `
-      <div class="admin-field" style="flex-direction:row;align-items:flex-start;gap:8px">
-        <input type="radio" name="af-correct" value="${i}" id="af-correct-${i}" style="accent-color:var(--red);margin-top:26px;flex-shrink:0">
-        <div style="flex:1"><label for="af-correct-${i}">Réponse ${String.fromCharCode(65+i)} <span style="color:var(--red);font-weight:700">(✓ si correcte)</span></label><input type="text" id="af-a${i}" placeholder="Texte de la réponse"></div>
+      <div class="admin-field">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="radio" name="af-correct" value="${i}" style="accent-color:var(--red);width:14px;height:14px;flex-shrink:0">
+          <span>Réponse ${String.fromCharCode(65+i)} — <span style="color:var(--red)">cocher si correcte</span></span>
+        </label>
+        <input type="text" id="af-a${i}" placeholder="Texte de la réponse">
       </div>`).join('')}
     <div class="admin-field"><label>Explication</label><textarea id="af-explication" rows="2"></textarea></div>`;
 }

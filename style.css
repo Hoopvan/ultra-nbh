@@ -259,7 +259,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 .admin-field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
 .admin-field:last-child{margin-bottom:0}
 .admin-field label{font-size:11px;font-weight:600;color:var(--white-muted);text-transform:uppercase;letter-spacing:.4px}
-.admin-field input,.admin-field textarea,.admin-field select{background:var(--black3);border:1px solid var(--black5);border-radius:8px;padding:10px 12px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;width:100%}
+.admin-field input,.admin-field textarea,.admin-field select{background:var(--black3);border:1px solid var(--black5);border-radius:8px;padding:10px 12px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;width:100%;min-width:0}
 .admin-field input:focus,.admin-field textarea:focus,.admin-field select:focus{outline:none;border-color:var(--red-mid)}
 .admin-field textarea{resize:vertical;min-height:60px}
 .admin-field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23888' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
