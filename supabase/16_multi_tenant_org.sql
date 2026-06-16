@@ -18,6 +18,8 @@ DROP POLICY IF EXISTS "orgs_select_anon" ON public.organizations;
 CREATE POLICY "orgs_select_anon" ON public.organizations
   FOR SELECT TO anon, authenticated USING (true);
 
+GRANT SELECT ON public.organizations TO anon, authenticated;
+
 -- ── 2. TABLE ORG_CONFIG ───────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS public.org_config (
@@ -38,6 +40,8 @@ ALTER TABLE public.org_config ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "org_config_select_anon" ON public.org_config;
 CREATE POLICY "org_config_select_anon" ON public.org_config
   FOR SELECT TO anon, authenticated USING (true);
+
+GRANT SELECT ON public.org_config TO anon, authenticated;
 
 -- ── 3. DONNÉES NBH ────────────────────────────────────────────────────────────
 
