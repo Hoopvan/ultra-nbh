@@ -18,10 +18,11 @@ const TYPES = {
 };
 
 // Exposés globalement pour les onclick inline des listes générées
-window._adminSelectType = selectType;
-window._adminSave       = saveMission;
-window._adminToggle     = toggleMissionActive;
-window._adminDelete     = deleteMission;
+window._adminSelectType  = selectType;
+window._adminSave        = saveMission;
+window._adminToggle      = toggleMissionActive;
+window._adminDelete      = deleteMission;
+window._adminUpdateDate  = updateMissionDate;
 
 // ── Init ───────────────────────────────────────────────────────────────────
 
@@ -76,10 +77,12 @@ async function loadMissionList() {
 
     const label = TYPES[m.type] || m.type;
     const preview = (m.content?.match || m.content?.question || m.content?.sponsor_name || m.content?.title || '').substring(0, 30);
-    const dateStr = m.type === 'boite_mystere' ? '∞' : m.date;
+    const dateCell = m.type === 'boite_mystere'
+      ? `<span class="admin-row-date">∞</span>`
+      : `<input type="date" class="admin-date-input" value="${m.date}" onchange="window._adminUpdateDate('${m.id}',this.value)">`;
     return `${separator}<div class="admin-row">
       <div class="admin-row-info">
-        <span class="admin-row-date">${dateStr}</span>
+        ${dateCell}
         <span class="admin-row-type">${label}</span>
         ${preview ? `<span class="admin-row-preview">${preview}</span>` : ''}
       </div>
@@ -323,6 +326,11 @@ async function saveMission(type) {
   if (msgEl) msgEl.innerHTML = '<span style="color:#4caf50">✓ Mission enregistrée !</span>';
   await loadMissionList();
   setTimeout(() => { if (msgEl) msgEl.innerHTML = ''; }, 3000);
+}
+
+async function updateMissionDate(id, date) {
+  await db.from('games').update({ date }).eq('id', id).eq('org_id', CURRENT_ORG_ID);
+  await loadMissionList();
 }
 
 async function toggleMissionActive(id, active) {
