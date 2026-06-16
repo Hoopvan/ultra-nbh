@@ -23,12 +23,12 @@ function hexBrighten(hex, factor) {
 }
 
 export async function loadOrgConfig() {
-  const { data: org } = await db.from('organizations').select('id, slug, name').eq('slug', ORG_SLUG).single();
-  if (!org) { console.error('Organisation introuvable :', ORG_SLUG); return; }
+  const { data: org, error: orgErr } = await db.from('organizations').select('id, slug, name').eq('slug', ORG_SLUG).single();
+  if (!org) { console.error('Organisation introuvable :', ORG_SLUG, orgErr); return; }
   CURRENT_ORG_ID = org.id;
 
-  const { data: cfg } = await db.from('org_config').select('*').eq('org_id', org.id).single();
-  if (!cfg) return;
+  const { data: cfg, error: cfgErr } = await db.from('org_config').select('*').eq('org_id', org.id).single();
+  if (!cfg) { console.error('org_config introuvable pour', org.id, cfgErr); return; }
   orgConfig = cfg;
 
   // CSS variables — couleurs primaire + variantes opacité
