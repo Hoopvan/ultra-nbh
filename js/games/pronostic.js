@@ -1,4 +1,4 @@
-import { db } from '../config.js';
+import { db, CURRENT_ORG_ID } from '../config.js';
 import { profile, gamesData, currentUser, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
@@ -54,7 +54,7 @@ export async function checkPronoResult() {
   const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
   if (profile.pronostic_date !== yesterday) { resultCard.style.display = 'none'; return; }
 
-  const { data: games } = await db.from('games').select('*').eq('type','pronostic').eq('date', yesterday);
+  const { data: games } = await db.from('games').select('*').eq('org_id', CURRENT_ORG_ID).eq('type','pronostic').eq('date', yesterday);
   const yesterdayGame = games?.find(g => g.content?.score_domicile_final != null);
   if (!yesterdayGame) { resultCard.style.display = 'none'; return; }
 
@@ -62,7 +62,7 @@ export async function checkPronoResult() {
   const finalScore = `${c.score_domicile_final}-${c.score_exterieur_final}`;
   const [fh, fa] = finalScore.split('-').map(Number);
 
-  const { data: votes } = await db.from('pronostic_votes').select('user_name, score, user_id').eq('match_id', c.match_id || 'unknown');
+  const { data: votes } = await db.from('pronostic_votes').select('user_name, score, user_id').eq('match_id', c.match_id || 'unknown').eq('org_id', CURRENT_ORG_ID);
   if (!votes || !votes.length) { resultCard.style.display = 'none'; return; }
 
   const ranked = votes.map(v => {

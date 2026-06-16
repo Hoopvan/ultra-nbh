@@ -1,4 +1,4 @@
-import { db, LEVELS } from './config.js';
+import { db, LEVELS, CURRENT_ORG_ID } from './config.js';
 import { profile, gamesData, demoMode } from './state.js';
 import { miniAvatarSVG } from './avatar.js';
 import { getLevel } from './ui.js';
@@ -7,7 +7,7 @@ const MEDALS = ['🥇', '🥈', '🥉'];
 
 export async function loadCommunityData() {
   if (demoMode) return;
-  const { count } = await db.from('users').select('*', {count:'exact',head:true});
+  const { count } = await db.from('users').select('*', {count:'exact',head:true}).eq('org_id', CURRENT_ORG_ID);
   const fc = document.getElementById('fans-total'); if (fc) fc.textContent = count || '—';
 
   if (gamesData.pouls) {
@@ -16,7 +16,7 @@ export async function loadCommunityData() {
     const dateEl = document.getElementById('tribune-match-date');
     if (matchEl) matchEl.innerHTML = c.match.replace(' vs ', '<br>vs ');
     if (dateEl) dateEl.textContent = c.date_label;
-    const { data: votes } = await db.from('pouls_votes').select('emotion').eq('match_id', c.match_id);
+    const { data: votes } = await db.from('pouls_votes').select('emotion').eq('match_id', c.match_id).eq('org_id', CURRENT_ORG_ID);
     if (votes && votes.length) {
       const t = {'En feu':0,'Confiant':0,'On y croit':0,'Nerveux':0};
       votes.forEach(v => { if (t[v.emotion] !== undefined) t[v.emotion]++; });
@@ -28,7 +28,7 @@ export async function loadCommunityData() {
       });
     }
   } else {
-    const { data: votes } = await db.from('pouls_votes').select('emotion');
+    const { data: votes } = await db.from('pouls_votes').select('emotion').eq('org_id', CURRENT_ORG_ID);
     if (votes && votes.length) {
       const t = {'En feu':0,'Confiant':0,'On y croit':0,'Nerveux':0};
       votes.forEach(v => { if (t[v.emotion] !== undefined) t[v.emotion]++; });
@@ -46,8 +46,8 @@ export async function loadCommunityData() {
   // Top 3 global + pool du même niveau en parallèle
   const lvl = getLevel(profile?.xp || 0);
   const [{ data: top3 }, { data: peerPool }] = await Promise.all([
-    db.from('users').select(SEL).order('xp', {ascending:false}).limit(3),
-    db.from('users').select(SEL).gte('xp', lvl.min).lt('xp', lvl.max).limit(20),
+    db.from('users').select(SEL).eq('org_id', CURRENT_ORG_ID).order('xp', {ascending:false}).limit(3),
+    db.from('users').select(SEL).eq('org_id', CURRENT_ORG_ID).gte('xp', lvl.min).lt('xp', lvl.max).limit(20),
   ]);
 
   if (!top3 || top3.length === 0) return;
@@ -63,6 +63,7 @@ export async function loadCommunityData() {
   if (peers.length < 7) {
     const exclude = new Set([...top3Ids, ...peers.map(f => f.id)]);
     const { data: fill } = await db.from('users').select(SEL)
+      .eq('org_id', CURRENT_ORG_ID)
       .not('id', 'in', `(${[...exclude].join(',')})`)
       .limit(7 - peers.length);
     if (fill) peers = [...peers, ...fill];

@@ -8,6 +8,7 @@ foreach ($line in $env_content) {
 
 Write-Host "URL: $SUPABASE_URL"
 Write-Host "KEY: $SUPABASE_ANON_KEY"
+if ($ORG_SLUG) { Write-Host "ORG: $ORG_SLUG" } else { $ORG_SLUG = 'nbh'; Write-Host "ORG: nbh (defaut)" }
 
 # Copie js/ -> js-local/ et substitue les credentials dans config.js
 if (Test-Path js-local) { Remove-Item -Recurse -Force js-local }
@@ -16,6 +17,7 @@ Copy-Item -Recurse js js-local
 $configContent = Get-Content js-local/config.js -Raw
 $configContent = $configContent -replace '\{\{SUPABASE_URL\}\}', $SUPABASE_URL
 $configContent = $configContent -replace '\{\{SUPABASE_ANON_KEY\}\}', $SUPABASE_ANON_KEY
+$configContent = $configContent -replace '\{\{ORG_SLUG\}\}', $ORG_SLUG
 Set-Content js-local/config.js $configContent
 
 # index-local.html : pointe sur /js-local/main.js au lieu de /js/main.js

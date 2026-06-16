@@ -1,4 +1,4 @@
-import { db } from './config.js';
+import { db, CURRENT_ORG_ID } from './config.js';
 import { currentUser, profile, demoMode, setCurrentUser, setProfile, setDemoMode, gamesData } from './state.js';
 import { updateProfile } from './profile.js';
 import { loadCommunityData } from './community.js';
@@ -87,7 +87,7 @@ export function confirmDeleteAccount() {
 
 export async function deleteAccount() {
   try {
-    await db.from('pouls_votes').delete().eq('user_id', currentUser.id);
+    await db.from('pouls_votes').delete().eq('user_id', currentUser.id).eq('org_id', CURRENT_ORG_ID);
     await db.from('users').delete().eq('id', currentUser.id);
     await db.rpc('delete_user');
     await db.auth.signOut();

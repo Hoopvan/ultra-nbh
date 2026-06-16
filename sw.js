@@ -1,4 +1,4 @@
-const CACHE = 'hoop-nbh-v10';
+const CACHE = 'hoop-nbh-v11';
 const ASSETS = [
   '/',
   '/index.html',
@@ -46,8 +46,11 @@ self.addEventListener('notificationclick', e => {
 
 // Fetch — réseau d'abord, cache en fallback
 self.addEventListener('fetch', e => {
-  // Ne pas intercepter les requêtes Supabase
+  // Ne pas intercepter les requêtes externes (Supabase, CDN)
   if (e.request.url.includes('supabase.co')) return;
+  if (e.request.url.includes('jsdelivr.net')) return;
+  if (e.request.url.includes('fonts.googleapis.com')) return;
+  if (e.request.url.includes('fonts.gstatic.com')) return;
 
   e.respondWith(
     fetch(e.request)

@@ -1,8 +1,27 @@
 const SUPABASE_URL = "{{SUPABASE_URL}}";
 const SUPABASE_ANON_KEY = "{{SUPABASE_ANON_KEY}}";
+const ORG_SLUG = "{{ORG_SLUG}}";
 
 const { createClient } = supabase;
 export const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+export let CURRENT_ORG_ID = null;
+export let orgConfig = {};
+
+export async function loadOrgConfig() {
+  const { data: org } = await db.from('organizations').select('id').eq('slug', ORG_SLUG).single();
+  if (!org) { console.error('Organisation introuvable :', ORG_SLUG); return; }
+  CURRENT_ORG_ID = org.id;
+
+  const { data: cfg } = await db.from('org_config').select('*').eq('org_id', org.id).single();
+  if (!cfg) return;
+  orgConfig = cfg;
+
+  const root = document.documentElement.style;
+  if (cfg.primary_color)   root.setProperty('--red',  cfg.primary_color);
+  if (cfg.secondary_color) root.setProperty('--navy', cfg.secondary_color);
+  if (cfg.accent_color)    root.setProperty('--gold', cfg.accent_color);
+}
 
 export const LEVELS = [
   {name:'Curieux',   min:0,    max:100,  reward:null},

@@ -1,4 +1,4 @@
-import { db } from '../config.js';
+import { db, CURRENT_ORG_ID } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
@@ -33,7 +33,7 @@ export async function submitPouls() {
   const nextLevel = getLevel();
   if (prevLevel !== nextLevel) setTimeout(() => showNotif(`🏆 ${nextLevel.name} !`), 1600);
 
-  const { data: votes } = await db.from('pouls_votes').select('emotion').eq('match_id', matchId);
+  const { data: votes } = await db.from('pouls_votes').select('emotion').eq('match_id', matchId).eq('org_id', CURRENT_ORG_ID);
   let pct = 0;
   if (votes && votes.length) { const same = votes.filter(v => v.emotion === selEmotion.label).length; pct = Math.round(same/votes.length*100); }
   document.getElementById('pouls-vote-ui').style.display = 'none';

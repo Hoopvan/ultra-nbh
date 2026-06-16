@@ -2,6 +2,7 @@ import { startCountdown } from './utils.js';
 import { closeModal } from './utils.js';
 import { showLevelsModal } from './ui.js';
 import { showTab } from './nav.js';
+import { loadOrgConfig } from './config.js';
 import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccount, deleteAccount } from './auth.js';
 import { subscribeToPush } from './push.js';
 import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-create.js';
@@ -175,7 +176,8 @@ async function triggerInstall() {
   deferredInstallPrompt = null;
 }
 
-window.onload = () => {
+window.onload = async () => {
+  await loadOrgConfig();
   initAuth(); // en premier — critique pour le callback OAuth
   startCountdown();
 

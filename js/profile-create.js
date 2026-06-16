@@ -1,4 +1,4 @@
-import { db } from './config.js';
+import { db, CURRENT_ORG_ID } from './config.js';
 import {
   AVATAR_SKINS, AVATAR_TOPS, AVATAR_HAIR_COLORS,
   AVATAR_EYES, AVATAR_MOUTHS, AVATAR_FACIAL_HAIRS, AVATAR_CLOTHES
@@ -94,6 +94,7 @@ export async function submitProfile() {
     p_mouth:       newParams.mouth,
     p_facial_hair: newParams.facialHair,
     p_clothe:      newParams.clothe,
+    p_org_id:      CURRENT_ORG_ID,
   });
   if (data) { setProfile(data); showMain(); }
   else console.error('create_profile error:', error);

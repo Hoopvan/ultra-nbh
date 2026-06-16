@@ -1,4 +1,4 @@
-import { db } from '../config.js';
+import { db, CURRENT_ORG_ID } from '../config.js';
 import { gamesData } from '../state.js';
 import { setMatchTarget } from '../utils.js';
 
@@ -7,6 +7,7 @@ export async function loadGames() {
   const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
   const { data } = await db.from('games')
     .select('*')
+    .eq('org_id', CURRENT_ORG_ID)
     .eq('active', true)
     .or(`date.gte.${weekAgo},type.eq.boite_mystere`)
     .order('date', { ascending: false });
