@@ -1,7 +1,6 @@
 import { db } from './config.js';
-import { currentUser, profile, demoMode } from './state.js';
-import { updateProfile } from './profile.js';
-import { showScreen, showTab } from './nav.js';
+import { currentUser, profile, demoMode, setProfile } from './state.js';
+import { updateUI } from './ui.js';
 
 const RARITY_WEIGHTS = { bronze: 10, silver: 4, gold: 1 };
 const RARITY_LABEL   = { bronze: 'BRONZE', silver: 'ARGENT', gold: 'OR' };
@@ -39,8 +38,14 @@ export async function openBoosterPack() {
   const coins = profile?.coins || 0;
   if (coins < PACK_COST) { showNotifCards(`Il te faut ${PACK_COST} 🐾 Hermines !`); return; }
 
-  // Deduct coins optimistically
-  await updateProfile({ coins: coins - PACK_COST });
+  // Déduire les coins (même pattern que buyItem)
+  const newCoins = coins - PACK_COST;
+  if (!demoMode && currentUser) {
+    const { error } = await db.from('users').update({ coins: newCoins }).eq('id', currentUser.id);
+    if (error) { showNotifCards('Erreur : ' + error.message); return; }
+  }
+  setProfile({ ...profile, coins: newCoins });
+  updateUI();
 
   const drawn = drawPack(allCards, PACK_SIZE);
 
