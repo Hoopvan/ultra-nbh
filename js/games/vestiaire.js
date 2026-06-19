@@ -52,10 +52,13 @@ export async function answerVestiaire(idx, correct) {
     const today = getToday();
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, vestiaire_date: today });
   } else {
-    const { data, error } = await db.rpc('game_vestiaire', { p_answer_index: idx });
-    if (error) { if (!error.message?.includes('TOO_FAST')) showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, réponse non enregistrée.'); return; }
-    setProfile(data.profile);
-    xpGain = data.correct ? 30 : 15;
+    xpGain = correct ? 30 : 15;
+    const today = getToday();
+    const { data: p, error } = await db.from('users')
+      .update({ xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, vestiaire_date: today })
+      .eq('id', profile.id).select().single();
+    if (error) { showNotif('Oups, réponse non enregistrée.'); return; }
+    setProfile(p);
   }
   showNotif(`+${xpGain} XP ⚡  +${xpGain} 🐾`);
   const nextLevel = getLevel();
