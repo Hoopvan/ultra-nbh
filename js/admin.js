@@ -1,5 +1,6 @@
 import { db, CURRENT_ORG_ID } from './config.js';
 import { profile } from './state.js';
+import { escapeHtml } from './utils.js';
 
 export function isAdmin() {
   return profile?.role === 'org_admin' || profile?.role === 'super_admin';
@@ -101,7 +102,7 @@ async function loadMissionList() {
       <div class="admin-row-info">
         ${dateCell}
         <span class="admin-row-type">${label}</span>
-        ${preview ? `<span class="admin-row-preview">${preview}</span>` : ''}
+        ${preview ? `<span class="admin-row-preview">${escapeHtml(preview)}</span>` : ''}
       </div>
       <div class="admin-row-actions">
         <button class="admin-toggle ${m.active ? 'on' : 'off'}" onclick="window._adminToggle('${m.id}',${!m.active})">${m.active ? 'ON' : 'OFF'}</button>
@@ -484,8 +485,8 @@ async function loadCardList() {
     <div style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;${!c.active ? 'opacity:.4' : ''}">
       ${c.photo_url ? `<img src="${c.photo_url}" style="width:36px;height:50px;object-fit:cover;border-radius:6px;border:1px solid var(--black5);flex-shrink:0">` : '<div style="width:36px;height:50px;background:var(--black3);border-radius:6px;flex-shrink:0"></div>'}
       <div style="flex:1;min-width:0">
-        <div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:15px;color:var(--white)">${c.player_name}</div>
-        <div style="font-size:11px;color:var(--white-muted)">${c.position || '—'} · <span style="color:${RARITY_COLOR[c.rarity] || '#fff'};font-weight:700">${c.rarity.toUpperCase()}</span> · ${team}</div>
+        <div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:15px;color:var(--white)">${escapeHtml(c.player_name)}</div>
+        <div style="font-size:11px;color:var(--white-muted)">${escapeHtml(c.position || '—')} · <span style="color:${RARITY_COLOR[c.rarity] || '#fff'};font-weight:700">${escapeHtml(c.rarity.toUpperCase())}</span> · ${escapeHtml(team)}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">
         <button onclick="window._adminMoveCard('${c.id}','up')" style="${btnStyle}${isFirst ? ';opacity:.2;pointer-events:none' : ''}">▲</button>

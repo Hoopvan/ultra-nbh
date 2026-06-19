@@ -52,8 +52,8 @@ export async function loadOrgConfig() {
   const appleMeta = document.querySelector('meta[name="apple-mobile-web-app-title"]');
   if (appleMeta) appleMeta.content = appName;
 
-  // Logo : si logo_url fourni, remplace les logos texte et l'image mascotte
-  if (cfg.logo_url) {
+  // Logo : si logo_url fourni et valide https, remplace les logos texte et l'image mascotte
+  if (cfg.logo_url && cfg.logo_url.startsWith('https://')) {
     document.querySelectorAll('.loading-logo, .ob-logo').forEach(el => {
       el.textContent = '';
       const img = document.createElement('img');

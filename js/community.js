@@ -2,6 +2,7 @@ import { db, LEVELS, CURRENT_ORG_ID } from './config.js';
 import { profile, gamesData, demoMode } from './state.js';
 import { miniAvatarSVG } from './avatar.js';
 import { getLevel } from './ui.js';
+import { escapeHtml } from './utils.js';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -14,7 +15,7 @@ export async function loadCommunityData() {
     const c = gamesData.pouls.content;
     const matchEl = document.getElementById('tribune-match-name');
     const dateEl = document.getElementById('tribune-match-date');
-    if (matchEl) matchEl.innerHTML = c.match.replace(' vs ', '<br>vs ');
+    if (matchEl) matchEl.innerHTML = escapeHtml(c.match).replace(' vs ', '<br>vs ');
     if (dateEl) dateEl.textContent = c.date_label;
     const { data: votes } = await db.from('pouls_votes').select('emotion').eq('match_id', c.match_id).eq('org_id', CURRENT_ORG_ID);
     if (votes && votes.length) {
@@ -89,7 +90,7 @@ export async function loadCommunityData() {
           <div class="fan-tile-avatar">${avatarSVGs[i]}</div>
           ${badge}
         </div>
-        <div class="fan-tile-name">${f.name.substring(0, 8)}</div>
+        <div class="fan-tile-name">${escapeHtml(f.name.substring(0, 8))}</div>
       </div>`;
   }).join('');
 }

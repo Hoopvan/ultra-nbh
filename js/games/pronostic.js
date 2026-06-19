@@ -1,6 +1,6 @@
 import { db, CURRENT_ORG_ID } from '../config.js';
 import { profile, gamesData, currentUser, demoMode, setProfile } from '../state.js';
-import { showNotif } from '../utils.js';
+import { showNotif, escapeHtml } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
 import { getToday } from '../date.js';
 
@@ -87,7 +87,7 @@ export async function checkPronoResult() {
     html += `<div style="display:flex;align-items:center;gap:10px;background:${isMe?'var(--red-dim)':'var(--black3)'};border-radius:var(--radius-sm);padding:8px 12px;border:1px solid ${isMe?'var(--red)':'var(--black4)'}">
       <span style="font-size:18px">${medals[i]}</span>
       <div style="flex:1">
-        <div style="font-size:13px;font-weight:500;color:var(--white)">${v.user_name}${isMe?' (toi)':''}</div>
+        <div style="font-size:13px;font-weight:500;color:var(--white)">${escapeHtml(v.user_name)}${isMe?' (toi)':''}</div>
         <div style="font-size:11px;color:var(--white-muted)">Prono : ${v.score} · écart : ${v.ecart} pts${v.exact?' · 🎯 Score exact':''}</div>
       </div>
     </div>`;
