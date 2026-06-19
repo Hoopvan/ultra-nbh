@@ -20,15 +20,6 @@ $configContent = $configContent -replace '\{\{SUPABASE_ANON_KEY\}\}', $SUPABASE_
 $configContent = $configContent -replace '\{\{ORG_SLUG\}\}', $ORG_SLUG
 Set-Content js-local/config.js $configContent
 
-if ($VAPID_PUBLIC_KEY) {
-    $pushContent = Get-Content js-local/push.js -Raw
-    $pushContent = $pushContent -replace '\{\{VAPID_PUBLIC_KEY\}\}', $VAPID_PUBLIC_KEY
-    Set-Content js-local/push.js $pushContent
-    Write-Host "VAPID: substituee"
-} else {
-    Write-Host "VAPID: VAPID_PUBLIC_KEY manquant dans .env (push desactive)"
-}
-
 # index-local.html : pointe sur /js-local/main.js au lieu de /js/main.js
 $content = Get-Content index.html -Raw
 $content = $content -replace '/js/main\.js', '/js-local/main.js'
