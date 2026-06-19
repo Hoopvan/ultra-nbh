@@ -1,4 +1,5 @@
 import { gamesData, profile } from '../state.js';
+import { getToday } from '../date.js';
 import { initVestiaire } from './vestiaire.js';
 import { initAnecdote } from './anecdote.js';
 import { initNantesNBH } from './nantes-nbh.js';
@@ -9,7 +10,7 @@ import { initTimeline, submitTimeline } from './timeline.js';
 import { initPhotoMystere } from './photo-mystere.js';
 
 export function openGame(name) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getToday();
   const dateKey = name === 'nantes_nbh'    ? 'nantes_nbh_date'
     : name === 'avant_apres'  ? 'avant_apres_date'
     : name === 'boite_mystere' ? 'boite_date'

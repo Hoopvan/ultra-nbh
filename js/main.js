@@ -9,6 +9,7 @@ import { subscribeToPush, unsubscribeFromPush, isPushSubscribed } from './push.j
 import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-create.js';
 import { openAvatarEdit, setEditParam, saveAvatarEdit, toggleWorn, buyItem } from './avatar.js';
 import { initTuto, nextTuto, prevTuto, skipTuto } from './tuto.js';
+import { initServerDate } from './date.js';
 import { openGame, closeGame } from './games/screens.js';
 import { initAdmin } from './admin.js';
 import { loadCards, loadUserCards, openBoosterPack, renderCollection, updateCollectionChip } from './cards.js';
@@ -292,6 +293,7 @@ window.onload = async () => {
     if (btn) btn.style.display = 'block';
   }
 
+  await initServerDate();
   wireEvents();
   try { initInstallUI(); wireInstall(); await wireNotifBtn(); } catch(e) { console.warn('install UI error', e); }
   try { await loadCards(); await loadUserCards(); updateCollectionChip(); } catch(e) { console.warn('cards error', e); }

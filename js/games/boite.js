@@ -1,4 +1,5 @@
 import { db } from '../config.js';
+import { getToday } from '../date.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { updateUI } from '../ui.js';
@@ -10,7 +11,7 @@ let _boiteResult = null;
 export function checkBoiteAccess() {
   const boiteCard = document.getElementById('mc-boite');
   if (!boiteCard || !gamesData.boite_mystere) return;
-  const today = new Date().toISOString().split('T')[0];
+  const today = getToday();
 
   if (profile?.boite_date === today) {
     boiteCard.style.display = '';
@@ -56,7 +57,7 @@ export function openBoiteReadOnly() {
 }
 
 export async function initBoite() {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getToday();
   if (profile?.boite_date === today) { closeGame(); return; }
   const c = gamesData.boite_mystere?.content;
   if (!c) return;

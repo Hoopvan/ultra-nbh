@@ -2,6 +2,7 @@ import { db } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
+import { getToday } from '../date.js';
 
 const BLUR_STAGES  = ['blur(14px) saturate(0)', 'blur(6px)', 'blur(0px)'];
 const XP_STAGES    = [50, 30, 15];
@@ -82,7 +83,7 @@ async function _submitPhotoMystere(chosen, stage, isCorrect, c) {
 
   if (demoMode) {
     const xpGain = isCorrect ? XP_STAGES[stage - 1] : 10;
-    const today  = new Date().toISOString().split('T')[0];
+    const today  = getToday();
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, photo_mystere_date: today });
     result = { correct: isCorrect, xp_gain: xpGain, answer: c.answer };
   } else {

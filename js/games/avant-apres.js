@@ -2,6 +2,7 @@ import { db } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
+import { getToday } from '../date.js';
 
 let aaExplored = false;
 let aaAnswered = false;
@@ -52,7 +53,7 @@ export async function revealAvantApres() {
 
   const prevLevel = getLevel();
   if (demoMode) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getToday();
     setProfile({ ...profile, xp: profile.xp + 30, coins: (profile.coins||0) + 30, interactions: (profile.interactions||0) + 1, avant_apres_date: today });
   } else {
     const { data, error } = await db.rpc('claim_avant_apres');

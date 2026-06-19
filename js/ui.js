@@ -1,5 +1,6 @@
 import { LEVELS } from './config.js';
 import { profile, gamesData } from './state.js';
+import { getToday } from './date.js';
 import { renderAvatar, renderEquip, renderNextUnlocks } from './avatar.js';
 import { isAdmin } from './admin.js';
 
@@ -40,7 +41,7 @@ export function updateUI() {
   const sm = document.getElementById('s-missions'); if (sm) sm.textContent = profile.interactions;
   const ss = document.getElementById('s-streak'); if (ss) ss.textContent = profile.streak;
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getToday();
 
   const mcVest = document.getElementById('mc-vestiaire');
   const mcAnec = document.getElementById('mc-anecdote');

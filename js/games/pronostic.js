@@ -2,6 +2,7 @@ import { db, CURRENT_ORG_ID } from '../config.js';
 import { profile, gamesData, currentUser, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
+import { getToday } from '../date.js';
 
 let pronoHome = 0, pronoAway = 0;
 
@@ -28,7 +29,7 @@ export async function submitPronostic() {
   const score = `${pronoHome}-${pronoAway}`;
   const prevLevel = getLevel();
   if (demoMode) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getToday();
     setProfile({ ...profile, xp: profile.xp + 25, coins: (profile.coins||0) + 25, interactions: (profile.interactions||0) + 1, pronostic_date: today, pronostic_score: score });
   } else {
     const { data, error } = await db.rpc('submit_pronostic', { p_score_home: pronoHome, p_score_away: pronoAway });

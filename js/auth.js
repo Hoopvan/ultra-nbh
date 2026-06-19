@@ -1,4 +1,5 @@
 import { db, CURRENT_ORG_ID } from './config.js';
+import { getToday } from './date.js';
 import { currentUser, profile, demoMode, setCurrentUser, setProfile, setDemoMode, gamesData } from './state.js';
 import { updateProfile } from './profile.js';
 import { loadCommunityData } from './community.js';
@@ -32,7 +33,7 @@ export async function loadOrCreateProfile() {
 
 export async function checkStreak() {
   if (!profile) return;
-  const today = new Date().toISOString().split('T')[0];
+  const today = getToday();
   if (profile.last_play === today) return;
   if (demoMode) {
     const diff = Math.floor((new Date(today) - new Date(profile.last_play)) / 86400000);
@@ -54,7 +55,7 @@ export function startDemoMode() {
     coins: 1000,
     interactions: 8,
     streak: 3,
-    last_play: new Date().toISOString().split('T')[0],
+    last_play: getToday(),
     active_items: ['couleurs', 'echarpe'],
     worn_items: ['couleurs', 'echarpe'],
     avatar_skin:        'tanned',

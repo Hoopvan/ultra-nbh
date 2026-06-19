@@ -2,6 +2,7 @@ import { db } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
+import { getToday } from '../date.js';
 
 let tlSelection = [];   // IDs dans l'ordre choisi par le fan
 let tlAnswered  = false;
@@ -91,7 +92,7 @@ export async function submitTimeline() {
     const correctOrder = [...c.events].sort((a, b) => a.year - b.year);
     const isCorrect    = JSON.stringify(tlSelection) === JSON.stringify(correctOrder.map(e => e.id));
     const xpGain       = isCorrect ? 30 : 15;
-    const today        = new Date().toISOString().split('T')[0];
+    const today        = getToday();
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, timeline_date: today });
     result = { correct: isCorrect, xp_gain: xpGain, correct_order: correctOrder };
   } else {

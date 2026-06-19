@@ -1,6 +1,7 @@
 import { db } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
 import { showNotif, escapeHtml } from '../utils.js';
+import { getToday } from '../date.js';
 import { getLevel, updateUI } from '../ui.js';
 
 let anecAnswered = false;
@@ -45,7 +46,7 @@ export async function answerAnecdote(idx, correct, btn) {
   let xpGain;
   if (demoMode) {
     xpGain = correct ? 30 : 15;
-    const today = new Date().toISOString().split('T')[0];
+    const today = getToday();
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, anecdote_date: today });
   } else {
     const { data, error } = await db.rpc('submit_anecdote_answer', { p_answer_text: anecShuffledAnswers[idx]?.text });

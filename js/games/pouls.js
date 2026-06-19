@@ -2,6 +2,7 @@ import { db, CURRENT_ORG_ID } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
+import { getToday } from '../date.js';
 
 let selEmotion = null;
 
@@ -18,7 +19,7 @@ export async function submitPouls() {
   const prevLevel = getLevel();
 
   if (demoMode) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getToday();
     setProfile({ ...profile, xp: profile.xp + 20, coins: (profile.coins||0) + 20, interactions: (profile.interactions||0) + 1, pouls_date: today });
   } else {
     const { data, error } = await db.rpc('submit_pouls_vote', { p_match_id: matchId, p_emotion: selEmotion.label });

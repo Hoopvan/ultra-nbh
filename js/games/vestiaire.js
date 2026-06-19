@@ -2,6 +2,7 @@ import { db } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
+import { getToday } from '../date.js';
 
 let vAnswered = false;
 
@@ -48,7 +49,7 @@ export async function answerVestiaire(idx, correct) {
   let xpGain;
   if (demoMode) {
     xpGain = correct ? 30 : 15;
-    const today = new Date().toISOString().split('T')[0];
+    const today = getToday();
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, vestiaire_date: today });
   } else {
     const { data, error } = await db.rpc('submit_vestiaire_answer', { p_answer_index: idx });

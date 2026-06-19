@@ -14,9 +14,21 @@ let newParams = {
 };
 
 export function goToAvatarCreate() {
-  const name = document.getElementById('name-input').value.trim();
-  if (!name) { document.getElementById('name-input').focus(); return; }
-  newName = name;
+  const raw = document.getElementById('name-input').value.trim();
+  if (!raw) { document.getElementById('name-input').focus(); return; }
+  if (raw.length < 2 || raw.length > 30) {
+    document.getElementById('name-input').setCustomValidity('2 à 30 caractères');
+    document.getElementById('name-input').reportValidity();
+    return;
+  }
+  // Autorise lettres (accents inclus), chiffres, espaces, tirets, apostrophes
+  if (!/^[\p{L}\p{N} '\-]+$/u.test(raw)) {
+    document.getElementById('name-input').setCustomValidity('Caractères non autorisés');
+    document.getElementById('name-input').reportValidity();
+    return;
+  }
+  document.getElementById('name-input').setCustomValidity('');
+  newName = raw;
   showScreen('create-avatar');
   initCreatePickers();
   updateCreatePreview();
