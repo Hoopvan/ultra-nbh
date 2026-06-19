@@ -24,6 +24,9 @@ window._adminToggle      = toggleMissionActive;
 window._adminDelete      = deleteMission;
 window._adminUpdateDate  = updateMissionDate;
 window._adminUploadImage = uploadImage;
+window._adminSwitchTab   = switchAdminTab;
+window._adminDeleteCard  = deleteCard;
+window._adminToggleCard  = toggleCardActive;
 
 // ── Init ───────────────────────────────────────────────────────────────────
 
@@ -31,6 +34,18 @@ export async function initAdmin() {
   renderTypeGrid();
   document.getElementById('admin-form-area').innerHTML = '';
   await loadMissionList();
+  wireCardForm();
+}
+
+function switchAdminTab(tab) {
+  const isMissions = tab === 'missions';
+  document.getElementById('admin-panel-missions').style.display = isMissions ? 'block' : 'none';
+  document.getElementById('admin-panel-cards').style.display    = isMissions ? 'none'  : 'block';
+  document.getElementById('admin-tab-missions').style.borderBottomColor = isMissions ? 'var(--red)' : 'transparent';
+  document.getElementById('admin-tab-missions').style.color     = isMissions ? 'var(--white)' : 'var(--white-muted)';
+  document.getElementById('admin-tab-cards').style.borderBottomColor    = isMissions ? 'transparent' : 'var(--red)';
+  document.getElementById('admin-tab-cards').style.color        = isMissions ? 'var(--white-muted)' : 'var(--white)';
+  if (!isMissions) loadCardList();
 }
 
 // ── Liste des missions ─────────────────────────────────────────────────────
@@ -375,4 +390,108 @@ async function deleteMission(id) {
   if (!confirm('Supprimer cette mission ?')) return;
   await db.from('games').delete().eq('id', id).eq('org_id', CURRENT_ORG_ID);
   await loadMissionList();
+}
+
+// ── GESTION CARTES ────────────────────────────────────────────────────────
+
+let cardPhotoFile = null;
+let cardPhotoUrl = null;
+
+function wireCardForm() {
+  const photoBtn = document.getElementById('card-photo-btn');
+  const fileInput = document.getElementById('card-photo-file');
+  const preview = document.getElementById('card-photo-preview');
+  const saveBtn = document.getElementById('card-save-btn');
+  if (!photoBtn) return;
+
+  photoBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    cardPhotoFile = file;
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+    photoBtn.textContent = '✅ ' + file.name;
+  });
+  saveBtn.addEventListener('click', saveCard);
+}
+
+async function saveCard() {
+  const name = document.getElementById('card-name-input').value.trim();
+  if (!name) { alert('Nom requis'); return; }
+  const saveBtn = document.getElementById('card-save-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Enregistrement…';
+
+  let photoUrl = '';
+  if (cardPhotoFile) {
+    const slug = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    const ext = cardPhotoFile.name.split('.').pop();
+    const path = `cards/${slug}_${Date.now()}.${ext}`;
+    const { error: upErr } = await db.storage.from('mission-images').upload(path, cardPhotoFile, { upsert: true });
+    if (!upErr) {
+      const { data: urlData } = db.storage.from('mission-images').getPublicUrl(path);
+      photoUrl = urlData?.publicUrl || '';
+    }
+  }
+
+  const id = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
+  const { error } = await db.from('cards').insert({
+    id,
+    player_name: name,
+    position: document.getElementById('card-pos-input').value.trim() || null,
+    rarity: document.getElementById('card-rarity-input').value,
+    sort_order: parseInt(document.getElementById('card-order-input').value) || 0,
+    photo_url: photoUrl,
+    active: true,
+    team: 'nbh',
+  });
+
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'ENREGISTRER LA CARTE';
+  if (error) { alert('Erreur : ' + error.message); return; }
+
+  // Reset form
+  document.getElementById('card-name-input').value = '';
+  document.getElementById('card-pos-input').value = '';
+  document.getElementById('card-rarity-input').value = 'bronze';
+  document.getElementById('card-order-input').value = '0';
+  document.getElementById('card-photo-preview').style.display = 'none';
+  document.getElementById('card-photo-btn').textContent = '📷 Choisir une photo';
+  cardPhotoFile = null;
+  await loadCardList();
+}
+
+async function loadCardList() {
+  const container = document.getElementById('admin-card-list');
+  if (!container) return;
+  container.innerHTML = '<div style="color:var(--white-muted);font-size:13px;padding:8px 0">Chargement…</div>';
+  const { data: cards } = await db.from('cards').select('*').order('sort_order');
+  if (!cards?.length) { container.innerHTML = '<div style="color:var(--white-muted);font-size:13px;padding:8px 0">Aucune carte.</div>'; return; }
+
+  const RARITY_COLOR = { bronze: '#cd7f32', silver: '#b8b8c8', gold: '#ffd700' };
+  container.innerHTML = cards.map(c => `
+    <div style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;${!c.active ? 'opacity:.4' : ''}">
+      ${c.photo_url ? `<img src="${c.photo_url}" style="width:36px;height:50px;object-fit:cover;border-radius:6px;border:1px solid var(--black5);flex-shrink:0">` : '<div style="width:36px;height:50px;background:var(--black3);border-radius:6px;flex-shrink:0"></div>'}
+      <div style="flex:1;min-width:0">
+        <div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:15px;color:var(--white)">${c.player_name}</div>
+        <div style="font-size:11px;color:var(--white-muted)">${c.position || '—'} · <span style="color:${RARITY_COLOR[c.rarity] || '#fff'};font-weight:700">${c.rarity.toUpperCase()}</span></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button onclick="window._adminToggleCard('${c.id}',${!c.active})" style="background:var(--black3);border:1px solid var(--black5);border-radius:6px;padding:5px 8px;color:var(--white-muted);font-size:11px;cursor:pointer">${c.active ? 'Masquer' : 'Afficher'}</button>
+        <button onclick="window._adminDeleteCard('${c.id}')" style="background:rgba(232,25,44,.1);border:1px solid rgba(232,25,44,.2);border-radius:6px;padding:5px 8px;color:var(--red);font-size:11px;cursor:pointer">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function toggleCardActive(id, active) {
+  await db.from('cards').update({ active }).eq('id', id);
+  await loadCardList();
+}
+
+async function deleteCard(id) {
+  if (!confirm('Supprimer cette carte ?')) return;
+  await db.from('cards').delete().eq('id', id);
+  await loadCardList();
 }

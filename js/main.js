@@ -11,6 +11,7 @@ import { openAvatarEdit, setEditParam, saveAvatarEdit, toggleWorn, buyItem } fro
 import { initTuto, nextTuto, prevTuto, skipTuto } from './tuto.js';
 import { openGame, closeGame } from './games/screens.js';
 import { initAdmin } from './admin.js';
+import { loadCards, loadUserCards, openBoosterPack, renderCollection, updateCollectionChip } from './cards.js';
 import { submitTimeline } from './games/timeline.js';
 import { selectEmotion, submitPouls } from './games/pouls.js';
 import { revealAvantApres } from './games/avant-apres.js';
@@ -139,6 +140,23 @@ function wireEvents() {
     if (toggleEl) { toggleWorn(toggleEl.dataset.toggleItem); return; }
     const buyEl = e.target.closest('[data-buy-item]');
     if (buyEl) buyItem(buyEl.dataset.buyItem);
+  });
+
+  // Boosters & Collection
+  document.getElementById('buy-booster-btn').addEventListener('click', openBoosterPack);
+  document.getElementById('open-collection-btn').addEventListener('click', () => {
+    renderCollection();
+    showScreen('collection');
+  });
+  document.getElementById('collection-back-btn').addEventListener('click', () => showTab('avatar'));
+  document.getElementById('booster-close-btn').addEventListener('click', () => {
+    document.getElementById('overlay-booster').style.display = 'none';
+    renderCollection();
+    showScreen('collection');
+  });
+  document.getElementById('booster-back-btn').addEventListener('click', () => {
+    document.getElementById('overlay-booster').style.display = 'none';
+    showTab('avatar');
   });
 
   // Admin
@@ -276,4 +294,5 @@ window.onload = async () => {
 
   wireEvents();
   try { initInstallUI(); wireInstall(); await wireNotifBtn(); } catch(e) { console.warn('install UI error', e); }
+  try { await loadCards(); await loadUserCards(); updateCollectionChip(); } catch(e) { console.warn('cards error', e); }
 };
