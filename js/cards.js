@@ -38,33 +38,37 @@ export async function openBoosterPack() {
   const coins = profile?.coins || 0;
   if (coins < PACK_COST) { showNotifCards(`Il te faut ${PACK_COST} 🐾 Hermines !`); return; }
 
-  // Déduire les coins (même pattern que buyItem)
+  // Déduire les coins
   const newCoins = coins - PACK_COST;
   if (!demoMode && currentUser) {
     const { error } = await db.from('users').update({ coins: newCoins }).eq('id', currentUser.id);
-    if (error) { showNotifCards('Erreur : ' + error.message); return; }
+    if (error) { showNotifCards('Erreur coins : ' + error.message); return; }
   }
   setProfile({ ...profile, coins: newCoins });
   updateUI();
 
   const drawn = drawPack(allCards, PACK_SIZE);
 
+  // Recharger les cartes déjà possédées (cas où loadUserCards n'a pas tourné au login)
+  await loadUserCards();
+
   // Persist drawn cards
   if (!demoMode && currentUser) {
     for (const card of drawn) {
       const existing = userCardsMap[card.id];
       if (existing) {
-        await db.from('user_cards').update({ count: existing.count + 1 }).eq('id', existing.id);
-        userCardsMap[card.id] = { ...existing, count: existing.count + 1 };
+        const { error } = await db.from('user_cards')
+          .update({ count: existing.count + 1 }).eq('id', existing.id);
+        if (!error) userCardsMap[card.id] = { ...existing, count: existing.count + 1 };
+        else showNotifCards('Erreur update : ' + error.message);
       } else {
-        const { data } = await db.from('user_cards')
-          .insert({ user_id: currentUser.id, card_id: card.id, count: 1 })
-          .select().single();
-        if (data) userCardsMap[card.id] = data;
+        const { error } = await db.from('user_cards')
+          .insert({ user_id: currentUser.id, card_id: card.id, count: 1 });
+        if (!error) userCardsMap[card.id] = { card_id: card.id, count: 1 };
+        else showNotifCards('Erreur insert : ' + error.message);
       }
     }
   } else {
-    // Demo: just update local map
     drawn.forEach(c => {
       userCardsMap[c.id] = userCardsMap[c.id]
         ? { ...userCardsMap[c.id], count: userCardsMap[c.id].count + 1 }
