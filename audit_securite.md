@@ -206,8 +206,8 @@ Le bouton démo est masqué via CSS uniquement (hostname check côté client). P
 | P0 | XSS innerHTML → textContent/DOMPurify | Faible |
 | ~~P0~~ ✅ | ~~XSS innerHTML → textContent/DOMPurify~~ | Faible |
 | ~~P0~~ ✅ | ~~CSP + X-Frame-Options + X-Content-Type-Options~~ | Faible |
-| P0 🔲 | RLS admin côté serveur (SQL Supabase à appliquer) | Moyen |
-| ~~P1~~ ✅ | ~~Date depuis serveur (get_server_date RPC — SQL ci-dessous)~~ | Faible |
+| ~~P0~~ ✅ | ~~RLS admin côté serveur sur games + cards (SQL appliqué)~~ | Moyen |
+| ~~P1~~ ✅ | ~~Date depuis serveur (get_server_date RPC + SQL appliqué)~~ | Faible |
 | ~~P1~~ ✅ | ~~Consentement RGPD persisté en DB (RPC set_rgpd_consent + audit trail)~~ | Faible |
 | P1 ⚠️ | Rate limiting sur RPCs — reporté (restructuration lourde, protection principale déjà assurée par le check date/jour côté client + mission unique par jour) | Moyen |
 | ~~P2~~ ✅ | ~~Validation nom profil (2-30 chars, regex unicode)~~ | Faible |
