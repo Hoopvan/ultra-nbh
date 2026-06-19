@@ -9,7 +9,7 @@ import { subscribeToPush } from './push.js';
 export async function signInWithGoogle() {
   const { error } = await db.auth.signInWithOAuth({
     provider: 'google', options: {
-      redirectTo: window.location.href,
+      redirectTo: window.location.origin + '/',
       queryParams: { prompt: 'select_account' }
     }
   });

@@ -3,7 +3,9 @@ const SUPABASE_ANON_KEY = "{{SUPABASE_ANON_KEY}}";
 const ORG_SLUG = "{{ORG_SLUG}}";
 
 const { createClient } = supabase;
-export const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { flowType: 'implicit' }
+});
 
 export let CURRENT_ORG_ID = null;
 export let orgConfig = {};
