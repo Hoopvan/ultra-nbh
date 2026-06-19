@@ -42,5 +42,5 @@ export function showMain() {
 // Retour depuis un jeu → onglet missions
 document.addEventListener('game:closed', () => showTab('missions'));
 
-// Fin du tuto → onglet tribune
-document.addEventListener('tuto:done', () => showTab('tribune'));
+// Fin du tuto → onglet missions (meilleur départ pour un nouveau fan)
+document.addEventListener('tuto:done', () => showTab('missions'));

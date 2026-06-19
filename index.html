@@ -93,69 +93,94 @@
 <!-- TUTO ONBOARDING -->
 <div id="screen-tuto" class="screen" style="background:var(--black)">
   <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-    <!-- Slides -->
     <div id="tuto-slides" style="flex:1;display:flex;overflow:hidden;position:relative">
 
-      <!-- Slide 1 -->
+      <!-- Slide 1 — Welcome personnalisé -->
       <div class="tuto-slide active" id="tuto-1">
-        <div style="font-size:72px;margin-bottom:20px">🐾</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:12px">Bienvenue dans la<br><span style="color:var(--red)">Communauté NBH</span></div>
-        <p style="font-size:15px;color:var(--white-muted);line-height:1.7">Le basket, ça ne se regarde pas, ça se vit. Découvre le club, l'équipe et l'univers du NBH autrement. Mini-jeux, pronostics, coulisses... deviens un acteur de cette aventure.</p>
+        <div style="font-size:72px;margin-bottom:16px">🏀</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;color:var(--white);line-height:1.05;margin-bottom:16px">
+          Bienvenue<br><span style="color:var(--red)" id="tuto-name">dans la tribu !</span>
+        </div>
+        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:24px">
+          Tu fais maintenant partie de la communauté NBH. Joue chaque jour et vis le basket autrement.
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;border:1px solid rgba(232,25,44,.25)">
+            <div style="font-size:24px">⚡</div>
+            <div style="font-size:10px;color:var(--white-muted);margin-top:5px;line-height:1.3">XP &<br>niveaux</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;border:1px solid rgba(245,166,35,.25)">
+            <div style="font-size:24px">🐾</div>
+            <div style="font-size:10px;color:var(--white-muted);margin-top:5px;line-height:1.3">Hermines<br>& boutique</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;border:1px solid rgba(74,158,255,.25)">
+            <div style="font-size:24px">👥</div>
+            <div style="font-size:10px;color:var(--white-muted);margin-top:5px;line-height:1.3">Classe-<br>ment fans</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;border:1px solid rgba(245,166,35,.25)">
+            <div style="font-size:24px">🎁</div>
+            <div style="font-size:10px;color:var(--white-muted);margin-top:5px;line-height:1.3">Boîte<br>mystère</div>
+          </div>
+        </div>
       </div>
 
-      <!-- Slide 2 -->
+      <!-- Slide 2 — Les missions -->
       <div class="tuto-slide" id="tuto-2">
-        <div style="font-size:72px;margin-bottom:20px">🏟️</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:12px">La <span style="color:var(--red)">Trocardière</span></div>
-        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:16px">Ton espace communautaire. Retrouve l'énergie collective des fans, l'actu du club et les moments forts — et si tu joues bien, c'est toi qu'on met en avant !</p>
-        <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 16px;border:1px solid var(--navy-bright)">
-          <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(74,158,255,.8);margin-bottom:4px">⚡ Prochain match</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--white)">Hermine vs Adversaire</div>
+        <div style="font-size:72px;margin-bottom:16px">🎯</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:10px">
+          Tes <span style="color:var(--red)">missions</span><br>du jour
+        </div>
+        <p style="font-size:14px;color:var(--white-muted);line-height:1.6;margin-bottom:16px">
+          Chaque jour, de nouveaux défis. Joue, réponds, pronostique — et gagne de l'XP à chaque mission complétée.
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid var(--black5)">
+            <div style="font-size:22px">💬</div><div style="font-size:10px;color:var(--white-muted);margin-top:4px">Pouls</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid var(--black5)">
+            <div style="font-size:22px">👕</div><div style="font-size:10px;color:var(--white-muted);margin-top:4px">Vestiaire</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid var(--black5)">
+            <div style="font-size:22px">📖</div><div style="font-size:10px;color:var(--white-muted);margin-top:4px">Anecdote</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid var(--black5)">
+            <div style="font-size:22px">🏙️</div><div style="font-size:10px;color:var(--white-muted);margin-top:4px">Quiz NBH</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid var(--black5)">
+            <div style="font-size:22px">🖼️</div><div style="font-size:10px;color:var(--white-muted);margin-top:4px">Avant/Après</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid var(--black5)">
+            <div style="font-size:22px">🎯</div><div style="font-size:10px;color:var(--white-muted);margin-top:4px">Pronostic</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid var(--black5)">
+            <div style="font-size:22px">📅</div><div style="font-size:10px;color:var(--white-muted);margin-top:4px">Timeline</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid var(--black5)">
+            <div style="font-size:22px">📷</div><div style="font-size:10px;color:var(--white-muted);margin-top:4px">Photo</div>
+          </div>
+          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid rgba(245,166,35,.4)">
+            <div style="font-size:22px">🎁</div><div style="font-size:10px;color:#f5a623;margin-top:4px">Mystère</div>
+          </div>
         </div>
       </div>
 
-      <!-- Slide 3 -->
+      <!-- Slide 3 — C'est parti -->
       <div class="tuto-slide" id="tuto-3">
-        <div style="font-size:72px;margin-bottom:20px">🎯</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:12px">Les <span style="color:var(--red)">Missions</span></div>
-        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:16px">Chaque jour de nouveaux défis t'attendent. Anecdotes, pronostics, questions sur Nantes et le NBH... Et si tu complètes toutes tes missions du jour, une <strong style="color:#f5a623">Boîte Mystère 🎁</strong> peut apparaître avec une surprise de nos partenaires. Mais rien n'est garanti...</p>
-        <div style="display:flex;gap:8px">
-          <div style="flex:1;background:var(--black3);border-radius:var(--radius-sm);padding:12px 10px;text-align:center;border:1px solid rgba(232,25,44,.3)">
-            <div style="font-size:22px">⚡</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin:4px 0 2px">XP</div>
-            <div style="font-size:11px;color:var(--white-muted);line-height:1.4">Monte de niveau et débloque des offres billetterie, boutique et merch</div>
-          </div>
-          <div style="flex:1;background:var(--black3);border-radius:var(--radius-sm);padding:12px 10px;text-align:center;border:1px solid rgba(245,166,35,.3)">
-            <div style="font-size:22px">🐾</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin:4px 0 2px">Hermines</div>
-            <div style="font-size:11px;color:var(--white-muted);line-height:1.4">Débloque des fonctionnalités dans l'app et bien plus à venir</div>
-          </div>
+        <div style="font-size:72px;margin-bottom:16px">🏆</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:var(--white);line-height:1.05;margin-bottom:16px">
+          Tu es prêt à<br><span style="color:var(--red)">jouer !</span>
         </div>
-      </div>
-
-      <!-- Slide 4 -->
-      <div class="tuto-slide" id="tuto-4">
-        <div style="font-size:72px;margin-bottom:20px">👤</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:12px">Ton <span style="color:var(--red)">Perso</span></div>
-        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:16px">Crée un fan à ton image. Chaque membre de la communauté est unique. À toi de jouer, de progresser et de faire partie de quelque chose qui grandit à chaque match.</p>
-        <div style="background:linear-gradient(135deg,var(--navy) 0%,#0a1428 100%);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--navy-bright);font-size:13px;color:var(--white-muted);line-height:1.5">
-          ✨ Plus tu t'investis, plus l'expérience devient riche. <strong style="color:var(--white)">Et tu ne voudras pas rater ça.</strong>
+        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:20px">
+          Complète tes missions chaque jour, monte de niveau et débloque des avantages exclusifs. Rejoins le classement des fans !
+        </p>
+        <div id="tuto-install-android" style="display:none;margin-bottom:12px">
+          <button id="tuto-install-btn" class="btn-red" style="width:100%">📲 INSTALLER L'APP</button>
         </div>
-      </div>
-
-      <!-- Slide 5 -->
-      <div class="tuto-slide" id="tuto-5">
-        <div style="font-size:72px;margin-bottom:20px">📲</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:12px">Installe <span style="color:var(--red)">l'app</span></div>
-        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:16px">Ajoute Hoop NBH sur ton écran d'accueil pour recevoir les notifications de match et accéder à l'app en un tap — même sans connexion.</p>
-        <div id="tuto-install-android" style="display:none">
-          <button id="tuto-install-btn" class="btn-red" style="width:100%;margin-bottom:12px">📲 INSTALLER L'APP</button>
-        </div>
-        <div id="tuto-install-ios" style="display:none;background:var(--black3);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--black5);font-size:13px;color:var(--white-muted);line-height:1.7">
+        <div id="tuto-install-ios" style="display:none;background:var(--black3);border-radius:var(--radius-sm);padding:12px 16px;border:1px solid var(--black5);font-size:13px;color:var(--white-muted);line-height:1.6;margin-bottom:12px">
           Sur iPhone : appuie sur <strong style="color:var(--white)">Partager</strong> dans Safari puis <strong style="color:var(--white)">"Sur l'écran d'accueil"</strong>.
         </div>
-        <div style="background:var(--black3);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--black5);font-size:13px;color:var(--white-muted);line-height:1.5;margin-top:12px">
-          Tu peux aussi installer l'app plus tard depuis <strong style="color:var(--white)">Ton Perso → Paramètres</strong>.
+        <div style="background:linear-gradient(135deg,rgba(232,25,44,.12) 0%,rgba(245,166,35,.08) 100%);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid rgba(232,25,44,.2);font-size:13px;color:var(--white-muted);line-height:1.5">
+          💡 Tu retrouves l'installation et les paramètres depuis <strong style="color:var(--white)">Ton Perso → Paramètres</strong>.
         </div>
       </div>
 
@@ -163,15 +188,11 @@
 
     <!-- Indicateurs + navigation -->
     <div style="padding:20px 28px max(40px, calc(20px + env(safe-area-inset-bottom, 0px)));flex-shrink:0">
-      <!-- Points de progression -->
       <div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px" id="tuto-dots">
         <div class="tuto-dot active" id="dot-1"></div>
         <div class="tuto-dot" id="dot-2"></div>
         <div class="tuto-dot" id="dot-3"></div>
-        <div class="tuto-dot" id="dot-4"></div>
-        <div class="tuto-dot" id="dot-5"></div>
       </div>
-      <!-- Boutons -->
       <div style="display:flex;gap:10px;align-items:center">
         <button id="tuto-prev" style="display:none;background:transparent;color:var(--white);border:1px solid var(--white-mid);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;padding:14px 18px;cursor:pointer;white-space:nowrap">
           ← RETOUR

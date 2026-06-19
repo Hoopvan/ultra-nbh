@@ -1,8 +1,14 @@
+import { profile } from './state.js';
+
 let tutoStep = 1;
-const TUTO_STEPS = 5;
+const TUTO_STEPS = 3;
 
 export function initTuto() {
   tutoStep = 1;
+  const nameEl = document.getElementById('tuto-name');
+  if (nameEl && profile?.name) {
+    nameEl.textContent = profile.name.split(' ')[0] + ' !';
+  }
   updateTutoStep();
 }
 
@@ -17,7 +23,6 @@ export function prevTuto() {
 
 export function skipTuto() {
   try { localStorage.setItem('hoop_tuto_done', '1'); } catch(e) {}
-  // nav.js écoute cet événement pour appeler showTab('tribune')
   document.dispatchEvent(new Event('tuto:done'));
 }
 
@@ -27,7 +32,7 @@ function updateTutoStep() {
     document.getElementById('dot-'+i)?.classList.toggle('active', i === tutoStep);
   }
   const nextBtn = document.getElementById('tuto-next');
-  if (nextBtn) nextBtn.textContent = tutoStep === TUTO_STEPS ? "C'EST PARTI ! 🏀" : 'SUIVANT →';
+  if (nextBtn) nextBtn.textContent = tutoStep === TUTO_STEPS ? 'MES MISSIONS 🎯' : 'SUIVANT →';
   const skipBtn = document.getElementById('tuto-skip');
   if (skipBtn) skipBtn.style.display = tutoStep === TUTO_STEPS ? 'none' : 'block';
   const prevBtn = document.getElementById('tuto-prev');
