@@ -4,6 +4,8 @@ import { loadCommunityData } from './community.js';
 import { initTuto } from './tuto.js';
 import { checkBoiteAccess } from './games/boite.js';
 import { checkPronoResult } from './games/pronostic.js';
+import { gamesData } from './state.js';
+import { openGame } from './games/screens.js';
 
 export function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => {
@@ -42,5 +44,10 @@ export function showMain() {
 // Retour depuis un jeu → onglet missions
 document.addEventListener('game:closed', () => showTab('missions'));
 
-// Fin du tuto → onglet missions (meilleur départ pour un nouveau fan)
-document.addEventListener('tuto:done', () => showTab('missions'));
+// Fin du tuto → missions + auto-ouvre la première mission disponible
+document.addEventListener('tuto:done', () => {
+  showTab('missions');
+  const ORDER = ['pouls', 'vestiaire', 'anecdote', 'nantes_nbh', 'avant_apres', 'pronostic', 'timeline', 'photo_mystere'];
+  const first = ORDER.find(t => gamesData[t] !== null);
+  if (first) setTimeout(() => openGame(first), 500);
+});
