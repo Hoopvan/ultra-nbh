@@ -57,7 +57,7 @@ export async function revealAvantApres() {
     setProfile({ ...profile, xp: profile.xp + 30, coins: (profile.coins||0) + 30, interactions: (profile.interactions||0) + 1, avant_apres_date: today });
   } else {
     const { data, error } = await db.rpc('claim_avant_apres');
-    if (error) { showNotif('Oups, le gain n\'a pas pu être enregistré.'); return; }
+    if (error) { showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, le gain n\'a pas pu être enregistré.'); return; }
     setProfile(data);
   }
   showNotif(`+30 XP ⚡  +30 🐾`);
