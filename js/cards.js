@@ -62,9 +62,12 @@ export async function openBoosterPack() {
     for (const card of drawn) {
       const existing = userCardsMap[card.id];
       if (existing) {
+        const newCount = (existing.count || 1) + 1;
         const { error } = await db.from('user_cards')
-          .update({ count: existing.count + 1 }).eq('id', existing.id);
-        if (!error) userCardsMap[card.id] = { ...existing, count: existing.count + 1 };
+          .update({ count: newCount })
+          .eq('user_id', currentUser.id)
+          .eq('card_id', card.id);
+        if (!error) userCardsMap[card.id] = { ...existing, count: newCount };
         else showNotifCards('Erreur update : ' + error.message);
       } else {
         const { error } = await db.from('user_cards')
