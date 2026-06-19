@@ -3,22 +3,12 @@ import { profile } from './state.js';
 let tutoStep = 1;
 const TUTO_STEPS = 5;
 
-function isIOS() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-}
-function isStandalone() {
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-}
-
 export function initTuto() {
   tutoStep = 1;
   const nameEl = document.getElementById('tuto-name');
   if (nameEl && profile?.name) {
     nameEl.textContent = profile.name.split(' ')[0] + ' !';
   }
-  // Affiche les instructions iOS seulement sur iPhone et hors standalone
-  const iosBlock = document.getElementById('tuto-install-ios');
-  if (iosBlock) iosBlock.style.display = isIOS() ? 'block' : 'none';
   updateTutoStep();
 }
 

@@ -214,7 +214,11 @@ async function wireNotifBtn() {
 
   if (!pushSupported) {
     const iosNoStandalone = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone && !window.matchMedia('(display-mode: standalone)').matches;
-    setUnavailable(iosNoStandalone ? 'Notifs disponibles via l\'app installée' : 'Notifications non disponibles');
+    setUnavailable(iosNoStandalone ? "Notifs disponibles via l'app installée" : 'Notifications non disponibles');
+    if (iosNoStandalone) {
+      const hint = document.getElementById('notif-install-hint');
+      if (hint) hint.style.display = 'block';
+    }
     return;
   }
   if (Notification.permission === 'denied') { setBlocked(); return; }
