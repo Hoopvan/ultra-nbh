@@ -38,13 +38,17 @@ export async function openBoosterPack() {
   const coins = profile?.coins || 0;
   if (coins < PACK_COST) { showNotifCards(`Il te faut ${PACK_COST} 🐾 Hermines !`); return; }
 
-  // Déduire les coins
-  const newCoins = coins - PACK_COST;
+  // Déduire les coins via RPC (même pattern que buy_unlockable)
   if (!demoMode && currentUser) {
-    const { error } = await db.from('users').update({ coins: newCoins }).eq('id', currentUser.id);
-    if (error) { showNotifCards('Erreur coins : ' + error.message); return; }
+    const { data, error } = await db.rpc('spend_coins', { p_amount: PACK_COST });
+    if (error) {
+      const msg = error.message?.includes('NOT_ENOUGH_COINS') ? `Il te faut ${PACK_COST} 🐾 Hermines !` : 'Erreur : ' + error.message;
+      showNotifCards(msg); return;
+    }
+    if (data) setProfile(data);
+  } else {
+    setProfile({ ...profile, coins: coins - PACK_COST });
   }
-  setProfile({ ...profile, coins: newCoins });
   updateUI();
 
   const drawn = drawPack(allCards, PACK_SIZE);
