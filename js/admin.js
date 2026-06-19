@@ -27,6 +27,7 @@ window._adminUploadImage = uploadImage;
 window._adminSwitchTab   = switchAdminTab;
 window._adminDeleteCard  = deleteCard;
 window._adminToggleCard  = toggleCardActive;
+window._adminMoveCard    = moveCard;
 
 // ── Init ───────────────────────────────────────────────────────────────────
 
@@ -394,8 +395,11 @@ async function deleteMission(id) {
 
 // ── GESTION CARTES ────────────────────────────────────────────────────────
 
+const TEAM_LABEL = { pro: 'Pro', espoir: 'Espoir', asso: 'Asso', admin: 'Admin', autre: 'Autre' };
+
 let cardPhotoFile = null;
 let cardPhotoUrl = null;
+let adminCards = [];
 
 function wireCardForm() {
   const photoBtn = document.getElementById('card-photo-btn');
@@ -435,16 +439,17 @@ async function saveCard() {
     }
   }
 
+  const nextOrder = adminCards.length > 0 ? Math.max(...adminCards.map(c => c.sort_order)) + 1 : 0;
   const id = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
   const { error } = await db.from('cards').insert({
     id,
     player_name: name,
     position: document.getElementById('card-pos-input').value.trim() || null,
     rarity: document.getElementById('card-rarity-input').value,
-    sort_order: parseInt(document.getElementById('card-order-input').value) || 0,
+    team: document.getElementById('card-team-input').value,
+    sort_order: nextOrder,
     photo_url: photoUrl,
     active: true,
-    team: 'nbh',
   });
 
   saveBtn.disabled = false;
@@ -455,7 +460,7 @@ async function saveCard() {
   document.getElementById('card-name-input').value = '';
   document.getElementById('card-pos-input').value = '';
   document.getElementById('card-rarity-input').value = 'bronze';
-  document.getElementById('card-order-input').value = '0';
+  document.getElementById('card-team-input').value = 'pro';
   document.getElementById('card-photo-preview').style.display = 'none';
   document.getElementById('card-photo-btn').textContent = '📷 Choisir une photo';
   cardPhotoFile = null;
@@ -467,22 +472,47 @@ async function loadCardList() {
   if (!container) return;
   container.innerHTML = '<div style="color:var(--white-muted);font-size:13px;padding:8px 0">Chargement…</div>';
   const { data: cards } = await db.from('cards').select('*').order('sort_order');
-  if (!cards?.length) { container.innerHTML = '<div style="color:var(--white-muted);font-size:13px;padding:8px 0">Aucune carte.</div>'; return; }
+  adminCards = cards || [];
+  if (!adminCards.length) { container.innerHTML = '<div style="color:var(--white-muted);font-size:13px;padding:8px 0">Aucune carte.</div>'; return; }
 
   const RARITY_COLOR = { bronze: '#cd7f32', silver: '#b8b8c8', gold: '#ffd700' };
-  container.innerHTML = cards.map(c => `
+  const btnStyle = 'background:var(--black3);border:1px solid var(--black5);border-radius:6px;padding:4px 7px;color:var(--white-muted);font-size:13px;cursor:pointer;line-height:1';
+
+  container.innerHTML = adminCards.map((c, i) => {
+    const isFirst = i === 0, isLast = i === adminCards.length - 1;
+    const team = TEAM_LABEL[c.team] || c.team || '—';
+    return `
     <div style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;${!c.active ? 'opacity:.4' : ''}">
       ${c.photo_url ? `<img src="${c.photo_url}" style="width:36px;height:50px;object-fit:cover;border-radius:6px;border:1px solid var(--black5);flex-shrink:0">` : '<div style="width:36px;height:50px;background:var(--black3);border-radius:6px;flex-shrink:0"></div>'}
       <div style="flex:1;min-width:0">
         <div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:15px;color:var(--white)">${c.player_name}</div>
-        <div style="font-size:11px;color:var(--white-muted)">${c.position || '—'} · <span style="color:${RARITY_COLOR[c.rarity] || '#fff'};font-weight:700">${c.rarity.toUpperCase()}</span></div>
+        <div style="font-size:11px;color:var(--white-muted)">${c.position || '—'} · <span style="color:${RARITY_COLOR[c.rarity] || '#fff'};font-weight:700">${c.rarity.toUpperCase()}</span> · ${team}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">
+        <button onclick="window._adminMoveCard('${c.id}','up')" style="${btnStyle}${isFirst ? ';opacity:.2;pointer-events:none' : ''}">▲</button>
+        <button onclick="window._adminMoveCard('${c.id}','down')" style="${btnStyle}${isLast ? ';opacity:.2;pointer-events:none' : ''}">▼</button>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0">
         <button onclick="window._adminToggleCard('${c.id}',${!c.active})" style="background:var(--black3);border:1px solid var(--black5);border-radius:6px;padding:5px 8px;color:var(--white-muted);font-size:11px;cursor:pointer">${c.active ? 'Masquer' : 'Afficher'}</button>
         <button onclick="window._adminDeleteCard('${c.id}')" style="background:rgba(232,25,44,.1);border:1px solid rgba(232,25,44,.2);border-radius:6px;padding:5px 8px;color:var(--red);font-size:11px;cursor:pointer">✕</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
+}
+
+async function moveCard(id, dir) {
+  const idx = adminCards.findIndex(c => c.id === id);
+  if (idx < 0) return;
+  const swapIdx = dir === 'up' ? idx - 1 : idx + 1;
+  if (swapIdx < 0 || swapIdx >= adminCards.length) return;
+
+  // Normalise en séquence continue puis permute les deux positions
+  const updates = adminCards.map((c, i) => ({ id: c.id, sort_order: i }));
+  updates[idx].sort_order = swapIdx;
+  updates[swapIdx].sort_order = idx;
+
+  await Promise.all(updates.map(u => db.from('cards').update({ sort_order: u.sort_order }).eq('id', u.id)));
+  await loadCardList();
 }
 
 async function toggleCardActive(id, active) {
