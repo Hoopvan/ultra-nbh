@@ -3,7 +3,7 @@ import { closeModal } from './utils.js';
 import { showLevelsModal } from './ui.js';
 import { showTab, showScreen } from './nav.js';
 import { loadOrgConfig } from './config.js';
-import { demoMode } from './state.js';
+import { demoMode, currentUser } from './state.js';
 import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccount, deleteAccount } from './auth.js';
 import { subscribeToPush, unsubscribeFromPush, isPushSubscribed } from './push.js';
 import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-create.js';
@@ -21,6 +21,31 @@ function wireEvents() {
   // Onboarding
   document.getElementById('signin-btn').addEventListener('click', signInWithGoogle);
   document.getElementById('demo-btn').addEventListener('click', startDemoMode);
+
+  // Consentement RGPD
+  const signinBtn = document.getElementById('signin-btn');
+  const consentCb = document.getElementById('consent-cb');
+  try {
+    if (localStorage.getItem('hoop_rgpd') === '1') {
+      document.getElementById('consent-wrap').style.display = 'none';
+      signinBtn.disabled = false;
+      signinBtn.style.opacity = '';
+      signinBtn.style.cursor = '';
+    } else {
+      consentCb.addEventListener('change', () => {
+        signinBtn.disabled = !consentCb.checked;
+        signinBtn.style.opacity = consentCb.checked ? '' : '0.4';
+        signinBtn.style.cursor = consentCb.checked ? '' : 'not-allowed';
+      });
+    }
+  } catch(e) {}
+
+  // Navigation politique de confidentialité
+  document.getElementById('privacy-link-ob').addEventListener('click', () => showScreen('privacy'));
+  document.getElementById('privacy-settings-btn').addEventListener('click', () => showScreen('privacy'));
+  document.getElementById('privacy-back-btn').addEventListener('click', () => {
+    if (currentUser) showTab('avatar'); else showScreen('onboarding');
+  });
 
   // Création profil
   document.getElementById('name-submit-btn').addEventListener('click', goToAvatarCreate);

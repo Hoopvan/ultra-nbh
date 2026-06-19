@@ -7,6 +7,7 @@ import { showScreen, showMain } from './nav.js';
 import { subscribeToPush } from './push.js';
 
 export async function signInWithGoogle() {
+  try { localStorage.setItem('hoop_rgpd', '1'); } catch(e) {}
   const { error } = await db.auth.signInWithOAuth({
     provider: 'google', options: {
       redirectTo: window.location.origin + '/',

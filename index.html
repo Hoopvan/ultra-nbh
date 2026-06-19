@@ -39,7 +39,13 @@
   <div class="ob-sub">Nantes Basket Hermine</div>
   <div class="ob-tagline">Bien plus que<br>des <em>matchs</em></div>
   <p class="ob-desc">Découvrez, participez et vivez<br>l'expérience NBH au quotidien.</p>
-  <button class="btn-red" id="signin-btn">CONNEXION AVEC GOOGLE</button>
+  <button class="btn-red" id="signin-btn" style="opacity:0.4;cursor:not-allowed" disabled>CONNEXION AVEC GOOGLE</button>
+  <div id="consent-wrap" style="margin-top:14px;display:flex;align-items:flex-start;gap:10px;text-align:left;padding:0 4px">
+    <input type="checkbox" id="consent-cb" style="margin-top:2px;accent-color:var(--red);width:18px;height:18px;flex-shrink:0;cursor:pointer">
+    <label for="consent-cb" style="font-size:13px;color:var(--white-muted);line-height:1.5;cursor:pointer">
+      J'ai lu et j'accepte la <button id="privacy-link-ob" style="background:none;border:none;color:var(--red);font-family:inherit;font-size:13px;cursor:pointer;padding:0;text-decoration:underline">politique de confidentialité</button>
+    </label>
+  </div>
   <button style="margin-top:12px;background:transparent;color:var(--white-muted);border:1px solid var(--black4);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;padding:12px;cursor:pointer;width:100%;display:none" id="demo-btn">
     MODE DÉMO (local uniquement)
   </button>
@@ -180,6 +186,54 @@
     </div>
   </div>
 </div>
+
+<!-- POLITIQUE DE CONFIDENTIALITÉ -->
+<div id="screen-privacy" class="screen">
+  <div class="topbar" style="border:none">
+    <button id="privacy-back-btn" style="background:transparent;border:none;color:var(--white);font-size:22px;cursor:pointer;padding:0 8px 0 0;line-height:1">←</button>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--white)">Politique de confidentialité</div>
+    <div style="width:32px"></div>
+  </div>
+  <div class="screen-scroll" style="padding:0 20px 40px">
+    <p style="font-size:12px;color:var(--white-muted);margin:0 0 24px">Dernière mise à jour : juin 2026</p>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px">1. Responsable du traitement</div>
+    <p style="font-size:14px;color:var(--white-muted);line-height:1.7;margin:0 0 20px">Cette application est développée par <strong style="color:var(--white)">Bfan SaaS</strong> pour le compte de <strong style="color:var(--white)">Nantes Basket Hermine (NBH)</strong>. Pour toute question : <span style="color:var(--red)">contact@bfan.app</span></p>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px">2. Données collectées</div>
+    <p style="font-size:14px;color:var(--white-muted);line-height:1.7;margin:0 0 8px">Lors de ton utilisation de l'application, nous collectons :</p>
+    <ul style="font-size:14px;color:var(--white-muted);line-height:1.8;margin:0 0 20px;padding-left:20px">
+      <li>Ton adresse e-mail (fournie par Google lors de la connexion)</li>
+      <li>Ton pseudo et ton avatar personnalisé</li>
+      <li>Tes données de progression : XP, Hermines, niveau, série de jours consécutifs</li>
+      <li>Tes réponses aux missions et jeux quotidiens</li>
+      <li>La date de ta dernière connexion</li>
+    </ul>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px">3. Finalité du traitement</div>
+    <p style="font-size:14px;color:var(--white-muted);line-height:1.7;margin:0 0 20px">Tes données sont utilisées exclusivement pour :<br>• Faire fonctionner l'application et afficher ta progression<br>• Permettre ta participation aux missions et au classement communautaire<br>• T'envoyer des notifications si tu les actives (uniquement en lien avec le club)</p>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px">4. Base légale</div>
+    <p style="font-size:14px;color:var(--white-muted);line-height:1.7;margin:0 0 20px">Le traitement repose sur ton <strong style="color:var(--white)">consentement explicite</strong> (Art. 6.1.a du RGPD), donné lors de ton inscription.</p>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px">5. Durée de conservation</div>
+    <p style="font-size:14px;color:var(--white-muted);line-height:1.7;margin:0 0 20px">Tes données sont conservées <strong style="color:var(--white)">jusqu'à la suppression de ton compte</strong>, disponible à tout moment dans <em>Ton Perso → Paramètres → Supprimer mon compte</em>.</p>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px">6. Tes droits</div>
+    <p style="font-size:14px;color:var(--white-muted);line-height:1.7;margin:0 0 20px">Conformément au RGPD, tu disposes d'un droit d'<strong style="color:var(--white)">accès</strong>, de <strong style="color:var(--white)">rectification</strong>, de <strong style="color:var(--white)">suppression</strong>, de <strong style="color:var(--white)">portabilité</strong> et d'<strong style="color:var(--white)">opposition</strong> concernant tes données. Pour exercer ces droits : <span style="color:var(--red)">contact@bfan.app</span></p>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px">7. Hébergement et sécurité</div>
+    <p style="font-size:14px;color:var(--white-muted);line-height:1.7;margin:0 0 20px">Tes données sont hébergées sur <strong style="color:var(--white)">Supabase</strong> (infrastructure AWS, région Europe), protégées par chiffrement TLS et authentification sécurisée. Tes données ne sont <strong style="color:var(--white)">jamais vendues à des tiers</strong>.</p>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px">8. Cookies et stockage local</div>
+    <p style="font-size:14px;color:var(--white-muted);line-height:1.7;margin:0 0 20px">L'application utilise le <strong style="color:var(--white)">stockage local de ton navigateur</strong> (localStorage) uniquement pour maintenir ta session et mémoriser tes préférences. Aucun cookie publicitaire ou de tracking n'est utilisé.</p>
+
+    <div style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:16px;font-size:13px;color:var(--white-muted);line-height:1.6">
+      Pour toute réclamation, tu peux également contacter la <strong style="color:var(--white)">CNIL</strong> (Commission Nationale de l'Informatique et des Libertés) : <span style="color:var(--red)">www.cnil.fr</span>
+    </div>
+  </div>
+</div>
+
 <div id="screen-tribune" class="screen">
   <div class="topbar">
     <div class="topbar-logo">HOOP<span>.</span></div>
@@ -440,6 +494,9 @@
       <div id="install-ios-hint" style="display:none;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white-muted);font-family:'Barlow',sans-serif;font-size:13px;line-height:1.6">
         📲 Pour installer : appuie sur <strong style="color:var(--white)">Partager</strong> dans Safari puis <strong style="color:var(--white)">"Sur l'écran d'accueil"</strong>.
       </div>
+      <button id="privacy-settings-btn" style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">🔒</span> Politique de confidentialité
+      </button>
       <button id="signout-btn" style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
         <span style="font-size:18px">🚪</span> Se déconnecter
       </button>
