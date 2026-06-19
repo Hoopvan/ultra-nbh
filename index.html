@@ -95,36 +95,27 @@
   <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
     <div id="tuto-slides" style="flex:1;display:flex;overflow:hidden;position:relative">
 
-      <!-- Slide 1 — Welcome personnalisé -->
+      <!-- Slide 1 — Welcome -->
       <div class="tuto-slide active" id="tuto-1">
         <div style="font-size:72px;margin-bottom:16px">🏀</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;color:var(--white);line-height:1.05;margin-bottom:16px">
           Bienvenue<br><span style="color:var(--red)" id="tuto-name">dans la tribu !</span>
         </div>
-        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:24px">
-          Tu fais maintenant partie de la communauté NBH. Joue chaque jour et vis le basket autrement.
+        <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:20px">
+          Tu fais maintenant partie de la communauté NBH. Joue chaque jour, progresse et vis le basket autrement.
         </p>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
-          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;border:1px solid rgba(232,25,44,.25)">
-            <div style="font-size:24px">⚡</div>
-            <div style="font-size:10px;color:var(--white-muted);margin-top:5px;line-height:1.3">XP &<br>niveaux</div>
-          </div>
-          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;border:1px solid rgba(245,166,35,.25)">
-            <div style="font-size:24px">🐾</div>
-            <div style="font-size:10px;color:var(--white-muted);margin-top:5px;line-height:1.3">Hermines<br>& boutique</div>
-          </div>
-          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;border:1px solid rgba(74,158,255,.25)">
-            <div style="font-size:24px">👥</div>
-            <div style="font-size:10px;color:var(--white-muted);margin-top:5px;line-height:1.3">Classe-<br>ment fans</div>
-          </div>
-          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;border:1px solid rgba(245,166,35,.25)">
-            <div style="font-size:24px">🎁</div>
-            <div style="font-size:10px;color:var(--white-muted);margin-top:5px;line-height:1.3">Boîte<br>mystère</div>
+        <div style="background:linear-gradient(135deg,var(--navy) 0%,#0a1428 100%);border-radius:var(--radius-sm);padding:16px;border:1px solid var(--navy-bright)">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white);margin-bottom:10px">Ce qui t'attend :</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--white-muted)"><span style="font-size:20px">🎯</span> Des missions quotidiennes exclusives</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--white-muted)"><span style="font-size:20px">⚡</span> De l'XP, des niveaux, des récompenses réelles</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--white-muted)"><span style="font-size:20px">🎁</span> Une Boîte Mystère à débloquer chaque jour</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--white-muted)"><span style="font-size:20px">👥</span> Un classement au sein de la communauté</div>
           </div>
         </div>
       </div>
 
-      <!-- Slide 2 — Les missions -->
+      <!-- Slide 2 — Missions -->
       <div class="tuto-slide" id="tuto-2">
         <div style="font-size:72px;margin-bottom:16px">🎯</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:10px">
@@ -158,29 +149,119 @@
           <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid var(--black5)">
             <div style="font-size:22px">📷</div><div style="font-size:10px;color:var(--white-muted);margin-top:4px">Photo</div>
           </div>
-          <div style="background:var(--black3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid rgba(245,166,35,.4)">
-            <div style="font-size:22px">🎁</div><div style="font-size:10px;color:#f5a623;margin-top:4px">Mystère</div>
+          <div style="background:rgba(245,166,35,.1);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;border:1px solid rgba(245,166,35,.5)">
+            <div style="font-size:22px">🎁</div><div style="font-size:10px;color:#f5a623;margin-top:4px;font-weight:700">Mystère</div>
           </div>
         </div>
       </div>
 
-      <!-- Slide 3 — C'est parti -->
+      <!-- Slide 3 — Boîte Mystère -->
       <div class="tuto-slide" id="tuto-3">
-        <div style="font-size:72px;margin-bottom:16px">🏆</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:var(--white);line-height:1.05;margin-bottom:16px">
-          Tu es prêt à<br><span style="color:var(--red)">jouer !</span>
+        <div style="font-size:72px;margin-bottom:16px">🎁</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:10px">
+          La <span style="color:#f5a623">Boîte Mystère</span>
         </div>
         <p style="font-size:15px;color:var(--white-muted);line-height:1.7;margin-bottom:20px">
-          Complète tes missions chaque jour, monte de niveau et débloque des avantages exclusifs. Rejoins le classement des fans !
+          Le bonus secret qui récompense les fans les plus assidus.
         </p>
-        <div id="tuto-install-android" style="display:none;margin-bottom:12px">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+          <div style="display:flex;align-items:center;gap:12px;background:var(--black3);border-radius:var(--radius-sm);padding:12px 14px;border:1px solid var(--black5)">
+            <div style="font-size:26px;flex-shrink:0">✅</div>
+            <div style="font-size:14px;color:var(--white-muted);line-height:1.4"><strong style="color:var(--white)">Complète toutes tes missions</strong> du jour</div>
+          </div>
+          <div style="display:flex;justify-content:center;font-size:18px;color:var(--white-muted)">↓</div>
+          <div style="display:flex;align-items:center;gap:12px;background:var(--black3);border-radius:var(--radius-sm);padding:12px 14px;border:1px solid var(--black5)">
+            <div style="font-size:26px;flex-shrink:0">🎁</div>
+            <div style="font-size:14px;color:var(--white-muted);line-height:1.4"><strong style="color:var(--white)">La Boîte Mystère apparaît</strong> dans tes missions</div>
+          </div>
+          <div style="display:flex;justify-content:center;font-size:18px;color:var(--white-muted)">↓</div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(245,166,35,.1);border-radius:var(--radius-sm);padding:12px 14px;border:1px solid rgba(245,166,35,.4)">
+            <div style="font-size:26px;flex-shrink:0">🎊</div>
+            <div style="font-size:14px;color:var(--white-muted);line-height:1.4"><strong style="color:#f5a623">Gagne une surprise</strong> : réduction boutique, place de match, goodies NBH...</div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--white-muted);font-style:italic;text-align:center">La boîte n'apparaît pas tous les jours — ça dépend de nos partenaires. Sois là !</p>
+      </div>
+
+      <!-- Slide 4 — XP & Niveaux -->
+      <div class="tuto-slide" id="tuto-4">
+        <div style="font-size:72px;margin-bottom:16px">⚡</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:10px">
+          Monte de <span style="color:var(--red)">niveau</span>
+        </div>
+        <p style="font-size:14px;color:var(--white-muted);line-height:1.6;margin-bottom:16px">
+          Chaque mission te rapporte de l'XP. Monte de niveau pour débloquer des avantages réels.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:10px;background:var(--black3);border-radius:var(--radius-sm);padding:10px 14px;border:1px solid var(--black5)">
+            <span style="font-size:16px">🥉</span>
+            <div style="flex:1">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white)">Curieux</div>
+              <div style="font-size:11px;color:var(--white-muted)">0 – 100 XP</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--black3);border-radius:var(--radius-sm);padding:10px 14px;border:1px solid var(--black5)">
+            <span style="font-size:16px">🎽</span>
+            <div style="flex:1">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white)">Supporter</div>
+              <div style="font-size:11px;color:var(--white-muted)">100 XP · 🎁 Tirage au sort écharpe mensuel</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--black3);border-radius:var(--radius-sm);padding:10px 14px;border:1px solid var(--black5)">
+            <span style="font-size:16px">🎟️</span>
+            <div style="flex:1">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white)">Fidèle</div>
+              <div style="font-size:11px;color:var(--white-muted)">300 XP · 🎁 –20% billetterie</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--black3);border-radius:var(--radius-sm);padding:10px 14px;border:1px solid rgba(232,25,44,.3)">
+            <span style="font-size:16px">🛍️</span>
+            <div style="flex:1">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white)">Ultras</div>
+              <div style="font-size:11px;color:var(--white-muted)">600 XP · 🎁 –20% boutique</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(245,166,35,.1) 0%,rgba(232,25,44,.08) 100%);border-radius:var(--radius-sm);padding:10px 14px;border:1px solid rgba(245,166,35,.4)">
+            <span style="font-size:16px">👑</span>
+            <div style="flex:1">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:#f5a623">Légende</div>
+              <div style="font-size:11px;color:var(--white-muted)">1000 XP · 🎁 Poster dédicacé de l'équipe</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5 — Installer l'app -->
+      <div class="tuto-slide" id="tuto-5">
+        <div style="font-size:72px;margin-bottom:16px">📲</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:10px">
+          Installe <span style="color:var(--red)">l'app</span><br>sur ton téléphone
+        </div>
+        <p style="font-size:14px;color:var(--white-muted);line-height:1.6;margin-bottom:16px">
+          Pour ne jamais rater tes missions du jour et accéder à l'app en un tap depuis ton écran d'accueil.
+        </p>
+        <div id="tuto-install-android" style="display:none;margin-bottom:14px">
           <button id="tuto-install-btn" class="btn-red" style="width:100%">📲 INSTALLER L'APP</button>
         </div>
-        <div id="tuto-install-ios" style="display:none;background:var(--black3);border-radius:var(--radius-sm);padding:12px 16px;border:1px solid var(--black5);font-size:13px;color:var(--white-muted);line-height:1.6;margin-bottom:12px">
-          Sur iPhone : appuie sur <strong style="color:var(--white)">Partager</strong> dans Safari puis <strong style="color:var(--white)">"Sur l'écran d'accueil"</strong>.
+        <div id="tuto-install-ios" style="display:none;background:var(--black3);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--black5);margin-bottom:14px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white);margin-bottom:10px">Sur iPhone (Safari) :</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--white-muted)">
+              <div style="background:var(--red);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0">1</div>
+              Appuie sur le symbole <strong style="color:var(--white)">Partager</strong> <span style="font-size:16px">⬆️</span> en bas de l'écran
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--white-muted)">
+              <div style="background:var(--red);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0">2</div>
+              Fais défiler et appuie sur <strong style="color:var(--white)">"Sur l'écran d'accueil"</strong>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--white-muted)">
+              <div style="background:var(--red);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0">3</div>
+              Appuie sur <strong style="color:var(--white)">"Ajouter"</strong> en haut à droite
+            </div>
+          </div>
         </div>
-        <div style="background:linear-gradient(135deg,rgba(232,25,44,.12) 0%,rgba(245,166,35,.08) 100%);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid rgba(232,25,44,.2);font-size:13px;color:var(--white-muted);line-height:1.5">
-          💡 Tu retrouves l'installation et les paramètres depuis <strong style="color:var(--white)">Ton Perso → Paramètres</strong>.
+        <div style="background:var(--black3);border-radius:var(--radius-sm);padding:12px 14px;border:1px solid var(--black5);font-size:12px;color:var(--white-muted);line-height:1.5">
+          💡 Tu peux aussi l'installer plus tard depuis <strong style="color:var(--white)">Ton Perso → Paramètres</strong>.
         </div>
       </div>
 
@@ -192,6 +273,8 @@
         <div class="tuto-dot active" id="dot-1"></div>
         <div class="tuto-dot" id="dot-2"></div>
         <div class="tuto-dot" id="dot-3"></div>
+        <div class="tuto-dot" id="dot-4"></div>
+        <div class="tuto-dot" id="dot-5"></div>
       </div>
       <div style="display:flex;gap:10px;align-items:center">
         <button id="tuto-prev" style="display:none;background:transparent;color:var(--white);border:1px solid var(--white-mid);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;padding:14px 18px;cursor:pointer;white-space:nowrap">

@@ -1,7 +1,7 @@
 import { profile } from './state.js';
 
 let tutoStep = 1;
-const TUTO_STEPS = 3;
+const TUTO_STEPS = 5;
 
 export function initTuto() {
   tutoStep = 1;
