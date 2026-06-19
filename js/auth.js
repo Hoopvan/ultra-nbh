@@ -91,10 +91,16 @@ export async function signOut() {
 }
 
 export function confirmDeleteAccount() {
+  const input = document.getElementById('delete-confirm-input');
+  if (input) input.value = '';
+  const btn = document.getElementById('delete-account-confirm-btn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '.4'; btn.style.cursor = 'not-allowed'; }
   document.getElementById('delete-modal').classList.add('show');
 }
 
 export async function deleteAccount() {
+  const input = document.getElementById('delete-confirm-input');
+  if (!input || input.value.trim().toUpperCase() !== 'SUPPRIMER') return;
   try {
     await db.from('pouls_votes').delete().eq('user_id', currentUser.id).eq('org_id', CURRENT_ORG_ID);
     await db.from('users').delete().eq('id', currentUser.id);

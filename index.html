@@ -1076,7 +1076,11 @@
     <div style="font-size:48px;margin-bottom:12px">⚠️</div>
     <div class="modal-title" style="color:var(--red)">Supprimer mon compte</div>
     <div class="modal-desc">Ton profil, ton XP, ton avatar et tes données seront supprimés définitivement. Cette action est irréversible.</div>
-    <button id="delete-account-confirm-btn" style="background:var(--red);color:white;border:none;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:16px;cursor:pointer;width:100%;margin-bottom:10px">
+    <div style="margin:16px 0 12px">
+      <div style="font-size:12px;color:var(--white-muted);margin-bottom:8px">Tape <strong style="color:var(--white)">SUPPRIMER</strong> pour confirmer</div>
+      <input id="delete-confirm-input" type="text" placeholder="SUPPRIMER" autocomplete="off" style="width:100%;background:var(--black3);border:1.5px solid var(--black5);border-radius:var(--radius-sm);padding:12px 14px;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;outline:none">
+    </div>
+    <button id="delete-account-confirm-btn" disabled style="background:var(--red);color:white;border:none;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:16px;cursor:not-allowed;width:100%;margin-bottom:10px;opacity:.4">
       OUI, SUPPRIMER
     </button>
     <button id="delete-modal-cancel-btn" style="background:transparent;color:var(--white-muted);border:1px solid var(--black5);border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:14px;cursor:pointer;width:100%">

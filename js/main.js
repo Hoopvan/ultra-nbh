@@ -171,9 +171,19 @@ function wireEvents() {
   document.getElementById('signout-btn').addEventListener('click', signOut);
   document.getElementById('confirm-delete-btn').addEventListener('click', confirmDeleteAccount);
   document.getElementById('delete-account-confirm-btn').addEventListener('click', deleteAccount);
-  document.getElementById('delete-modal-cancel-btn').addEventListener('click', () =>
-    document.getElementById('delete-modal').classList.remove('show')
-  );
+  document.getElementById('delete-modal-cancel-btn').addEventListener('click', () => {
+    document.getElementById('delete-modal').classList.remove('show');
+    document.getElementById('delete-confirm-input').value = '';
+    const btn = document.getElementById('delete-account-confirm-btn');
+    btn.disabled = true; btn.style.opacity = '.4'; btn.style.cursor = 'not-allowed';
+  });
+  document.getElementById('delete-confirm-input').addEventListener('input', e => {
+    const ok = e.target.value.trim().toUpperCase() === 'SUPPRIMER';
+    const btn = document.getElementById('delete-account-confirm-btn');
+    btn.disabled = !ok;
+    btn.style.opacity = ok ? '1' : '.4';
+    btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+  });
 
   // Modals
   document.getElementById('unlock-modal-close-btn').addEventListener('click', closeModal);
