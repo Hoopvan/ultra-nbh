@@ -96,7 +96,7 @@ export async function submitTimeline() {
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, timeline_date: today });
     result = { correct: isCorrect, xp_gain: xpGain, correct_order: correctOrder };
   } else {
-    const { data, error } = await db.rpc('submit_timeline_answer', { p_order: tlSelection });
+    const { data, error } = await db.rpc('game_timeline', { p_order: tlSelection });
     if (error) { const isFast = error.message?.includes('TOO_FAST'); if (!isFast) showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, réponse non enregistrée.'); if (isFast || !error.message?.includes('ALREADY_PLAYED_TODAY')) tlAnswered = false; return; }
     setProfile(data.profile);
     result = data;

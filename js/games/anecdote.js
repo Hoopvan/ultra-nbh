@@ -49,7 +49,7 @@ export async function answerAnecdote(idx, correct, btn) {
     const today = getToday();
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, anecdote_date: today });
   } else {
-    const { data, error } = await db.rpc('submit_anecdote_answer', { p_answer_text: anecShuffledAnswers[idx]?.text });
+    const { data, error } = await db.rpc('game_anecdote', { p_answer_text: anecShuffledAnswers[idx]?.text });
     if (error) { if (!error.message?.includes('TOO_FAST')) showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, réponse non enregistrée.'); return; }
     setProfile(data.profile);
     xpGain = data.correct ? 30 : 15;

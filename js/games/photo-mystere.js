@@ -87,7 +87,7 @@ async function _submitPhotoMystere(chosen, stage, isCorrect, c) {
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, photo_mystere_date: today });
     result = { correct: isCorrect, xp_gain: xpGain, answer: c.answer };
   } else {
-    const { data, error } = await db.rpc('submit_photo_mystere', { p_answer: chosen, p_stage: stage });
+    const { data, error } = await db.rpc('game_photo_mystere', { p_answer: chosen, p_stage: stage });
     if (error) { const isFast = error.message?.includes('TOO_FAST'); if (!isFast) showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, réponse non enregistrée.'); if (isFast || !error.message?.includes('ALREADY_PLAYED_TODAY')) pmAnswered = false; return; }
     setProfile(data.profile);
     result = data;

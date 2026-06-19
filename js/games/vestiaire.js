@@ -52,7 +52,7 @@ export async function answerVestiaire(idx, correct) {
     const today = getToday();
     setProfile({ ...profile, xp: profile.xp + xpGain, coins: (profile.coins||0) + xpGain, interactions: (profile.interactions||0) + 1, vestiaire_date: today });
   } else {
-    const { data, error } = await db.rpc('submit_vestiaire_answer', { p_answer_index: idx });
+    const { data, error } = await db.rpc('game_vestiaire', { p_answer_index: idx });
     if (error) { if (!error.message?.includes('TOO_FAST')) showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, réponse non enregistrée.'); return; }
     setProfile(data.profile);
     xpGain = data.correct ? 30 : 15;
