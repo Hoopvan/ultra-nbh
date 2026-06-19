@@ -206,18 +206,22 @@ async function wireNotifBtn() {
     btn.style.opacity = '0.5';
     btn.disabled = true;
   };
-  const setUnavailable = () => {
-    btn.innerHTML = '<span style="font-size:18px">🔔</span> Notifications (compte requis)';
+  const setUnavailable = (msg) => {
+    btn.innerHTML = `<span style="font-size:18px">🔔</span> ${msg}`;
     btn.style.opacity = '0.4';
     btn.disabled = true;
   };
 
-  if (!pushSupported) { setUnavailable(); return; }
+  if (!pushSupported) {
+    const iosNoStandalone = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone && !window.matchMedia('(display-mode: standalone)').matches;
+    setUnavailable(iosNoStandalone ? 'Notifs disponibles via l\'app installée' : 'Notifications non disponibles');
+    return;
+  }
   if (Notification.permission === 'denied') { setBlocked(); return; }
   if (await isPushSubscribed()) setSubscribed(); else setUnsubscribed();
 
   btn.addEventListener('click', async () => {
-    if (demoMode) { setUnavailable(); return; }
+    if (demoMode) { setUnavailable('Notifications (mode démo)'); return; }
     btn.disabled = true;
     if (await isPushSubscribed()) {
       await unsubscribeFromPush();

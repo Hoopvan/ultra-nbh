@@ -18,7 +18,7 @@ export function initTuto() {
   }
   // Affiche les instructions iOS seulement sur iPhone et hors standalone
   const iosBlock = document.getElementById('tuto-install-ios');
-  if (iosBlock) iosBlock.style.display = (isIOS() && !isStandalone()) ? 'block' : 'none';
+  if (iosBlock) iosBlock.style.display = isIOS() ? 'block' : 'none';
   updateTutoStep();
 }
 
