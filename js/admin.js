@@ -163,7 +163,7 @@ async function uploadImage(fileInput, urlInputId) {
   const { error } = await db.storage.from('mission-images').upload(path, file, { cacheControl: '31536000', upsert: false });
 
   if (error) {
-    if (previewEl) previewEl.innerHTML = `<span style="font-size:12px;color:var(--red)">Erreur : ${error.message}</span>`;
+    if (previewEl) { previewEl.textContent = ''; const s = document.createElement('span'); s.style.cssText = 'font-size:12px;color:var(--red)'; s.textContent = 'Erreur upload'; previewEl.appendChild(s); }
     return;
   }
   const { data } = db.storage.from('mission-images').getPublicUrl(path);
@@ -368,7 +368,7 @@ async function saveMission(type) {
   const { error } = await db.from('games').insert({ org_id: CURRENT_ORG_ID, type, date, active, content });
 
   if (error) {
-    if (msgEl) msgEl.innerHTML = `<span style="color:var(--red)">Erreur : ${error.message}</span>`;
+    if (msgEl) { msgEl.textContent = ''; const s = document.createElement('span'); s.style.color = 'var(--red)'; s.textContent = 'Erreur enregistrement'; msgEl.appendChild(s); }
     return;
   }
   if (msgEl) msgEl.innerHTML = '<span style="color:#4caf50">✓ Mission enregistrée !</span>';

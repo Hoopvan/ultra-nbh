@@ -1,6 +1,7 @@
 import { db } from './config.js';
 import { currentUser, profile, demoMode, setProfile } from './state.js';
 import { updateUI } from './ui.js';
+import { escapeHtml } from './utils.js';
 
 const RARITY_WEIGHTS = { bronze: 10, silver: 4, gold: 1 };
 const RARITY_LABEL   = { bronze: 'BRONZE', silver: 'ARGENT', gold: 'OR' };
@@ -149,12 +150,12 @@ function showPackOverlay(drawn) {
 function buildCardFront(card) {
   return `
     <div style="position:relative;flex:1;overflow:hidden;min-height:0">
-      <img class="card-photo" src="${card.photo_url || ''}" alt="${card.player_name}" loading="lazy" onerror="this.style.display='none'">
+      <img class="card-photo" src="${escapeHtml(card.photo_url || '')}" alt="${escapeHtml(card.player_name)}" loading="lazy" onerror="this.style.display='none'">
       <div class="card-rarity-badge">${RARITY_LABEL[card.rarity] || 'BRONZE'}</div>
     </div>
     <div class="card-info">
-      <div class="card-name">${card.player_name}</div>
-      ${card.position ? `<div class="card-pos">${card.position}</div>` : ''}
+      <div class="card-name">${escapeHtml(card.player_name)}</div>
+      ${card.position ? `<div class="card-pos">${escapeHtml(card.position)}</div>` : ''}
     </div>
   `;
 }

@@ -1,6 +1,6 @@
 import { db } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
-import { showNotif } from '../utils.js';
+import { showNotif, escapeHtml } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
 
 let anecAnswered = false;
@@ -11,12 +11,12 @@ export function initAnecdote() {
   const c = gamesData.anecdote?.content;
   if (!c) { console.warn('Pas de jeu Anecdote actif'); return; }
   const subj = document.getElementById('anec-subject'); if (subj) subj.textContent = c.subject || 'Le Club';
-  const q = document.getElementById('anec-question'); if (q) q.innerHTML = c.question;
+  const q = document.getElementById('anec-question'); if (q) q.textContent = c.question;
   const list = document.getElementById('anec-answers'); if (!list) return;
   anecShuffledAnswers = [...c.answers].sort(() => Math.random() - 0.5);
   list.innerHTML = anecShuffledAnswers.map((a,i) => `
     <button class="answer-btn" id="anec-${i}" data-idx="${i}" data-correct="${a.correct}">
-      <span class="answer-letter">${['A','B','C'][i]}</span>${a.text}
+      <span class="answer-letter">${['A','B','C'][i]}</span>${escapeHtml(a.text)}
     </button>`).join('');
   list.onclick = e => {
     const btn = e.target.closest('[data-idx]');

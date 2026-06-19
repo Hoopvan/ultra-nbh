@@ -1,3 +1,19 @@
+export function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+export function safeImg(src, style = '') {
+  const img = document.createElement('img');
+  img.src = src;
+  if (style) img.setAttribute('style', style);
+  return img;
+}
+
 export function showNotif(txt) {
   const el = document.getElementById('notif');
   document.getElementById('notif-txt').textContent = txt;

@@ -41,6 +41,6 @@ export async function loadGames() {
     const num = document.getElementById('v-num'); if (num) num.textContent = c.num;
     const name = document.getElementById('v-name'); if (name) name.textContent = c.name;
     const pos = document.getElementById('v-pos'); if (pos) pos.textContent = c.pos;
-    const q = document.getElementById('v-question-text'); if (q) q.innerHTML = c.question;
+    const q = document.getElementById('v-question-text'); if (q) q.textContent = c.question;
   }
 }

@@ -54,8 +54,14 @@ export async function loadOrgConfig() {
 
   // Logo : si logo_url fourni, remplace les logos texte et l'image mascotte
   if (cfg.logo_url) {
-    const imgHtml = `<img src="${cfg.logo_url}" alt="${appName}" style="max-height:56px;max-width:180px;object-fit:contain">`;
-    document.querySelectorAll('.loading-logo, .ob-logo').forEach(el => { el.innerHTML = imgHtml; });
+    document.querySelectorAll('.loading-logo, .ob-logo').forEach(el => {
+      el.textContent = '';
+      const img = document.createElement('img');
+      img.src = cfg.logo_url;
+      img.alt = appName;
+      img.setAttribute('style', 'max-height:56px;max-width:180px;object-fit:contain');
+      el.appendChild(img);
+    });
     const mascot = document.querySelector('.ob-mascot img');
     if (mascot) mascot.src = cfg.logo_url;
   }
@@ -73,7 +79,7 @@ export async function loadOrgConfig() {
   // Remplacement des références texte au nom de l'app
   ['.name-sub', '#tuto-5 p'].forEach(sel => {
     const el = document.querySelector(sel);
-    if (el) el.innerHTML = el.innerHTML.replace(/Hoop NBH/g, appName);
+    if (el) el.textContent = el.textContent.replace(/Hoop NBH/g, appName);
   });
 }
 
