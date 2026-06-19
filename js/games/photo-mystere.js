@@ -88,7 +88,7 @@ async function _submitPhotoMystere(chosen, stage, isCorrect, c) {
     result = { correct: isCorrect, xp_gain: xpGain, answer: c.answer };
   } else {
     const { data, error } = await db.rpc('submit_photo_mystere', { p_answer: chosen, p_stage: stage });
-    if (error) { showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, réponse non enregistrée.'); if (!error.message?.includes('ALREADY_PLAYED_TODAY')) pmAnswered = false; return; }
+    if (error) { const isFast = error.message?.includes('TOO_FAST'); if (!isFast) showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, réponse non enregistrée.'); if (isFast || !error.message?.includes('ALREADY_PLAYED_TODAY')) pmAnswered = false; return; }
     setProfile(data.profile);
     result = data;
   }

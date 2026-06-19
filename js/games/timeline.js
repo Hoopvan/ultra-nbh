@@ -97,7 +97,7 @@ export async function submitTimeline() {
     result = { correct: isCorrect, xp_gain: xpGain, correct_order: correctOrder };
   } else {
     const { data, error } = await db.rpc('submit_timeline_answer', { p_order: tlSelection });
-    if (error) { showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, réponse non enregistrée.'); if (!error.message?.includes('ALREADY_PLAYED_TODAY')) tlAnswered = false; return; }
+    if (error) { const isFast = error.message?.includes('TOO_FAST'); if (!isFast) showNotif(error.message?.includes('ALREADY_PLAYED_TODAY') ? 'Tu as déjà joué aujourd\'hui !' : 'Oups, réponse non enregistrée.'); if (isFast || !error.message?.includes('ALREADY_PLAYED_TODAY')) tlAnswered = false; return; }
     setProfile(data.profile);
     result = data;
   }

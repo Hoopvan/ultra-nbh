@@ -54,6 +54,8 @@ export async function checkStreak() {
 }
 
 export function startDemoMode() {
+  const h = window.location.hostname;
+  if (h !== 'localhost' && h !== '127.0.0.1') return;
   setCurrentUser({ id: 'demo-user-local' });
   setProfile({
     id: 'demo-user-local',
