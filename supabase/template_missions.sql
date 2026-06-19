@@ -96,6 +96,165 @@ INSERT INTO public.games (type, date, active, content) VALUES (
   }'::jsonb
 );
 
+-- ───── Propositions "Sel ou Poivre" — Nantes ou NBH ? ──────────────────────────
+-- Principe (Burger Quiz, vrai esprit) : un duo fixe ("Nantes ou NBH ?"), puis une
+-- rafale de questions COURTES, à la fois sérieuses et absurdes, où la réponse
+-- doit pouvoir surprendre — y compris en étant évidente une fois sur deux, comme
+-- dans l'émission (cf. "Qui remue la queue ? Un pitbull"). Pas de cours d'histoire
+-- dans la question : une amorce punchy, et l'explication fait le sel (et le poivre).
+-- Faits réels marqués [VÉRIFIÉ]. Le reste est de l''humour assumé, pas une donnée
+-- à vérifier — comme "Macron ou macaron, qui est sucré ?" dans l''original.
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-20', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui a l''hermine comme symbole ?",
+    "answer":      "nbh",
+    "explication": "Le club porte le nom \"Hermine\" depuis 1907. La ville n''a pas de surnom animalier officiel ! [VÉRIFIÉ]"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-21', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui a la personnalité la plus connue dans ses rangs ?",
+    "answer":      "nantes",
+    "explication": "Jules Verne, natif de la ville en 1828, dépasse large en notoriété ! [VÉRIFIÉ]"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-22', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui peut faire trembler les gradins un soir de match ?",
+    "answer":      "nbh",
+    "explication": "4 300 supporters qui hurlent à la Trocardière, ça secoue ! 🔥"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-23', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui a un château fort ?",
+    "answer":      "nantes",
+    "explication": "Le Château des ducs de Bretagne, oui. La Trocardière, malgré le bruit qu''on y fait, reste une salle de sport ! [VÉRIFIÉ]"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-24', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui peut techniquement dribbler ?",
+    "answer":      "nbh",
+    "explication": "Les joueurs, oui. La ville, on ne lui a jamais vu un crossover. 🏀"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-25', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui sort plutôt le vendredi soir ?",
+    "answer":      "les_deux",
+    "explication": "Une victoire à fêter, une terrasse en centre-ville... les deux savent faire la fête ! 🎉"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-26', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui a déjà fait pleurer ses fans (de joie ou de rage) ?",
+    "answer":      "les_deux",
+    "explication": "Un dernier panier raté, une finale perdue... les émotions fortes, ça connaît des deux côtés ! 😭"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-27', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui existe depuis plus longtemps que la tour Eiffel ?",
+    "answer":      "nantes",
+    "explication": "La tour Eiffel date de 1889, NBH de 1891 (deux ans plus jeune !), Nantes remonte à l''Antiquité. [VÉRIFIÉ]"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-28', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui a un éléphant géant qui se balade tranquillement ?",
+    "answer":      "nantes",
+    "explication": "Le Grand Éléphant des Machines de l''île, en service depuis 2007. NBH n''a toujours pas de mascotte pachyderme ! [VÉRIFIÉ]"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-29', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui peut prétendre jouer à domicile... hors de Nantes ?",
+    "answer":      "nbh",
+    "explication": "La Trocardière est à Rezé, pas dans Nantes intra-muros. Paradoxal mais vrai ! [VÉRIFIÉ]"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-06-30', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui a déjà grimpé trois divisions en quatorze ans ?",
+    "answer":      "nbh",
+    "explication": "Nationale 3 (1981) → Nationale 2 (1992) → Pro B (1995). Une ville ne grimpe pas de division ! [VÉRIFIÉ]"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-07-01', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui te donne envie de crier \"Allez !\" sans même y réfléchir ?",
+    "answer":      "les_deux",
+    "explication": "Devant un match ou en parlant de sa ville, le réflexe est le même chez un vrai supporter ! 📣"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-07-02', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui a changé de nom dans son histoire ?",
+    "answer":      "les_deux",
+    "explication": "NBH s''appelait \"Les Enfants nantais de Sainte-Anne\" avant 1907. Nantes portait le nom antique de Condevicnum ! [VÉRIFIÉ]"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-07-03', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui peut se vanter d''avoir un nouveau joueur star cette saison ?",
+    "answer":      "nbh",
+    "explication": "[À CONFIRMER PAR LE CLUB — nom de la recrue phare de la saison, pour une vraie punchline maison]"
+  }'::jsonb
+);
+
+INSERT INTO public.games (type, date, active, content) VALUES (
+  'nantes_nbh', '2026-07-04', false,
+  '{
+    "context":     "Nantes ou NBH ?",
+    "question":    "Qui a un surnom donné par ses fans ?",
+    "answer":      "nbh",
+    "explication": "[À CONFIRMER PAR LE CLUB — surnom du club ou du kop, s''il existe, sinon retirer cette question]"
+  }'::jsonb
+);
+
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 5. AVANT / APRÈS
