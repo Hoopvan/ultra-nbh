@@ -43,7 +43,7 @@ export async function openBoosterPack() {
   if (!demoMode && currentUser) {
     const { data, error } = await db.rpc('spend_coins', { p_amount: PACK_COST });
     if (error) {
-      const msg = error.message?.includes('NOT_ENOUGH_COINS') ? `Il te faut ${PACK_COST} 🐾 Hermines !` : 'Erreur : ' + error.message;
+      const msg = error.message?.includes('NOT_ENOUGH_COINS') ? `Il te faut ${PACK_COST} 🐾 Hermines !` : 'Oups, impossible d\'ouvrir le pack.';
       showNotifCards(msg); return;
     }
     if (data) setProfile(data);
@@ -68,12 +68,12 @@ export async function openBoosterPack() {
           .eq('user_id', currentUser.id)
           .eq('card_id', card.id);
         if (!error) userCardsMap[card.id] = { ...existing, count: newCount };
-        else showNotifCards('Erreur update : ' + error.message);
+        else { console.error('user_cards update error:', error); showNotifCards('Oups, erreur lors de l\'enregistrement.'); }
       } else {
         const { error } = await db.from('user_cards')
           .insert({ user_id: currentUser.id, card_id: card.id, count: 1 });
         if (!error) userCardsMap[card.id] = { card_id: card.id, count: 1 };
-        else showNotifCards('Erreur insert : ' + error.message);
+        else { console.error('user_cards insert error:', error); showNotifCards('Oups, erreur lors de l\'enregistrement.'); }
       }
     }
   } else {

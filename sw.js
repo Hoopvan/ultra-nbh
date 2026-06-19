@@ -55,9 +55,19 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     fetch(e.request)
       .then(res => {
-        // Met à jour le cache avec la réponse fraîche
-        const clone = res.clone();
-        caches.open(CACHE).then(cache => cache.put(e.request, clone));
+        // Ne cache que les réponses valides avec un content-type attendu
+        const ct = res.headers.get('content-type') || '';
+        const cacheable = res.ok && (
+          ct.includes('text/') ||
+          ct.includes('application/javascript') ||
+          ct.includes('application/json') ||
+          ct.includes('image/') ||
+          ct.includes('font/')
+        );
+        if (cacheable) {
+          const clone = res.clone();
+          caches.open(CACHE).then(cache => cache.put(e.request, clone));
+        }
         return res;
       })
       .catch(() => caches.match(e.request))

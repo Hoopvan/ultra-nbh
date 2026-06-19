@@ -453,7 +453,7 @@ async function saveCard() {
 
   saveBtn.disabled = false;
   saveBtn.textContent = 'ENREGISTRER LA CARTE';
-  if (error) { alert('Erreur : ' + error.message); return; }
+  if (error) { console.error('saveCard error:', error); alert('Erreur lors de l\'enregistrement de la carte.'); return; }
 
   // Reset form
   document.getElementById('card-name-input').value = '';
@@ -525,6 +525,6 @@ async function deleteCard(id) {
   const { error: ucErr } = await db.from('user_cards').delete().eq('card_id', id);
   if (ucErr) { alert('Erreur nettoyage collections : ' + ucErr.message); return; }
   const { error } = await db.from('cards').delete().eq('id', id);
-  if (error) { alert('Erreur suppression carte : ' + error.message); return; }
+  if (error) { console.error('deleteCard error:', error); alert('Erreur lors de la suppression.'); return; }
   await loadCardList();
 }

@@ -1,7 +1,7 @@
 import { db } from './config.js';
 import { demoMode, currentUser } from './state.js';
 
-const VAPID_PUBLIC_KEY = 'BIHp75U4mGIkrrA18sYGwIFQTxJUiBg_Y7uJsHC9lWZlI8ERYQRz3oqwcwLlLQtBtqoAF_NYGbZ_k1mBIVovIOM';
+const VAPID_PUBLIC_KEY = '{{VAPID_PUBLIC_KEY}}';
 
 function urlBase64ToUint8Array(base64) {
   const pad = '='.repeat((4 - base64.length % 4) % 4);
