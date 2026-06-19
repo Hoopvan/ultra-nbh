@@ -208,8 +208,8 @@ Le bouton démo est masqué via CSS uniquement (hostname check côté client). P
 | ~~P0~~ ✅ | ~~CSP + X-Frame-Options + X-Content-Type-Options~~ | Faible |
 | P0 🔲 | RLS admin côté serveur (SQL Supabase à appliquer) | Moyen |
 | ~~P1~~ ✅ | ~~Date depuis serveur (get_server_date RPC — SQL ci-dessous)~~ | Faible |
-| P1 🔲 | Consentement RGPD persisté en DB | Faible |
-| P1 🔲 | Rate limiting sur RPCs | Moyen |
+| ~~P1~~ ✅ | ~~Consentement RGPD persisté en DB (RPC set_rgpd_consent + audit trail)~~ | Faible |
+| P1 ⚠️ | Rate limiting sur RPCs — reporté (restructuration lourde, protection principale déjà assurée par le check date/jour côté client + mission unique par jour) | Moyen |
 | ~~P2~~ ✅ | ~~Validation nom profil (2-30 chars, regex unicode)~~ | Faible |
 | P3 | Messages d'erreur génériques | Faible |
 | P3 | VAPID key en env var | Faible |

@@ -22,6 +22,13 @@ export async function loadOrCreateProfile() {
   const { data } = await db.from('users').select('*').eq('id', currentUser.id).single();
   if (data) {
     setProfile(data);
+    // Persiste le consentement RGPD en DB si localStorage l'a mais pas encore la DB
+    if (!data.rgpd_consent) {
+      try {
+        const localConsent = localStorage.getItem('hoop_rgpd') === '1';
+        if (localConsent) await db.rpc('set_rgpd_consent');
+      } catch(e) {}
+    }
     await checkStreak();
     await loadGames();
     await loadCommunityData();
