@@ -289,8 +289,8 @@
     </div>
 
     <!-- Indicateurs + navigation -->
-    <div style="padding:20px 28px max(40px, calc(20px + env(safe-area-inset-bottom, 0px)));flex-shrink:0">
-      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px" id="tuto-dots">
+    <div style="padding:16px 20px calc(12px + env(safe-area-inset-bottom, 0px));flex-shrink:0">
+      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:16px" id="tuto-dots">
         <div class="tuto-dot active" id="dot-1"></div>
         <div class="tuto-dot" id="dot-2"></div>
         <div class="tuto-dot" id="dot-3"></div>
@@ -687,7 +687,7 @@
     <button id="admin-tab-missions" onclick="window._adminSwitchTab('missions')" style="flex:1;background:transparent;border:none;border-bottom:2px solid var(--red);padding:12px;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer">MISSIONS</button>
     <button id="admin-tab-cards" onclick="window._adminSwitchTab('cards')" style="flex:1;background:transparent;border:none;border-bottom:2px solid transparent;padding:12px;color:var(--white-muted);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer">CARTES</button>
   </div>
-  <div class="screen-scroll">
+  <div class="screen-scroll" style="padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px))">
     <!-- PANEL MISSIONS -->
     <div id="admin-panel-missions" style="padding:0 16px 20px">
       <div class="section-label">Missions récentes & à venir</div>
