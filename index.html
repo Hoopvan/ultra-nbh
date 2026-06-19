@@ -734,8 +734,8 @@
         </div>
         <div class="admin-field">
           <label>Photo</label>
-          <button id="card-photo-btn" class="admin-img-btn">📷 Choisir une photo</button>
-          <input id="card-photo-file" type="file" accept="image/*" style="display:none">
+          <input id="card-photo-file" type="file" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;overflow:hidden">
+          <label for="card-photo-file" id="card-photo-btn" class="admin-img-btn">📷 Choisir une photo</label>
           <img id="card-photo-preview" style="display:none;width:80px;height:110px;object-fit:cover;border-radius:8px;margin-top:8px;border:1px solid var(--black5)">
         </div>
         <button id="card-save-btn" class="btn-red" style="width:100%;margin-top:4px">ENREGISTRER LA CARTE</button>

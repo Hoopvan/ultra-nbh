@@ -175,8 +175,8 @@ async function uploadImage(fileInput, urlInputId) {
 function imageField(id, label, optional = false) {
   return `<div class="admin-field">
     <label>${label}${optional ? ' <span style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span>' : ''}</label>
-    <input type="file" accept="image/*" id="af-file-${id}" style="display:none" onchange="window._adminUploadImage(this,'af-${id}')">
-    <button type="button" class="admin-img-btn" onclick="document.getElementById('af-file-${id}').click()">📷 Choisir depuis la galerie</button>
+    <input type="file" accept="image/*" id="af-file-${id}" style="position:absolute;width:0;height:0;opacity:0;overflow:hidden" onchange="window._adminUploadImage(this,'af-${id}')">
+    <label for="af-file-${id}" class="admin-img-btn">📷 Choisir depuis la galerie</label>
     <div id="af-${id}-preview"></div>
     <input type="url" id="af-${id}" placeholder="ou colle une URL directement" style="margin-top:6px">
   </div>`;
@@ -408,7 +408,6 @@ function wireCardForm() {
   const saveBtn = document.getElementById('card-save-btn');
   if (!photoBtn) return;
 
-  photoBtn.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', async () => {
     const file = fileInput.files[0];
     if (!file) return;
