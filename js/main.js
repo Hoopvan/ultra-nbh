@@ -8,7 +8,7 @@ import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccoun
 import { subscribeToPush, unsubscribeFromPush, isPushSubscribed } from './push.js';
 import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-create.js';
 import { openAvatarEdit, setEditParam, saveAvatarEdit, toggleWorn, buyItem } from './avatar.js';
-import { nextTuto, prevTuto, skipTuto } from './tuto.js';
+import { initTuto, nextTuto, prevTuto, skipTuto } from './tuto.js';
 import { openGame, closeGame } from './games/screens.js';
 import { initAdmin } from './admin.js';
 import { submitTimeline } from './games/timeline.js';
@@ -43,6 +43,11 @@ function wireEvents() {
   // Navigation politique de confidentialité
   document.getElementById('privacy-link-ob').addEventListener('click', () => showScreen('privacy'));
   document.getElementById('privacy-settings-btn').addEventListener('click', () => showScreen('privacy'));
+  document.getElementById('replay-tuto-btn').addEventListener('click', () => {
+    try { localStorage.removeItem('hoop_tuto_done'); } catch(e) {}
+    showScreen('tuto');
+    initTuto();
+  });
   document.getElementById('privacy-back-btn').addEventListener('click', () => {
     if (currentUser) showTab('avatar'); else showScreen('onboarding');
   });
