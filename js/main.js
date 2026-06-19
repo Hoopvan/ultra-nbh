@@ -42,6 +42,15 @@ function wireEvents() {
 
   // Navigation politique de confidentialité
   document.getElementById('privacy-link-ob').addEventListener('click', () => showScreen('privacy'));
+
+  // Accordéon installation
+  document.getElementById('install-expand-btn').addEventListener('click', () => {
+    const panel = document.getElementById('install-instructions');
+    const arrow = document.getElementById('install-expand-arrow');
+    const open = panel.style.display !== 'none';
+    panel.style.display = open ? 'none' : 'block';
+    if (arrow) arrow.textContent = open ? '▼' : '▲';
+  });
   document.getElementById('privacy-settings-btn').addEventListener('click', () => showScreen('privacy'));
   document.getElementById('replay-tuto-btn').addEventListener('click', () => {
     try { localStorage.removeItem('hoop_tuto_done'); } catch(e) {}

@@ -614,13 +614,32 @@
         <span style="font-size:18px">🔔</span> Activer les notifications
       </button>
       <div id="notif-install-hint" style="display:none;background:rgba(232,25,44,.07);border:1px solid rgba(232,25,44,.2);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;color:var(--white-muted);line-height:1.5">
-        📲 Les notifications nécessitent d'<strong style="color:var(--white)">installer l'app sur ton écran d'accueil</strong>. Va dans <strong style="color:var(--white)">Paramètres → Revoir le tutoriel</strong> pour voir comment faire.
+        📲 Les notifications nécessitent d'<strong style="color:var(--white)">installer l'app sur ton écran d'accueil</strong>. Consulte <strong style="color:var(--white)">"Installer l'app"</strong> ci-dessous pour voir comment faire.
       </div>
-      <button id="install-btn" style="display:none;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:none;align-items:center;gap:10px">
-        <span style="font-size:18px">📲</span> Installer l'app
+      <button id="install-expand-btn" style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;width:100%">
+        <span style="font-size:18px">📲</span> <span style="flex:1">Installer l'app sur l'écran d'accueil</span><span id="install-expand-arrow">▼</span>
       </button>
-      <div id="install-ios-hint" style="display:none;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white-muted);font-family:'Barlow',sans-serif;font-size:13px;line-height:1.6">
-        📲 Pour installer : appuie sur <strong style="color:var(--white)">Partager</strong> dans Safari puis <strong style="color:var(--white)">"Sur l'écran d'accueil"</strong>.
+      <div id="install-instructions" style="display:none;background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;margin-top:-4px">
+        <div id="install-btn" style="display:none;margin-bottom:12px">
+          <button onclick="document.getElementById('install-btn').style.display='none'" class="btn-red" style="width:100%;font-size:15px;padding:12px">📲 INSTALLER (Android)</button>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:8px">📱 Sur iPhone / iPad</div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">1</div>Appuie sur <strong style="color:var(--white)">Partager ⬆️</strong> en bas du navigateur</div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">2</div>Appuie sur <strong style="color:var(--white)">"Voir plus"</strong></div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">3</div><strong style="color:var(--white)">"Ajouter à l'écran d'accueil"</strong></div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">4</div><strong style="color:var(--white)">"Ajouter"</strong> ✅</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:8px">🤖 Sur Android (Chrome)</div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">1</div>Appuie sur <strong style="color:var(--white)">⋮</strong> en haut à droite</div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">2</div><strong style="color:var(--white)">"Ajouter à l'écran d'accueil"</strong></div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">3</div><strong style="color:var(--white)">"Installer"</strong> ✅</div>
+          </div>
+        </div>
       </div>
       <button id="replay-tuto-btn" style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:14px 16px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
         <span style="font-size:18px">🎓</span> Revoir le tutoriel
