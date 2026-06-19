@@ -520,7 +520,11 @@ async function toggleCardActive(id, active) {
 }
 
 async function deleteCard(id) {
-  if (!confirm('Supprimer cette carte ?')) return;
-  await db.from('cards').delete().eq('id', id);
+  if (!confirm('Supprimer cette carte ? Les collections des fans seront aussi nettoyées.')) return;
+  // Supprimer d'abord les lignes user_cards (FK constraint)
+  const { error: ucErr } = await db.from('user_cards').delete().eq('card_id', id);
+  if (ucErr) { alert('Erreur nettoyage collections : ' + ucErr.message); return; }
+  const { error } = await db.from('cards').delete().eq('id', id);
+  if (error) { alert('Erreur suppression carte : ' + error.message); return; }
   await loadCardList();
 }
