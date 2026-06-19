@@ -1,10 +1,12 @@
 import { profile } from './state.js';
 
 let tutoStep = 1;
+let tutoIsReplay = false;
 const TUTO_STEPS = 5;
 
-export function initTuto() {
+export function initTuto(replay = false) {
   tutoStep = 1;
+  tutoIsReplay = replay;
   const nameEl = document.getElementById('tuto-name');
   if (nameEl && profile?.name) {
     nameEl.textContent = profile.name.split(' ')[0] + ' !';
@@ -23,7 +25,7 @@ export function prevTuto() {
 
 export function skipTuto() {
   try { localStorage.setItem('hoop_tuto_done', '1'); } catch(e) {}
-  document.dispatchEvent(new Event('tuto:done'));
+  document.dispatchEvent(new CustomEvent('tuto:done', { detail: { replay: tutoIsReplay } }));
 }
 
 function updateTutoStep() {

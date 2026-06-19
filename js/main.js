@@ -55,7 +55,7 @@ function wireEvents() {
   document.getElementById('replay-tuto-btn').addEventListener('click', () => {
     try { localStorage.removeItem('hoop_tuto_done'); } catch(e) {}
     showScreen('tuto');
-    initTuto();
+    initTuto(true);
   });
   document.getElementById('privacy-back-btn').addEventListener('click', () => {
     if (currentUser) showTab('avatar'); else showScreen('onboarding');

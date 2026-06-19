@@ -45,9 +45,11 @@ export function showMain() {
 document.addEventListener('game:closed', () => showTab('missions'));
 
 // Fin du tuto → missions + auto-ouvre la première mission disponible
-document.addEventListener('tuto:done', () => {
+document.addEventListener('tuto:done', (e) => {
   showTab('missions');
-  const ORDER = ['pouls', 'vestiaire', 'anecdote', 'nantes_nbh', 'avant_apres', 'pronostic', 'timeline', 'photo_mystere'];
-  const first = ORDER.find(t => gamesData[t] !== null);
-  if (first) setTimeout(() => openGame(first), 500);
+  if (!e.detail?.replay) {
+    const ORDER = ['pouls', 'vestiaire', 'anecdote', 'nantes_nbh', 'avant_apres', 'pronostic', 'timeline', 'photo_mystere'];
+    const first = ORDER.find(t => gamesData[t] !== null);
+    if (first) setTimeout(() => openGame(first), 500);
+  }
 });
