@@ -1,6 +1,6 @@
 import { db } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
-import { showNotif } from '../utils.js';
+import { showNotif, escapeHtml } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
 import { getToday } from '../date.js';
 
@@ -16,15 +16,15 @@ export function initNantesNBH() {
   const btns = document.getElementById('nnb-buttons');
   if (!btns) return;
   btns.innerHTML = `
-    <button data-choice="nantes" data-answer="${c.answer}" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
+    <button data-choice="nantes" data-answer="${escapeHtml(c.answer)}" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
       <span style="font-size:28px">🏙️</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)">Nantes</span>
     </button>
-    <button data-choice="nbh" data-answer="${c.answer}" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
+    <button data-choice="nbh" data-answer="${escapeHtml(c.answer)}" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
       <span style="font-size:28px">🏀</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)">NBH</span>
     </button>
-    <button data-choice="les_deux" data-answer="${c.answer}" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
+    <button data-choice="les_deux" data-answer="${escapeHtml(c.answer)}" style="background:var(--black2);border:2px solid var(--black4);border-radius:var(--radius);padding:18px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px">
       <span style="font-size:28px">❤️</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white)">Les Deux</span>
     </button>`;

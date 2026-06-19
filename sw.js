@@ -1,4 +1,4 @@
-const CACHE = 'hoop-nbh-v33';
+const CACHE = 'hoop-nbh-v34';
 const ASSETS = [
   '/',
   '/index.html',

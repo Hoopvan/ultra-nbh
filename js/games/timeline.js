@@ -1,6 +1,6 @@
 import { db } from '../config.js';
 import { profile, gamesData, demoMode, setProfile } from '../state.js';
-import { showNotif } from '../utils.js';
+import { showNotif, escapeHtml } from '../utils.js';
 import { getLevel, updateUI } from '../ui.js';
 import { getToday } from '../date.js';
 
@@ -30,7 +30,7 @@ export function initTimeline() {
         font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--white-muted)">
         ?
       </div>
-      <div style="flex:1;font-size:14px;color:var(--white);line-height:1.4">${e.text}</div>
+      <div style="flex:1;font-size:14px;color:var(--white);line-height:1.4">${escapeHtml(e.text)}</div>
     </div>`).join('');
 
   list.onclick = e => {
@@ -127,12 +127,12 @@ function _showTimelineResult(result, c) {
         const ok       = userRank === i;
         return `<div style="display:flex;align-items:center;gap:10px;background:var(--black3);border-radius:var(--radius-sm);padding:10px 14px;border:1px solid ${ok ? '#1a9e5e' : 'var(--black4)'}">
           <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:${ok ? '#1a9e5e' : 'var(--red)'}">${i+1}</span>
-          <span style="font-size:13px;color:var(--white);flex:1">${e.text || e}</span>
-          <span style="font-size:11px;color:var(--white-muted)">${e.year || ''}</span>
+          <span style="font-size:13px;color:var(--white);flex:1">${escapeHtml(e.text || String(e))}</span>
+          <span style="font-size:11px;color:var(--white-muted)">${escapeHtml(String(e.year || ''))}</span>
         </div>`;
       }).join('')}
     </div>
-    ${c.explication ? `<div style="background:var(--black3);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--white-muted);line-height:1.6;margin-bottom:16px">${c.explication}</div>` : ''}`;
+    ${c.explication ? `<div style="background:var(--black3);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--white-muted);line-height:1.6;margin-bottom:16px">${escapeHtml(c.explication)}</div>` : ''}`;
 
   resultEl.style.display = 'block';
   document.getElementById('tl-submit').style.display  = 'none';
