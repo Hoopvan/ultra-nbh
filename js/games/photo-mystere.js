@@ -24,7 +24,6 @@ export function initPhotoMystere() {
   if (q) q.textContent = c.question || 'Qui est-ce ?';
 
   const img = document.getElementById('pm-img');
-  const loading = document.getElementById('pm-loading');
   if (img) {
     img.style.opacity = '0';
     img.style.filter = BLUR_STAGES[0];

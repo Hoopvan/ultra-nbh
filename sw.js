@@ -1,4 +1,4 @@
-const CACHE = 'hoop-nbh-v40';
+const CACHE = 'hoop-nbh-v41';
 const ASSETS = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
   '/logo-nbh.png',
+  '/js/supabase.min.js',
   '/js/main.js',
   '/js/config.js',
   '/js/state.js',
@@ -73,7 +74,6 @@ self.addEventListener('fetch', e => {
   // Laisser passer les requêtes externes sans interception
   const url = e.request.url;
   if (url.includes('supabase.co'))        return;
-  if (url.includes('jsdelivr.net'))       return;
   if (url.includes('dicebear.com'))       return;
   if (url.includes('fonts.googleapis.com')) return;
   if (url.includes('fonts.gstatic.com'))  return;
