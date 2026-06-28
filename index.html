@@ -842,7 +842,7 @@
     <div style="font-size:12px;color:var(--white-muted);margin-bottom:16px">Glisse le curseur pour révéler</div>
 
     <!-- Slider de révélation -->
-    <div id="aa-slider-wrap" style="position:relative;border-radius:var(--radius);overflow:hidden;height:260px;background:var(--black3);margin-bottom:16px;user-select:none">
+    <div id="aa-slider-wrap" style="position:relative;border-radius:var(--radius);overflow:hidden;height:260px;background:var(--black3);margin-bottom:16px;user-select:none;-webkit-user-select:none">
       <!-- Image APRÈS (fond) -->
       <img id="aa-img-apres" src="" alt="Après" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
       <!-- Image AVANT (masquée par clip) -->
@@ -857,7 +857,7 @@
       <div style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);border-radius:6px;padding:4px 10px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:white" id="aa-label-avant">Avant</div>
       <div style="position:absolute;top:10px;right:10px;background:rgba(232,25,44,.7);border-radius:6px;padding:4px 10px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:white" id="aa-label-apres">Après</div>
       <!-- Zone de touch invisible -->
-      <div id="aa-touch" style="position:absolute;inset:0;cursor:ew-resize"></div>
+      <div id="aa-touch" style="position:absolute;inset:0;cursor:ew-resize;touch-action:none"></div>
     </div>
 
     <!-- Résultat après exploration -->
@@ -994,7 +994,7 @@
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--red);margin-top:8px;background:var(--red-dim);padding:6px 16px;border-radius:20px;border:1px solid var(--red)" id="scratch-result-code">—</div>
         </div>
         <!-- Canvas de grattage par-dessus -->
-        <canvas id="scratch-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+        <canvas id="scratch-canvas" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none"></canvas>
       </div>
       <div style="font-size:12px;color:var(--white-muted);text-align:center;margin-bottom:16px" id="scratch-hint">Gratte avec le doigt pour révéler</div>
       <button class="btn-red" id="boite-claim-btn" style="display:none">J'AI COMPRIS ✓</button>

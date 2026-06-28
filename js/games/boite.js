@@ -42,7 +42,7 @@ export function openBoiteReadOnly() {
   const c = gamesData.boite_mystere?.content;
   if (!c) return;
   document.getElementById('boite-sponsor-name').textContent = c.sponsor_name || '—';
-  if (c.sponsor_logo) { const el = document.getElementById('boite-sponsor-logo'); el.textContent = ''; const img = document.createElement('img'); img.src = c.sponsor_logo; img.setAttribute('style','max-height:50px;max-width:150px;object-fit:contain'); el.appendChild(img); }
+  if (c.sponsor_logo) { const el = document.getElementById('boite-sponsor-logo'); el.textContent = ''; const img = document.createElement('img'); img.src = c.sponsor_logo; img.setAttribute('style','max-height:50px;max-width:150px;object-fit:contain'); img.onerror = () => { img.remove(); }; el.appendChild(img); }
   const canvas = document.getElementById('scratch-canvas');
   if (canvas) canvas.style.display = 'none';
   const r = profile?.boite_last_result;
@@ -62,7 +62,7 @@ export async function initBoite() {
   const c = gamesData.boite_mystere?.content;
   if (!c) return;
   document.getElementById('boite-sponsor-name').textContent = c.sponsor_name || '—';
-  if (c.sponsor_logo) { const el = document.getElementById('boite-sponsor-logo'); el.textContent = ''; const img = document.createElement('img'); img.src = c.sponsor_logo; img.setAttribute('style','max-height:50px;max-width:150px;object-fit:contain'); el.appendChild(img); }
+  if (c.sponsor_logo) { const el = document.getElementById('boite-sponsor-logo'); el.textContent = ''; const img = document.createElement('img'); img.src = c.sponsor_logo; img.setAttribute('style','max-height:50px;max-width:150px;object-fit:contain'); img.onerror = () => { img.remove(); }; el.appendChild(img); }
 
   if (demoMode) {
     const won = Math.random() < (c.win_probability || 0.3);

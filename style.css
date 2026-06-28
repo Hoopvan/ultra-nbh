@@ -10,7 +10,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 #app{height:100vh;height:100svh;width:100vw;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;overflow:hidden}
 .screen{display:none;flex-direction:column;flex:1;overflow:hidden}
 .screen.active{display:flex}
-.screen-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:88px}
+.screen-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding-bottom:88px}
 
 /* LOADING */
 #screen-loading{display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:var(--black)}
@@ -171,7 +171,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 /* GAMES */
 .game-screen{display:none;flex-direction:column;flex:1;background:var(--black);overflow:hidden}
 .game-screen.active{display:flex}
-.game-scroll{flex:1;overflow-y:auto;padding:20px 20px 100px;-webkit-overflow-scrolling:touch}
+.game-scroll{flex:1;overflow-y:auto;padding:20px 20px 100px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 .game-topbar{display:flex;align-items:center;gap:12px;padding:14px 20px 10px;flex-shrink:0;border-bottom:1px solid var(--black3)}
 .game-back-btn{width:36px;height:36px;background:var(--black3);border:1px solid var(--black5);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .game-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white)}
@@ -212,7 +212,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 @keyframes fadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 .tuto-dot{width:8px;height:8px;border-radius:50%;background:var(--black5);transition:all .2s}
 .tuto-dot.active{width:24px;border-radius:4px;background:var(--red)}
-.navbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(13,13,20,.96);border-top:1px solid var(--black4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;justify-content:space-around;align-items:center;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
+.navbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(13,13,20,.96);border-top:1px solid var(--black4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;justify-content:space-around;align-items:center;padding:8px 0 calc(8px + env(safe-area-inset-bottom, 0px));z-index:100}
 .nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:4px 16px;flex:1}
 .nav-icon{font-size:22px;color:var(--white-muted);transition:color .15s}
 .nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-muted);font-weight:600;transition:color .15s}
@@ -226,7 +226,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:v
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-end;justify-content:center}
 .modal-overlay.show{display:flex}
-.modal{background:var(--black2);border:1px solid var(--black5);border-radius:24px 24px 0 0;padding:32px 24px calc(32px + env(safe-area-inset-bottom));width:100%;max-width:430px;text-align:center;animation:slideUp .35s cubic-bezier(.17,.67,.5,1.3)}
+.modal{background:var(--black2);border:1px solid var(--black5);border-radius:24px 24px 0 0;padding:32px 24px calc(32px + env(safe-area-inset-bottom, 0px));width:100%;max-width:430px;text-align:center;animation:slideUp .35s cubic-bezier(.17,.67,.5,1.3)}
 @keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal-pill{width:40px;height:4px;background:var(--black5);border-radius:2px;margin:0 auto 24px}
 .modal-unlock-icon{font-size:64px;margin-bottom:12px}
