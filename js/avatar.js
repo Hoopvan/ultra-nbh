@@ -77,6 +77,8 @@ async function fetchDicebear(p, size) {
 }
 
 export async function buildAvatarSVG(p, size = 280) {
+  const key = _mainCacheKey(p);
+  if (_mainCache[key]) return _mainCache[key];
   const worn = p?.worn_items || [];
   try {
     let svg = await fetchDicebear(p, size);
@@ -86,11 +88,25 @@ export async function buildAvatarSVG(p, size = 280) {
     if (worn.includes('casquette')) overlays.push(OVERLAY_CASQUETTE);
     if (worn.includes('maillot'))   overlays.push(OVERLAY_MAILLOT);
     if (overlays.length) svg = svg.replace('</svg>', overlays.join('') + '</svg>');
+    _mainCache[key] = svg;
     return svg;
   } catch { return FALLBACK_SVG; }
 }
 
 const _miniCache = {};
+const _mainCache = {};
+
+function _mainCacheKey(p) {
+  const worn = (p?.worn_items || []).slice().sort().join(',');
+  return [p?.id, p?.avatar_skin, p?.avatar_top, p?.avatar_hair_color,
+          p?.avatar_eyes, p?.avatar_mouth, p?.avatar_facial_hair,
+          p?.avatar_clothe, worn].join('|');
+}
+
+export function invalidateAvatarCache(p) {
+  delete _mainCache[_mainCacheKey(p)];
+  if (p?.id) delete _miniCache[p.id];
+}
 
 export async function miniAvatarSVG(p) {
   const key = p?.id;
@@ -164,6 +180,7 @@ export async function toggleWorn(id) {
   const worn = [...(profile.worn_items || [])];
   const idx = worn.indexOf(id);
   if (idx > -1) worn.splice(idx, 1); else worn.push(id);
+  invalidateAvatarCache(profile);
   await updateProfile({ worn_items: worn });
   renderAvatar(); renderEquip();
 }
@@ -188,6 +205,7 @@ export async function buyItem(id) {
     }
     setProfile(data);
   }
+  invalidateAvatarCache(profile);
   showNotif(`${item.icon} ${item.name} débloqué !`);
   renderAvatar(); renderEquip(); renderNextUnlocks();
   ['coins-t','coins-m','coins-a'].forEach(id => {
@@ -260,6 +278,7 @@ export async function setEditParam(key, value) {
 }
 
 export async function saveAvatarEdit() {
+  invalidateAvatarCache(profile);
   await updateProfile({
     avatar_skin:        editParams.skin,
     avatar_top:         editParams.top,
@@ -269,7 +288,6 @@ export async function saveAvatarEdit() {
     avatar_facial_hair: editParams.facialHair,
     avatar_clothe:      editParams.clothe,
   });
-  delete _miniCache[profile?.id];
   editParams = {};
   document.getElementById('avatar-edit-panel').style.display = 'none';
   renderAvatar();

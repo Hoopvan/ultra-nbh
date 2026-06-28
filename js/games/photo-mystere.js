@@ -17,11 +17,27 @@ export function initPhotoMystere() {
   const c = gamesData.photo_mystere?.content;
   if (!c) { console.warn('Pas de jeu Photo Mystère actif'); return; }
 
+  const loading = document.getElementById('pm-loading');
+  if (loading) loading.style.display = 'flex';
+
   const q = document.getElementById('pm-question');
   if (q) q.textContent = c.question || 'Qui est-ce ?';
 
   const img = document.getElementById('pm-img');
-  if (img) { img.src = c.image_url; img.style.filter = BLUR_STAGES[0]; }
+  const loading = document.getElementById('pm-loading');
+  if (img) {
+    img.style.opacity = '0';
+    img.style.filter = BLUR_STAGES[0];
+    img.onload = () => {
+      img.style.opacity = '1';
+      if (loading) loading.style.display = 'none';
+    };
+    img.onerror = () => {
+      if (loading) loading.style.display = 'none';
+      img.style.opacity = '0.3';
+    };
+    img.src = c.image_url;
+  }
 
   document.getElementById('pm-stage-label').textContent = STAGE_LABELS[0];
 

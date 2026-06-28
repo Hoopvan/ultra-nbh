@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0a0a0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -57,7 +57,7 @@
   <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 28px">
     <div class="name-title">Comment<br>on t'appelle ?</div>
     <p class="name-sub">Ce sera ton nom dans la communauté Hoop NBH.</p>
-    <input type="text" class="input-field" id="name-input" placeholder="Ton nom de fan..." maxlength="16" autocomplete="off">
+    <input type="text" class="input-field" id="name-input" placeholder="Ton nom de fan..." maxlength="30" autocomplete="off">
     <button class="btn-red" id="name-submit-btn">SUIVANT →</button>
   </div>
 </div>
@@ -252,14 +252,10 @@
             </div>
             <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)">
               <div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">2</div>
-              Appuie sur <strong style="color:var(--white)">"Voir plus"</strong>
-            </div>
-            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)">
-              <div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">3</div>
               <strong style="color:var(--white)">"Ajouter à l'écran d'accueil"</strong>
             </div>
             <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)">
-              <div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">4</div>
+              <div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">3</div>
               <strong style="color:var(--white)">"Ajouter"</strong> ✅
             </div>
           </div>
@@ -644,9 +640,8 @@
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:8px">📱 Sur iPhone / iPad</div>
           <div style="display:flex;flex-direction:column;gap:7px">
             <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">1</div>Appuie sur <strong style="color:var(--white)">Partager ⬆️</strong> en bas du navigateur</div>
-            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">2</div>Appuie sur <strong style="color:var(--white)">"Voir plus"</strong></div>
-            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">3</div><strong style="color:var(--white)">"Ajouter à l'écran d'accueil"</strong></div>
-            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">4</div><strong style="color:var(--white)">"Ajouter"</strong> ✅</div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">2</div><strong style="color:var(--white)">"Ajouter à l'écran d'accueil"</strong></div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--white-muted)"><div style="background:var(--red);border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">3</div><strong style="color:var(--white)">"Ajouter"</strong> ✅</div>
           </div>
         </div>
         <div>
@@ -747,7 +742,7 @@
 <!-- GAME POULS -->
 <div id="game-pouls" class="game-screen">
   <div class="game-topbar">
-    <button class="game-back-btn">←</button>
+    <button class="game-back-btn" aria-label="Retour">←</button>
     <div><div class="game-title">Le Pouls du Club</div><div class="game-xp-label">+20 XP à gagner</div></div>
   </div>
   <div class="game-scroll">
@@ -775,7 +770,7 @@
 <!-- GAME VESTIAIRE -->
 <div id="game-vestiaire" class="game-screen">
   <div class="game-topbar">
-    <button class="game-back-btn">←</button>
+    <button class="game-back-btn" aria-label="Retour">←</button>
     <div><div class="game-title">Le Vestiaire</div><div class="game-xp-label">+30 XP à gagner</div></div>
   </div>
   <div class="game-scroll">
@@ -799,7 +794,7 @@
 <!-- GAME ANECDOTE -->
 <div id="game-anecdote" class="game-screen">
   <div class="game-topbar">
-    <button class="game-back-btn">←</button>
+    <button class="game-back-btn" aria-label="Retour">←</button>
     <div><div class="game-title">L'Anecdote</div><div class="game-xp-label">+30 XP à gagner</div></div>
   </div>
   <div class="game-scroll">
@@ -818,7 +813,7 @@
 <!-- GAME NANTES / NBH / LES DEUX -->
 <div id="game-nantes_nbh" class="game-screen">
   <div class="game-topbar">
-    <button class="game-back-btn">←</button>
+    <button class="game-back-btn" aria-label="Retour">←</button>
     <div><div class="game-title">Nantes / NBH / Les Deux</div><div class="game-xp-label">+30 XP à gagner</div></div>
   </div>
   <div class="game-scroll">
@@ -839,7 +834,7 @@
 <!-- GAME AVANT / APRÈS -->
 <div id="game-avant_apres" class="game-screen">
   <div class="game-topbar">
-    <button class="game-back-btn">←</button>
+    <button class="game-back-btn" aria-label="Retour">←</button>
     <div><div class="game-title">Avant / Après</div><div class="game-xp-label">+30 XP à gagner</div></div>
   </div>
   <div class="game-scroll">
@@ -883,7 +878,7 @@
 <!-- GAME TIMELINE -->
 <div id="game-timeline" class="game-screen">
   <div class="game-topbar">
-    <button class="game-back-btn">←</button>
+    <button class="game-back-btn" aria-label="Retour">←</button>
     <div><div class="game-title">La Timeline</div><div class="game-xp-label">+30 XP à gagner</div></div>
   </div>
   <div class="game-scroll">
@@ -903,14 +898,17 @@
 <!-- GAME PHOTO MYSTÈRE -->
 <div id="game-photo_mystere" class="game-screen">
   <div class="game-topbar">
-    <button class="game-back-btn">←</button>
+    <button class="game-back-btn" aria-label="Retour">←</button>
     <div><div class="game-title">Photo Mystère</div><div class="game-xp-label">Jusqu'à +50 XP</div></div>
   </div>
   <div class="game-scroll">
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:8px" id="pm-question">Qui est-ce ?</div>
     <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:12px" id="pm-stage-label">Indice 1 / 3 — Bonne réponse = +50 XP 🔥</div>
-    <div style="border-radius:var(--radius);overflow:hidden;margin-bottom:16px;background:var(--black3)">
-      <img id="pm-img" src="" alt="" style="width:100%;display:block;transition:filter .6s ease">
+    <div style="border-radius:var(--radius);overflow:hidden;margin-bottom:16px;background:var(--black3);position:relative;min-height:200px;display:flex;align-items:center;justify-content:center">
+      <div id="pm-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--black3)">
+        <div class="loading-spinner"></div>
+      </div>
+      <img id="pm-img" src="" alt="" style="width:100%;display:block;transition:filter .6s ease, opacity .3s ease;opacity:0">
     </div>
     <div class="answers-list" id="pm-answers"></div>
     <div class="v-explication" id="pm-expl" style="display:none"></div>
@@ -922,7 +920,7 @@
 <!-- GAME PRONOSTIC -->
 <div id="game-pronostic" class="game-screen">
   <div class="game-topbar">
-    <button class="game-back-btn">←</button>
+    <button class="game-back-btn" aria-label="Retour">←</button>
     <div><div class="game-title">Pronostic du match</div><div class="game-xp-label">+25 XP à gagner</div></div>
   </div>
   <div class="game-scroll">
@@ -973,7 +971,7 @@
 <!-- GAME BOÎTE MYSTÈRE -->
 <div id="game-boite_mystere" class="game-screen">
   <div class="game-topbar">
-    <button class="game-back-btn">←</button>
+    <button class="game-back-btn" aria-label="Retour">←</button>
     <div><div class="game-title">Boîte Mystère</div><div class="game-xp-label">Offert par notre partenaire</div></div>
   </div>
   <div class="game-scroll">

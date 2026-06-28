@@ -207,9 +207,7 @@ function initInstallUI() {
   if (isInStandaloneMode()) return; // déjà installée
 
   if (isIOS()) {
-    document.getElementById('install-ios-hint').style.display = 'block';
-    document.getElementById('tuto-install-ios').style.display = 'block';
-    return;
+    return; // Les instructions iOS sont toujours visibles dans le tuto et les paramètres
   }
 
   window.addEventListener('beforeinstallprompt', e => {

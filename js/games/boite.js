@@ -93,32 +93,55 @@ export async function initBoite() {
 function initScratchCanvas() {
   const canvas = document.getElementById('scratch-canvas');
   if (!canvas) return;
-  canvas.width = 340; canvas.height = 200;
+
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.offsetWidth;
+  const cssH = canvas.offsetHeight;
+  canvas.width  = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+
   const ctx = canvas.getContext('2d');
-  const grad = ctx.createLinearGradient(0, 0, 340, 200);
+  ctx.scale(dpr, dpr);
+
+  const grad = ctx.createLinearGradient(0, 0, cssW, cssH);
   grad.addColorStop(0, '#f5a623'); grad.addColorStop(1, '#e85d04');
-  ctx.fillStyle = grad; ctx.fillRect(0, 0, 340, 200);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, cssW, cssH);
   ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.font = 'bold 64px sans-serif'; ctx.textAlign = 'center';
-  ctx.fillText('🎁', 170, 120);
+  ctx.font = 'bold 64px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🎁', cssW / 2, cssH * 0.62);
+
   let scratching = false;
 
-  function scratch(x, y) {
+  function scratch(cssX, cssY) {
     ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath(); ctx.arc(x, y, 30, 0, Math.PI*2); ctx.fill();
-    const d = ctx.getImageData(0,0,340,200).data;
-    let t = 0; for (let i = 3; i < d.length; i += 4) if (d[i] === 0) t++;
-    if (t/(340*200) > 0.4) {
+    ctx.beginPath();
+    ctx.arc(cssX, cssY, 30, 0, Math.PI * 2);
+    ctx.fill();
+    const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let transparent = 0;
+    for (let i = 3; i < d.length; i += 4) if (d[i] === 0) transparent++;
+    if (transparent / (canvas.width * canvas.height) > 0.4) {
       canvas.style.display = 'none';
       document.getElementById('scratch-hint').textContent = '🎉 Révélé !';
       document.getElementById('boite-claim-btn').style.display = 'block';
     }
   }
+
   canvas.onmousedown = e => { scratching = true; scratch(e.offsetX, e.offsetY); };
-  canvas.onmouseup = () => scratching = false;
+  canvas.onmouseup   = () => { scratching = false; };
   canvas.onmousemove = e => { if (scratching) scratch(e.offsetX, e.offsetY); };
-  canvas.ontouchstart = e => { e.preventDefault(); const r = canvas.getBoundingClientRect(); scratch(e.touches[0].clientX-r.left, e.touches[0].clientY-r.top); };
-  canvas.ontouchmove = e => { e.preventDefault(); const r = canvas.getBoundingClientRect(); scratch(e.touches[0].clientX-r.left, e.touches[0].clientY-r.top); };
+  canvas.ontouchstart = e => {
+    e.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    scratch(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top);
+  };
+  canvas.ontouchmove = e => {
+    e.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    scratch(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top);
+  };
 }
 
 export function claimBoite() {
