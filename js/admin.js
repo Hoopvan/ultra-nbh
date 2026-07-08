@@ -3,7 +3,8 @@ import { profile } from './state.js';
 import { escapeHtml } from './utils.js';
 
 export function isAdmin() {
-  return profile?.role === 'org_admin' || profile?.role === 'super_admin';
+  if (profile?.role === 'super_admin') return true;
+  return profile?.role === 'org_admin' && profile?.org_id === CURRENT_ORG_ID;
 }
 
 const TYPES = {

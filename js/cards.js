@@ -18,7 +18,7 @@ export async function loadCards() {
 
 export async function loadUserCards() {
   if (demoMode || !currentUser) return;
-  const { data } = await db.from('user_cards').select('*').eq('user_id', currentUser.id);
+  const { data } = await db.from('user_cards').select('*').eq('user_id', currentUser.id).eq('org_id', CURRENT_ORG_ID);
   userCardsMap = {};
   (data || []).forEach(r => { userCardsMap[r.card_id] = r; });
 }
