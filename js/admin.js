@@ -443,6 +443,7 @@ async function saveCard() {
   const id = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
   const { error } = await db.from('cards').insert({
     id,
+    org_id: CURRENT_ORG_ID,
     player_name: name,
     position: document.getElementById('card-pos-input').value.trim() || null,
     rarity: document.getElementById('card-rarity-input').value,
@@ -471,7 +472,7 @@ async function loadCardList() {
   const container = document.getElementById('admin-card-list');
   if (!container) return;
   container.innerHTML = '<div style="color:var(--white-muted);font-size:13px;padding:8px 0">Chargement…</div>';
-  const { data: cards } = await db.from('cards').select('*').order('sort_order');
+  const { data: cards } = await db.from('cards').select('*').eq('org_id', CURRENT_ORG_ID).order('sort_order');
   adminCards = cards || [];
   if (!adminCards.length) { container.innerHTML = '<div style="color:var(--white-muted);font-size:13px;padding:8px 0">Aucune carte.</div>'; return; }
 
