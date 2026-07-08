@@ -107,14 +107,17 @@ export const LEVELS = [
   {name:'Légende',   min:1000, max:9999, reward:'🖼️ Poster de l\'équipe dédicacé'},
 ];
 
-export const UNLOCKABLES = [
-  {id:'couleurs',  icon:'🎨', name:'Couleurs NBH',  cost:50,  desc:'Tenue aux couleurs du club'},
-  {id:'echarpe',   icon:'🧣', name:'Écharpe',       cost:80,  desc:'L\'écharpe officielle de l\'Hermine'},
-  {id:'casquette', icon:'🧢', name:'Casquette',     cost:120, desc:'La casquette bleue marine NBH'},
-  {id:'lunettes',  icon:'🕶️', name:'Lunettes',      cost:150, desc:'Style assuré en tribune'},
-  {id:'maillot',   icon:'👕', name:'Maillot',       cost:200, desc:'Le maillot domicile du club'},
-  {id:'bandeau',   icon:'🎽', name:'Bandeau',       cost:250, desc:'Bandeau NBH sur le front'},
-];
+export let UNLOCKABLES = [];
+
+export async function loadUnlockables() {
+  const { data, error } = await db.from('unlockables')
+    .select('id, icon, name, cost, description, sort_order')
+    .eq('org_id', CURRENT_ORG_ID)
+    .eq('active', true)
+    .order('sort_order');
+  if (error) { console.error('loadUnlockables error:', error); return; }
+  UNLOCKABLES = (data || []).map(u => ({ id: u.id, icon: u.icon, name: u.name, cost: u.cost, desc: u.description }));
+}
 
 export const AVATAR_SKINS = [
   {id:'light',     label:'Clair',  color:'#f5c89a'},

@@ -2,7 +2,7 @@ import { startCountdown } from './utils.js';
 import { closeModal } from './utils.js';
 import { showLevelsModal } from './ui.js';
 import { showTab, showScreen } from './nav.js';
-import { loadOrgConfig } from './config.js';
+import { loadOrgConfig, loadUnlockables } from './config.js';
 import { demoMode, currentUser } from './state.js';
 import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccount, deleteAccount } from './auth.js';
 import { subscribeToPush, unsubscribeFromPush, isPushSubscribed } from './push.js';
@@ -293,6 +293,7 @@ async function triggerInstall() {
 
 window.onload = async () => {
   await loadOrgConfig();
+  await loadUnlockables();
   initAuth(); // en premier — critique pour le callback OAuth
   startCountdown();
 
