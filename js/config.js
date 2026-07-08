@@ -2,8 +2,15 @@ const SUPABASE_URL = "{{SUPABASE_URL}}";
 const SUPABASE_ANON_KEY = "{{SUPABASE_ANON_KEY}}";
 const ORG_SLUG = "{{ORG_SLUG}}";
 
+/* Garde : évite le crash quand les placeholders ne sont pas substitués
+   (dev local sans .env). Le client est créé avec des valeurs factices —
+   toutes les requêtes échoueront silencieusement, le mode démo bypasse
+   Supabase de toute façon. */
+const _url = SUPABASE_URL.startsWith('{{') ? 'https://placeholder.supabase.co' : SUPABASE_URL;
+const _key = SUPABASE_ANON_KEY.startsWith('{{') ? 'placeholder-key' : SUPABASE_ANON_KEY;
+
 const { createClient } = supabase;
-export const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+export const db = createClient(_url, _key, {
   auth: { flowType: 'implicit' }
 });
 
@@ -33,17 +40,26 @@ export async function loadOrgConfig() {
   if (!cfg) { console.error('org_config introuvable pour', org.id, cfgErr); return; }
   orgConfig = cfg;
 
-  // CSS variables — couleurs primaire + variantes opacité
+  // CSS brand tokens — override depuis la base de données org_config
   const root = document.documentElement.style;
   if (cfg.primary_color) {
+    root.setProperty('--brand-primary',     cfg.primary_color);
+    root.setProperty('--brand-primary-dim', hexToRgba(cfg.primary_color, 0.12));
+    root.setProperty('--brand-primary-mid', hexToRgba(cfg.primary_color, 0.25));
+    /* compat anciens inline styles */
     root.setProperty('--red',     cfg.primary_color);
     root.setProperty('--red-dim', hexToRgba(cfg.primary_color, 0.12));
     root.setProperty('--red-mid', hexToRgba(cfg.primary_color, 0.25));
   }
   if (cfg.secondary_color) {
+    root.setProperty('--brand-secondary',     cfg.secondary_color);
+    root.setProperty('--brand-secondary-dim', hexToRgba(cfg.secondary_color, 0.10));
+    /* compat anciens inline styles */
     root.setProperty('--navy',        cfg.secondary_color);
-    root.setProperty('--navy-bright', hexBrighten(cfg.secondary_color, 1.0));
+    root.setProperty('--navy-bright', hexBrighten(cfg.secondary_color, 0.5));
   }
+  if (cfg.bg_color)     root.setProperty('--brand-bg', cfg.bg_color);
+  if (cfg.accent_color) root.setProperty('--brand-accent', cfg.accent_color);
   if (cfg.accent_color) root.setProperty('--gold', cfg.accent_color);
 
   // Titre de page et meta PWA
