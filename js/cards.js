@@ -1,4 +1,4 @@
-import { db } from './config.js';
+import { db, CURRENT_ORG_ID } from './config.js';
 import { currentUser, profile, demoMode, setProfile } from './state.js';
 import { updateUI } from './ui.js';
 import { escapeHtml } from './utils.js';
@@ -12,13 +12,13 @@ let allCards = [];
 let userCardsMap = {}; // card_id → { count, id (row uuid) }
 
 export async function loadCards() {
-  const { data } = await db.from('cards').select('*').eq('active', true).order('sort_order');
+  const { data } = await db.from('cards').select('*').eq('active', true).eq('org_id', CURRENT_ORG_ID).order('sort_order');
   allCards = data || [];
 }
 
 export async function loadUserCards() {
   if (demoMode || !currentUser) return;
-  const { data } = await db.from('user_cards').select('*').eq('user_id', currentUser.id);
+  const { data } = await db.from('user_cards').select('*').eq('user_id', currentUser.id).eq('org_id', CURRENT_ORG_ID);
   userCardsMap = {};
   (data || []).forEach(r => { userCardsMap[r.card_id] = r; });
 }
@@ -71,7 +71,7 @@ export async function openBoosterPack() {
         else { console.error('user_cards update error:', error); showNotifCards('Oups, erreur lors de l\'enregistrement.'); }
       } else {
         const { error } = await db.from('user_cards')
-          .insert({ user_id: currentUser.id, card_id: card.id, count: 1 });
+          .insert({ user_id: currentUser.id, card_id: card.id, count: 1, org_id: CURRENT_ORG_ID });
         if (!error) userCardsMap[card.id] = { card_id: card.id, count: 1 };
         else { console.error('user_cards insert error:', error); showNotifCards('Oups, erreur lors de l\'enregistrement.'); }
       }
