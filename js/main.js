@@ -155,6 +155,7 @@ function wireEvents() {
     renderCollection();
     showScreen('collection');
   });
+  document.getElementById('booster-reopen-btn').addEventListener('click', openBoosterPack);
   document.getElementById('booster-back-btn').addEventListener('click', () => {
     document.getElementById('overlay-booster').style.display = 'none';
     showTab('avatar');

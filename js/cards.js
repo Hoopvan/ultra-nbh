@@ -98,11 +98,13 @@ function showPackOverlay(drawn) {
   const row = document.getElementById('booster-cards-row');
   const msg = document.getElementById('booster-reveal-msg');
   const closeBtn = document.getElementById('booster-close-btn');
+  const reopenBtn = document.getElementById('booster-reopen-btn');
   const backBtn = document.getElementById('booster-back-btn');
   const hint = document.getElementById('booster-tap-hint');
 
   msg.textContent = '';
   closeBtn.style.display = 'none';
+  reopenBtn.style.display = 'none';
   backBtn.style.display = 'none';
   hint.textContent = 'Tes cartes arrivent…';
   overlay.style.display = 'flex';
@@ -143,6 +145,7 @@ function showPackOverlay(drawn) {
           hint.textContent = '';
           if (!hasGold) msg.textContent = drawn.some(c => c.rarity === 'silver') ? '🥈 Belle prise !' : 'Pack ouvert !';
           closeBtn.style.display = 'block';
+          reopenBtn.style.display = 'block';
           backBtn.style.display = 'block';
         }, 600);
       }
