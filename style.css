@@ -31,6 +31,13 @@
   --radius:    16px;
   --radius-sm: 10px;
   --gold:      #f5a623;
+
+  /* Texte sur fond intentionnellement sombre (cartes à dégradé foncé,
+     overlays plein écran). Fixes, indépendants du thème clair/sombre —
+     ne jamais utiliser --white/--white-muted ici : ces derniers pointent
+     vers --brand-text (texte foncé) dans le thème clair actuel. */
+  --on-dark:       #ffffff;
+  --on-dark-muted: rgba(255,255,255,0.65);
 }
 
 /* ══════════════════════════════════════════════════════════════════════
