@@ -4,6 +4,10 @@ import { updateUI } from './ui.js';
 import { escapeHtml } from './utils.js';
 import { getToday } from './date.js';
 
+// Poids fixes PAR PALIER (pas par carte) : le tirage choisit d'abord une
+// rareté selon ce ratio, puis une carte au hasard dans ce palier. Ça évite
+// que le nombre de cartes définies par palier (ex. 8 bronze vs 2 gold)
+// ne fausse les probabilités réelles.
 const RARITY_WEIGHTS = { bronze: 10, silver: 4, gold: 1 };
 const RARITY_LABEL   = { bronze: 'BRONZE', silver: 'ARGENT', gold: 'OR' };
 const PACK_COST = 50;
@@ -124,9 +128,40 @@ async function persistDrawnCards(drawn) {
   }
 }
 
+function pickRarity() {
+  const total = Object.values(RARITY_WEIGHTS).reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (const [rarity, weight] of Object.entries(RARITY_WEIGHTS)) {
+    r -= weight;
+    if (r < 0) return rarity;
+  }
+  return Object.keys(RARITY_WEIGHTS).pop();
+}
+
 function drawPack(cards, count) {
-  const pool = cards.flatMap(c => Array(RARITY_WEIGHTS[c.rarity] || 10).fill(c));
-  return Array.from({ length: count }, () => pool[Math.floor(Math.random() * pool.length)]);
+  const rarities = Object.keys(RARITY_WEIGHTS);
+  const byRarity = {};
+  rarities.forEach(r => { byRarity[r] = []; });
+  cards.forEach(c => { (byRarity[c.rarity] || byRarity[rarities[0]]).push(c); });
+
+  const usedIds = new Set();
+  const drawn = [];
+
+  for (let i = 0; i < count; i++) {
+    // Repli si le club n'a aucune carte dans la rareté tirée
+    let pool = byRarity[pickRarity()];
+    if (!pool.length) pool = rarities.map(r => byRarity[r]).find(p => p.length) || cards;
+
+    // Pas de doublon dans le même pack tant que le palier le permet
+    let available = pool.filter(c => !usedIds.has(c.id));
+    if (!available.length) available = pool;
+
+    const card = available[Math.floor(Math.random() * available.length)];
+    usedIds.add(card.id);
+    drawn.push(card);
+  }
+
+  return drawn;
 }
 
 function showPackOverlay(drawn) {
