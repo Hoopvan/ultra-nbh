@@ -59,6 +59,7 @@ export function updateUI() {
   const mcProno = document.getElementById('mc-pronostic');
   if (mcProno) mcProno.style.display = gamesData.pronostic ? '' : 'none';
 
+  if (profile.free_booster_date  === today) setMissionDone('mc-free-booster', 'mx-free-booster');
   if (profile.pouls_date         === today) setMissionDone('mc-pouls',        'mx-pouls');
   if (profile.vestiaire_date     === today) setMissionDone('mc-vestiaire',    'mx-vestiaire');
   if (profile.anecdote_date      === today) setMissionDone('mc-anecdote',     'mx-anecdote');

@@ -2,6 +2,7 @@ import { db, CURRENT_ORG_ID } from './config.js';
 import { currentUser, profile, demoMode, setProfile } from './state.js';
 import { updateUI } from './ui.js';
 import { escapeHtml } from './utils.js';
+import { getToday } from './date.js';
 
 const RARITY_WEIGHTS = { bronze: 10, silver: 4, gold: 1 };
 const RARITY_LABEL   = { bronze: 'BRONZE', silver: 'ARGENT', gold: 'OR' };
@@ -56,8 +57,46 @@ export async function openBoosterPack() {
 
   // Recharger les cartes déjà possédées (cas où loadUserCards n'a pas tourné au login)
   await loadUserCards();
+  await persistDrawnCards(drawn);
 
-  // Persist drawn cards
+  updateCollectionChip();
+  showPackOverlay(drawn);
+}
+
+export async function openDailyFreeBooster() {
+  if (!allCards.length) {
+    await loadCards();
+    if (!allCards.length) { alert('Aucune carte disponible pour le moment !'); return; }
+  }
+
+  const today = getToday();
+  if (profile?.free_booster_date === today) {
+    showNotifCards('Reviens demain pour ta prochaine carte !');
+    return;
+  }
+
+  if (!demoMode && currentUser) {
+    const { data, error } = await db.rpc('claim_daily_free_booster');
+    if (error) {
+      showNotifCards(error.message?.includes('ALREADY_CLAIMED_TODAY') ? 'Reviens demain pour ta prochaine carte !' : 'Oups, impossible d\'ouvrir le booster.');
+      return;
+    }
+    setProfile(data.profile);
+  } else {
+    setProfile({ ...profile, free_booster_date: today });
+  }
+  updateUI();
+
+  const drawn = drawPack(allCards, 1);
+
+  await loadUserCards();
+  await persistDrawnCards(drawn);
+
+  updateCollectionChip();
+  showPackOverlay(drawn);
+}
+
+async function persistDrawnCards(drawn) {
   if (!demoMode && currentUser) {
     for (const card of drawn) {
       const existing = userCardsMap[card.id];
@@ -83,9 +122,6 @@ export async function openBoosterPack() {
         : { card_id: c.id, count: 1 };
     });
   }
-
-  updateCollectionChip();
-  showPackOverlay(drawn);
 }
 
 function drawPack(cards, count) {
@@ -95,18 +131,21 @@ function drawPack(cards, count) {
 
 function showPackOverlay(drawn) {
   const overlay = document.getElementById('overlay-booster');
+  const title = document.getElementById('booster-title');
   const row = document.getElementById('booster-cards-row');
   const msg = document.getElementById('booster-reveal-msg');
   const closeBtn = document.getElementById('booster-close-btn');
   const reopenBtn = document.getElementById('booster-reopen-btn');
   const backBtn = document.getElementById('booster-back-btn');
   const hint = document.getElementById('booster-tap-hint');
+  const single = drawn.length === 1;
 
   msg.textContent = '';
   closeBtn.style.display = 'none';
   reopenBtn.style.display = 'none';
   backBtn.style.display = 'none';
-  hint.textContent = 'Tes cartes arrivent…';
+  if (title) title.textContent = single ? 'CARTE GRATUITE 🃏' : 'PACK DÉCOUVERTE 🃏';
+  hint.textContent = single ? 'Ta carte arrive…' : 'Tes cartes arrivent…';
   overlay.style.display = 'flex';
 
   // Render 3 face-down cards
@@ -143,7 +182,7 @@ function showPackOverlay(drawn) {
       if (i === drawn.length - 1) {
         setTimeout(() => {
           hint.textContent = '';
-          if (!hasGold) msg.textContent = drawn.some(c => c.rarity === 'silver') ? '🥈 Belle prise !' : 'Pack ouvert !';
+          if (!hasGold) msg.textContent = drawn.some(c => c.rarity === 'silver') ? '🥈 Belle prise !' : (single ? 'Carte débloquée !' : 'Pack ouvert !');
           closeBtn.style.display = 'block';
           reopenBtn.style.display = 'block';
           backBtn.style.display = 'block';

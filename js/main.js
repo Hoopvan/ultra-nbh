@@ -12,7 +12,7 @@ import { initTuto, nextTuto, prevTuto, skipTuto } from './tuto.js';
 import { initServerDate } from './date.js';
 import { openGame, closeGame } from './games/screens.js';
 import { initAdmin } from './admin.js';
-import { loadCards, loadUserCards, openBoosterPack, renderCollection, updateCollectionChip } from './cards.js';
+import { loadCards, loadUserCards, openBoosterPack, openDailyFreeBooster, renderCollection, updateCollectionChip } from './cards.js';
 import { submitTimeline } from './games/timeline.js';
 import { selectEmotion, submitPouls } from './games/pouls.js';
 import { revealAvantApres } from './games/avant-apres.js';
@@ -83,6 +83,7 @@ function wireEvents() {
   document.getElementById('m-lvl-label').addEventListener('click', showLevelsModal);
 
   // Missions
+  document.getElementById('mc-free-booster').addEventListener('click', openDailyFreeBooster);
   ['pouls', 'vestiaire', 'anecdote'].forEach(t =>
     document.getElementById(`mc-${t}`).addEventListener('click', () => openGame(t))
   );

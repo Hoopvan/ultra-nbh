@@ -478,6 +478,13 @@
     </div>
     <div class="section-label">Missions du jour</div>
     <div class="missions-list">
+      <div class="mission-card available" id="mc-free-booster">
+        <div class="mission-card-inner">
+          <div class="mission-icon" style="background:linear-gradient(135deg,#f5a623,#e85d04)">🃏</div>
+          <div class="mission-info"><div class="mission-title">Booster Gratuit</div><div class="mission-desc">Une carte gratuite à ouvrir chaque jour.</div></div>
+          <span class="mission-xp xp-avail" id="mx-free-booster">🎁 Offert</span>
+        </div>
+      </div>
       <div class="mission-card available" id="mc-pouls">
         <div class="mission-card-inner">
           <div class="mission-icon">❤️</div>
@@ -1111,7 +1118,7 @@
 
 <!-- OVERLAY OUVERTURE PACK -->
 <div id="overlay-booster" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:2000;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
-  <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--on-dark);margin-bottom:6px;white-space:nowrap">PACK DÉCOUVERTE 🃏</div>
+  <div id="booster-title" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--on-dark);margin-bottom:6px;white-space:nowrap">PACK DÉCOUVERTE 🃏</div>
   <div id="booster-tap-hint" style="font-size:13px;color:var(--on-dark-muted);margin-bottom:32px">Tes cartes arrivent…</div>
   <div id="booster-cards-row" style="display:flex;gap:14px;justify-content:center"></div>
   <div id="booster-reveal-msg" style="margin-top:22px;font-family:'Barlow Condensed',sans-serif;font-size:20px;color:var(--on-dark);min-height:30px"></div>
