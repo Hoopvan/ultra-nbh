@@ -36,7 +36,7 @@ function updateTutoStep() {
   const nextBtn = document.getElementById('tuto-next');
   if (nextBtn) nextBtn.textContent = tutoStep === TUTO_STEPS ? 'MES MISSIONS 🎯' : 'SUIVANT →';
   const skipBtn = document.getElementById('tuto-skip');
-  if (skipBtn) skipBtn.style.display = tutoStep === TUTO_STEPS ? 'none' : 'block';
+  if (skipBtn) skipBtn.style.display = tutoStep === 1 ? 'block' : 'none';
   const prevBtn = document.getElementById('tuto-prev');
   if (prevBtn) prevBtn.style.display = tutoStep > 1 ? 'block' : 'none';
 }
