@@ -264,13 +264,20 @@ async function wireNotifBtn() {
   btn.addEventListener('click', async () => {
     if (demoMode) { setUnavailable('Notifications (mode démo)'); return; }
     btn.disabled = true;
-    if (await isPushSubscribed()) {
-      await unsubscribeFromPush();
-      setUnsubscribed();
-    } else {
-      await subscribeToPush();
-      if (Notification.permission === 'granted') setSubscribed();
-      else if (Notification.permission === 'denied') setBlocked();
+    try {
+      if (await isPushSubscribed()) {
+        await unsubscribeFromPush();
+        setUnsubscribed();
+      } else {
+        await subscribeToPush();
+        if (Notification.permission === 'granted') setSubscribed();
+        else if (Notification.permission === 'denied') setBlocked();
+        else setUnsubscribed();
+      }
+    } catch (err) {
+      console.error('Erreur toggle notifications:', err);
+      if (Notification.permission === 'denied') setBlocked();
+      else if (await isPushSubscribed()) setSubscribed();
       else setUnsubscribed();
     }
   });
