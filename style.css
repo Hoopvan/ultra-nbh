@@ -138,7 +138,7 @@ html, body {
 .tab-header {
   flex-shrink: 0;
   background: var(--brand-secondary);
-  padding: 14px 20px 12px;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 20px 12px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .tab-header-logo {
