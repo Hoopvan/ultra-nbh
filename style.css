@@ -649,7 +649,14 @@ html, body {
   display: flex; align-items: center; justify-content: center;
   border: 2px solid rgba(255,255,255,0.18);
   box-shadow: inset 0 0 0 4px rgba(255,255,255,0.06), inset 0 0 24px rgba(0,0,0,0.35);
+  opacity: 1;
+  transition: opacity .2s linear;
 }
+/* Filet de sécurité cross-browser : certains WebKit ne masquent pas fiablement
+   backface-visibility quand l'élément a aussi un box-shadow + une animation
+   continue (le dos "transparaît" derrière le recto). On force la disparition
+   par opacité en plus de la rotation 3D. */
+.card-inner.flipped .card-back-face { opacity: 0; pointer-events: none; }
 .card-back-face::before {
   content: ''; position: absolute; inset: 6px;
   border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; pointer-events: none;
