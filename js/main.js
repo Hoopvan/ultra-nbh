@@ -2,7 +2,7 @@ import { startCountdown } from './utils.js';
 import { closeModal } from './utils.js';
 import { showLevelsModal } from './ui.js';
 import { showTab, showScreen } from './nav.js';
-import { loadOrgConfig, loadUnlockables } from './config.js';
+import { loadOrgConfig, loadUnlockables, TABS } from './config.js';
 import { demoMode, currentUser } from './state.js';
 import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccount, deleteAccount } from './auth.js';
 import { subscribeToPush, unsubscribeFromPush, isPushSubscribed } from './push.js';
@@ -152,9 +152,18 @@ function wireEvents() {
   });
   document.getElementById('collection-back-btn').addEventListener('click', () => showTab('avatar'));
 
-  // Paramètres
-  document.getElementById('open-settings-btn').addEventListener('click', () => showScreen('settings'));
-  document.getElementById('settings-back-btn').addEventListener('click', () => showTab('avatar'));
+  // Paramètres — accessible depuis les 3 onglets, retour vers l'onglet d'origine
+  let settingsOriginTab = 'avatar';
+  document.querySelectorAll('.open-settings-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const active = document.querySelector('.screen.active');
+      if (active && TABS.includes(active.id.replace('screen-', ''))) {
+        settingsOriginTab = active.id.replace('screen-', '');
+      }
+      showScreen('settings');
+    });
+  });
+  document.getElementById('settings-back-btn').addEventListener('click', () => showTab(settingsOriginTab));
   document.getElementById('booster-close-btn').addEventListener('click', () => {
     document.getElementById('overlay-booster').style.display = 'none';
     renderCollection();
