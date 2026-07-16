@@ -76,18 +76,21 @@ async function fetchDicebear(p, size) {
   return res.text();
 }
 
+function applyOverlays(svg, worn) {
+  const overlays = [];
+  if (worn.includes('bandeau'))   overlays.push(OVERLAY_BANDEAU);
+  if (worn.includes('echarpe'))   overlays.push(OVERLAY_ECHARPE);
+  if (worn.includes('casquette')) overlays.push(OVERLAY_CASQUETTE);
+  if (worn.includes('maillot'))   overlays.push(OVERLAY_MAILLOT);
+  return overlays.length ? svg.replace('</svg>', overlays.join('') + '</svg>') : svg;
+}
+
 export async function buildAvatarSVG(p, size = 280) {
   const key = _mainCacheKey(p);
   if (_mainCache[key]) return _mainCache[key];
   const worn = p?.worn_items || [];
   try {
-    let svg = await fetchDicebear(p, size);
-    const overlays = [];
-    if (worn.includes('bandeau'))   overlays.push(OVERLAY_BANDEAU);
-    if (worn.includes('echarpe'))   overlays.push(OVERLAY_ECHARPE);
-    if (worn.includes('casquette')) overlays.push(OVERLAY_CASQUETTE);
-    if (worn.includes('maillot'))   overlays.push(OVERLAY_MAILLOT);
-    if (overlays.length) svg = svg.replace('</svg>', overlays.join('') + '</svg>');
+    const svg = applyOverlays(await fetchDicebear(p, size), worn);
     _mainCache[key] = svg;
     return svg;
   } catch { return FALLBACK_SVG; }
@@ -112,7 +115,7 @@ export async function miniAvatarSVG(p) {
   const key = p?.id;
   if (key && _miniCache[key]) return _miniCache[key];
   try {
-    const svg = await fetchDicebear(p, 52);
+    const svg = applyOverlays(await fetchDicebear(p, 52), p?.worn_items || []);
     if (key) _miniCache[key] = svg;
     return svg;
   } catch { return FALLBACK_SVG; }
