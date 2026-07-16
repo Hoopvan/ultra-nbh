@@ -69,10 +69,11 @@ export async function openBoosterPack() {
 
   // Recharger les cartes déjà possédées (cas où loadUserCards n'a pas tourné au login)
   await loadUserCards();
+  const newCardIds = new Set(drawn.filter(c => !userCardsMap[c.id]).map(c => c.id));
   await persistDrawnCards(drawn);
 
   updateCollectionChip();
-  showPackOverlay(drawn);
+  showPackOverlay(drawn, newCardIds);
 }
 
 export async function openDailyFreeBooster() {
@@ -102,10 +103,11 @@ export async function openDailyFreeBooster() {
   const drawn = drawPack(allCards, 1);
 
   await loadUserCards();
+  const newCardIds = new Set(drawn.filter(c => !userCardsMap[c.id]).map(c => c.id));
   await persistDrawnCards(drawn);
 
   updateCollectionChip();
-  showPackOverlay(drawn);
+  showPackOverlay(drawn, newCardIds);
 }
 
 async function persistDrawnCards(drawn) {
@@ -172,7 +174,7 @@ function drawPack(cards, count) {
   return drawn;
 }
 
-function showPackOverlay(drawn) {
+function showPackOverlay(drawn, newCardIds = new Set()) {
   const overlay = document.getElementById('overlay-booster');
   const title = document.getElementById('booster-title');
   const row = document.getElementById('booster-cards-row');
@@ -191,13 +193,13 @@ function showPackOverlay(drawn) {
   hint.textContent = single ? 'Ta carte arrive…' : 'Tes cartes arrivent…';
   overlay.style.display = 'flex';
 
-  // Render 3 face-down cards
+  // Render face-down cards, avec une petite arrivée en cascade
   const CARD_W = 100, CARD_H = 145;
-  row.innerHTML = drawn.map(() => `
-    <div class="card-wrap" style="width:${CARD_W}px;height:${CARD_H}px">
+  row.innerHTML = drawn.map((_, i) => `
+    <div class="card-wrap card-deal" style="width:${CARD_W}px;height:${CARD_H}px;animation-delay:${i * 120}ms">
       <div class="card-inner">
         <div class="card-face card-back-face">
-          <span style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:rgba(255,255,255,.12);letter-spacing:-1px">HOOP.</span>
+          <div class="card-back-emblem"><span class="ball">🏀</span><span class="word">HOOP.</span></div>
         </div>
         <div class="card-face card-front-face"></div>
       </div>
@@ -212,8 +214,9 @@ function showPackOverlay(drawn) {
     setTimeout(() => {
       const wrap = cardEls[i];
       wrap.classList.add(`card-rarity-${card.rarity}`);
-      wrap.querySelector('.card-front-face').innerHTML = buildCardFront(card);
+      wrap.querySelector('.card-front-face').innerHTML = buildCardFront(card, newCardIds.has(card.id));
       wrap.querySelector('.card-inner').classList.add('flipped');
+      setTimeout(() => wrap.classList.add('card-pop'), 550);
 
       if (card.rarity === 'gold' && !hasGold) {
         hasGold = true;
@@ -235,11 +238,12 @@ function showPackOverlay(drawn) {
   });
 }
 
-function buildCardFront(card) {
+function buildCardFront(card, isNew = false) {
   return `
     <div style="position:relative;flex:1;overflow:hidden;min-height:0">
       <img class="card-photo" src="${escapeHtml(card.photo_url || '')}" alt="${escapeHtml(card.player_name)}" loading="lazy" onerror="this.style.display='none'">
       <div class="card-rarity-badge">${RARITY_LABEL[card.rarity] || 'BRONZE'}</div>
+      ${isNew ? '<div class="card-new-badge">✨ Nouveau</div>' : ''}
     </div>
     <div class="card-info">
       <div class="card-name">${escapeHtml(card.player_name)}</div>
