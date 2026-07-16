@@ -21,6 +21,7 @@ $$;
 grant execute on function public.my_org_id() to authenticated;
 
 drop policy if exists "users_select_all" on public.users;
+drop policy if exists "users_select_same_org" on public.users;
 create policy "users_select_same_org" on public.users
   for select to authenticated
   using (org_id = public.my_org_id());
