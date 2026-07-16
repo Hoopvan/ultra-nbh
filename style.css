@@ -495,6 +495,75 @@ html, body {
 .tuto-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: all .2s; }
 .tuto-dot.active { width: 24px; border-radius: 4px; background: var(--brand-primary); }
 
+#screen-tuto { background: var(--brand-bg); }
+
+.tuto-hero-emoji { font-size: 72px; margin-bottom: 16px; }
+.tuto-hero-emoji.sm { font-size: 56px; margin-bottom: 10px; }
+
+.tuto-title { font-family: var(--font-display); font-size: 42px; font-weight: 900; color: var(--brand-text); line-height: 1.05; margin-bottom: 16px; }
+.tuto-title.lg { font-size: 36px; line-height: 1.1; margin-bottom: 10px; }
+.tuto-title.md { font-size: 34px; line-height: 1.1; margin-bottom: 8px; }
+.tuto-title .accent { color: var(--brand-primary); }
+.tuto-title .accent-gold { color: var(--gold); }
+
+.tuto-desc { font-size: 15px; color: var(--brand-text-muted); line-height: 1.7; margin-bottom: 20px; }
+.tuto-desc.sm { font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+.tuto-desc.xs { font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+.tuto-desc.footnote { font-size: 12px; font-style: italic; text-align: center; margin-bottom: 0; }
+.tuto-desc.hint { font-size: 11px; text-align: center; margin-bottom: 0; }
+
+.tuto-card-dark { background: linear-gradient(135deg, var(--brand-secondary) 0%, #0a1428 100%); border-radius: var(--radius-sm); padding: 16px; border: 1px solid rgba(255,255,255,0.15); }
+.tuto-card-dark-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--on-dark); margin-bottom: 10px; }
+.tuto-feature-list { display: flex; flex-direction: column; gap: 8px; }
+.tuto-feature-row { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--on-dark-muted); }
+.tuto-feature-row .emoji { font-size: 20px; }
+
+.tuto-mission-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.tuto-mission-card { background: rgba(0,0,0,0.05); border-radius: var(--radius-sm); padding: 10px 6px; text-align: center; border: 1px solid rgba(0,0,0,0.10); }
+.tuto-mission-card.special { background: rgba(245,166,35,.1); border-color: rgba(245,166,35,.5); }
+.tuto-mission-card .icon { font-size: 22px; }
+.tuto-mission-card .label { font-size: 10px; color: var(--brand-text-muted); margin-top: 4px; }
+.tuto-mission-card.special .label { color: var(--gold); font-weight: 700; }
+
+.tuto-flow { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.tuto-flow-arrow { display: flex; justify-content: center; font-size: 18px; color: var(--brand-text-muted); }
+.tuto-flow-card { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.05); border-radius: var(--radius-sm); padding: 12px 14px; border: 1px solid rgba(0,0,0,0.10); }
+.tuto-flow-card.highlight { background: rgba(245,166,35,.1); border-color: rgba(245,166,35,.4); }
+.tuto-flow-icon { font-size: 26px; flex-shrink: 0; }
+.tuto-flow-text { font-size: 14px; color: var(--brand-text-muted); line-height: 1.4; }
+.tuto-flow-text strong { color: var(--brand-text); }
+.tuto-flow-card.highlight .tuto-flow-text strong { color: var(--gold); }
+
+.tuto-levels { display: flex; flex-direction: column; gap: 6px; }
+.tuto-level-row { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.05); border-radius: var(--radius-sm); padding: 10px 14px; border: 1px solid rgba(0,0,0,0.10); }
+.tuto-level-row.accent { border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent); }
+.tuto-level-row.legend { background: linear-gradient(135deg, rgba(245,166,35,.1) 0%, color-mix(in srgb, var(--brand-primary) 8%, transparent) 100%); border-color: rgba(245,166,35,.4); }
+.tuto-level-emoji { font-size: 16px; }
+.tuto-level-info { flex: 1; }
+.tuto-level-name { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--brand-text); }
+.tuto-level-row.legend .tuto-level-name { color: var(--gold); }
+.tuto-level-xp { font-size: 11px; color: var(--brand-text-muted); }
+
+.tuto-install-cta { display: none; margin-bottom: 12px; }
+.tuto-install-cta .btn-red { width: 100%; }
+
+.tuto-platform-card { background: rgba(0,0,0,0.05); border-radius: var(--radius-sm); padding: 12px 14px; border: 1px solid rgba(0,0,0,0.10); margin-bottom: 10px; }
+.tuto-platform-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--brand-text); margin-bottom: 8px; }
+.tuto-steps { display: flex; flex-direction: column; gap: 7px; }
+.tuto-step { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--brand-text-muted); }
+.tuto-step strong { color: var(--brand-text); }
+.tuto-step-num { background: var(--brand-primary); border-radius: 50%; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: var(--brand-on-primary); flex-shrink: 0; }
+
+.tuto-nav-footer { padding: 20px 28px max(40px, calc(20px + env(safe-area-inset-bottom, 0px))); flex-shrink: 0; }
+.tuto-dots-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
+.tuto-nav-buttons { display: flex; gap: 10px; align-items: stretch; }
+.tuto-btn-outline { background: transparent; color: var(--brand-text); border: 1px solid rgba(0,0,0,0.12); border-radius: var(--radius); font-family: var(--font-display); font-size: 16px; font-weight: 700; padding: 14px; cursor: pointer; }
+.tuto-btn-prev { display: none; padding: 14px 18px; white-space: nowrap; }
+.tuto-btn-skip { flex: 1; }
+.tuto-btn-next { flex: 2; padding: 14px 20px; }
+
+.avatar-edit-btn { margin: 0 auto 4px; display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.10); border-radius: 20px; padding: 8px 16px; color: var(--brand-text-muted); font-family: var(--font-display); font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: .5px; }
+
 /* ══════════════════════════════════════════════════════════════════════
    NOTIFICATIONS & MODALS
    ══════════════════════════════════════════════════════════════════════ */
