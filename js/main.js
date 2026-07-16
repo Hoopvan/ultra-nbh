@@ -151,6 +151,10 @@ function wireEvents() {
     showScreen('collection');
   });
   document.getElementById('collection-back-btn').addEventListener('click', () => showTab('avatar'));
+
+  // Paramètres
+  document.getElementById('open-settings-btn').addEventListener('click', () => showScreen('settings'));
+  document.getElementById('settings-back-btn').addEventListener('click', () => showTab('avatar'));
   document.getElementById('booster-close-btn').addEventListener('click', () => {
     document.getElementById('overlay-booster').style.display = 'none';
     renderCollection();
