@@ -1,4 +1,4 @@
-import { db, CURRENT_ORG_ID } from './config.js';
+import { db, CURRENT_ORG_ID, TEAM_LABEL } from './config.js';
 import { profile } from './state.js';
 import { escapeHtml } from './utils.js';
 
@@ -396,8 +396,6 @@ async function deleteMission(id) {
 }
 
 // ── GESTION CARTES ────────────────────────────────────────────────────────
-
-const TEAM_LABEL = { pro: 'Pro', espoir: 'Espoir', asso: 'Asso', admin: 'Admin', autre: 'Autre' };
 
 let cardPhotoFile = null;
 let cardPhotoUrl = null;

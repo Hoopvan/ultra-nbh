@@ -1,4 +1,4 @@
-import { db, CURRENT_ORG_ID } from './config.js';
+import { db, CURRENT_ORG_ID, TEAM_LABEL, TEAM_ORDER } from './config.js';
 import { currentUser, profile, demoMode, setProfile } from './state.js';
 import { updateUI } from './ui.js';
 import { escapeHtml } from './utils.js';
@@ -15,6 +15,14 @@ const PACK_SIZE = 3;
 
 let allCards = [];
 let userCardsMap = {}; // card_id → { count, id (row uuid) }
+let collectionTeamFilter = null;
+
+function getAvailableTeams() {
+  const present = new Set(allCards.map(c => c.team || 'autre'));
+  const ordered = TEAM_ORDER.filter(t => present.has(t));
+  present.forEach(t => { if (!ordered.includes(t)) ordered.push(t); });
+  return ordered;
+}
 
 export async function loadCards() {
   const { data } = await db.from('cards').select('*').eq('active', true).eq('org_id', CURRENT_ORG_ID).order('sort_order');
@@ -243,15 +251,31 @@ function buildCardFront(card) {
 export function renderCollection() {
   const grid = document.getElementById('collection-grid');
   const countEl = document.getElementById('collection-count');
+  const tabsEl = document.getElementById('collection-tabs');
   if (!grid) return;
+
+  const teams = getAvailableTeams();
+  if (!collectionTeamFilter || !teams.includes(collectionTeamFilter)) {
+    collectionTeamFilter = teams[0] || null;
+  }
+
+  if (tabsEl) {
+    tabsEl.innerHTML = teams.length > 1 ? teams.map(t => `
+      <button class="collection-tab${t === collectionTeamFilter ? ' active' : ''}" data-team="${t}">${escapeHtml(TEAM_LABEL[t] || t)}</button>
+    `).join('') : '';
+    tabsEl.querySelectorAll('[data-team]').forEach(btn => {
+      btn.addEventListener('click', () => { collectionTeamFilter = btn.dataset.team; renderCollection(); });
+    });
+  }
 
   const owned = Object.keys(userCardsMap).length;
   const total = allCards.length;
   if (countEl) countEl.textContent = `${owned}/${total}`;
 
   const CARD_W = '100%', CARD_H = 145;
+  const shownCards = collectionTeamFilter ? allCards.filter(c => (c.team || 'autre') === collectionTeamFilter) : allCards;
 
-  grid.innerHTML = allCards.map(card => {
+  grid.innerHTML = shownCards.map(card => {
     const have = userCardsMap[card.id];
     if (have) {
       return `

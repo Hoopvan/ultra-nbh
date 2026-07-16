@@ -175,3 +175,6 @@ export const AVATAR_CLOTHES = [
 ];
 
 export const TABS = ['tribune','missions','avatar'];
+
+export const TEAM_LABEL = { pro: 'Pro', espoir: 'Espoir', asso: 'Asso', admin: 'Admin', autre: 'Autre' };
+export const TEAM_ORDER = ['pro', 'espoir', 'asso', 'admin', 'autre'];
