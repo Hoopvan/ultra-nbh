@@ -3,7 +3,7 @@ import { profile, gamesData, demoMode, currentUser } from './state.js';
 import { miniAvatarSVG } from './avatar.js';
 import { getLevel } from './ui.js';
 import { escapeHtml } from './utils.js';
-import { getFriendIds, updateFriendsBadge } from './friends.js';
+import { getFriendIds, updateFriendsBadge, openProfile } from './friends.js';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 const SEL = 'id,name,xp,streak,avatar_skin,avatar_top,avatar_hair_color,avatar_eyes,avatar_mouth,avatar_facial_hair,avatar_clothe,worn_items';
@@ -131,4 +131,10 @@ export async function renderFansGrid(mode = 'club') {
         <div class="fan-tile-name">${escapeHtml(f.name.substring(0, 8))}</div>
       </div>`;
   }).join('');
+
+  grid.querySelectorAll('.fan-tile').forEach((tile, i) => {
+    if (allFans[i].id === currentUser?.id) return;
+    tile.style.cursor = 'pointer';
+    tile.addEventListener('click', () => openProfile(allFans[i]));
+  });
 }

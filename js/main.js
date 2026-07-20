@@ -22,8 +22,8 @@ import { renderFansGrid } from './community.js';
 import { showNotif } from './utils.js';
 import {
   openFriendsScreen, sendFriendRequest, respondToRequest, cancelRequest, removeCurrentFriend,
-  openFriendProfile, openTradeComposer, closeTradeComposer, pickTradeCard, confirmTrade,
-  respondTrade, cancelTrade,
+  openTradeComposer, closeTradeComposer, pickTradeCard, confirmTrade,
+  respondTrade, cancelTrade, sendRequestToCurrentProfile,
 } from './friends.js';
 
 function wireEvents() {
@@ -31,8 +31,7 @@ function wireEvents() {
   document.getElementById('signin-btn').addEventListener('click', signInWithGoogle);
   document.getElementById('demo-btn').addEventListener('click', () => {
     startDemoMode();
-    const friendsBtn = document.getElementById('open-friends-btn');
-    if (friendsBtn) friendsBtn.style.display = 'none';
+    document.querySelectorAll('.open-friends-btn').forEach(btn => { btn.style.display = 'none'; });
   });
 
   // Consentement RGPD
@@ -167,8 +166,8 @@ function wireEvents() {
   document.getElementById('classement-toggle-club').addEventListener('click', () => renderFansGrid('club'));
   document.getElementById('classement-toggle-amis').addEventListener('click', () => renderFansGrid('amis'));
 
-  // Amis
-  document.getElementById('open-friends-btn').addEventListener('click', openFriendsScreen);
+  // Amis — accessible depuis les 3 onglets, comme les paramètres
+  document.querySelectorAll('.open-friends-btn').forEach(btn => btn.addEventListener('click', openFriendsScreen));
   document.getElementById('friends-back-btn').addEventListener('click', () => showTab('tribune'));
   document.getElementById('friend-add-btn').addEventListener('click', sendFriendRequest);
   document.getElementById('copy-friend-code-btn').addEventListener('click', () => {
@@ -189,14 +188,21 @@ function wireEvents() {
     if (declineTrade) { respondTrade(declineTrade.dataset.declineTrade, false); return; }
     const cancelTradeEl = e.target.closest('[data-cancel-trade]');
     if (cancelTradeEl) { cancelTrade(cancelTradeEl.dataset.cancelTrade); return; }
-    const openFriend = e.target.closest('[data-open-friend]');
-    if (openFriend) openFriendProfile(openFriend.dataset.openFriend);
+    const rankingToggle = e.target.closest('[data-ranking-toggle]');
+    if (rankingToggle) {
+      const body = document.getElementById(rankingToggle.dataset.rankingToggle);
+      if (!body) return;
+      const expand = body.style.display === 'none';
+      body.style.display = expand ? 'flex' : 'none';
+      rankingToggle.classList.toggle('expanded', expand);
+    }
   });
 
   // Profil d'un ami
   document.getElementById('friend-profile-back-btn').addEventListener('click', () => showScreen('friends'));
   document.getElementById('friend-profile-remove-btn').addEventListener('click', removeCurrentFriend);
   document.getElementById('friend-profile-trade-btn').addEventListener('click', openTradeComposer);
+  document.getElementById('friend-profile-add-btn').addEventListener('click', sendRequestToCurrentProfile);
 
   // Compositeur d'échange
   document.getElementById('trade-composer-close-btn').addEventListener('click', closeTradeComposer);

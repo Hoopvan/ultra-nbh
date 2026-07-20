@@ -31,17 +31,21 @@ export async function getFriendIds() {
   return (data || []).map(f => f.user_a === currentUser.id ? f.user_b : f.user_a);
 }
 
+const BADGE_IDS = ['friends-badge-t', 'friends-badge-m', 'friends-badge-a'];
+
 export async function updateFriendsBadge() {
-  const badge = document.getElementById('friends-badge');
-  if (!badge) return;
-  if (demoMode || !currentUser) { badge.style.display = 'none'; return; }
+  const badges = BADGE_IDS.map(id => document.getElementById(id)).filter(Boolean);
+  if (!badges.length) return;
+  if (demoMode || !currentUser) { badges.forEach(b => { b.style.display = 'none'; }); return; }
   const [{ count: reqCount }, { count: tradeCount }] = await Promise.all([
     db.from('friend_requests').select('*', { count: 'exact', head: true }).eq('to_user', currentUser.id).eq('status', 'pending'),
     db.from('card_trades').select('*', { count: 'exact', head: true }).eq('to_user', currentUser.id).eq('status', 'pending'),
   ]);
   const total = (reqCount || 0) + (tradeCount || 0);
-  badge.textContent = total;
-  badge.style.display = total > 0 ? 'flex' : 'none';
+  badges.forEach(b => {
+    b.textContent = total;
+    b.style.display = total > 0 ? 'flex' : 'none';
+  });
 }
 
 export async function openFriendsScreen() {
@@ -95,6 +99,7 @@ async function loadFriendsData() {
   renderFriendRequests(usersById);
   renderTrades(usersById);
   await renderFriendsGrid();
+  await renderFriendsXP();
   await renderFriendsProno();
   await updateFriendsBadge();
 }
@@ -172,9 +177,33 @@ async function renderFriendsGrid() {
   if (empty) empty.style.display = 'none';
   const avatarSVGs = await Promise.all(friends.map(f => miniAvatarSVG(f)));
   grid.innerHTML = friends.map((f, i) => `
-    <div class="fan-tile friend-tile" data-open-friend="${f.id}">
+    <div class="fan-tile friend-tile">
       <div class="fan-tile-avatar">${avatarSVGs[i]}</div>
       <div class="fan-tile-name">${escapeHtml(f.name.substring(0, 8))}</div>
+    </div>`).join('');
+  grid.querySelectorAll('.friend-tile').forEach((tile, i) => {
+    tile.addEventListener('click', () => openProfile(friends[i]));
+  });
+}
+
+async function renderFriendsXP() {
+  const grid = document.getElementById('friends-xp-ranking');
+  if (!grid) return;
+  if (demoMode || !currentUser) { grid.innerHTML = ''; return; }
+  if (!friends.length) {
+    grid.innerHTML = '<div style="font-size:12px;color:var(--brand-text-muted);padding:8px 0">Ajoute des amis pour voir ce classement !</div>';
+    return;
+  }
+
+  const ids = [...friends.map(f => f.id), currentUser.id];
+  const { data } = await db.from('users').select('id,name,xp').in('id', ids).order('xp', { ascending: false });
+  grid.innerHTML = (data || []).map((u, i) => `
+    <div class="friend-request-row">
+      <div style="font-family:var(--font-display);font-weight:800;color:var(--brand-text-muted);width:20px;flex-shrink:0">${i + 1}</div>
+      <div class="friend-request-info">
+        <div class="friend-request-name">${escapeHtml(u.name)}${u.id === currentUser.id ? ' (toi)' : ''}</div>
+      </div>
+      <div style="font-family:var(--font-display);font-weight:800;color:var(--brand-primary)">${u.xp} XP</div>
     </div>`).join('');
 }
 
@@ -247,24 +276,42 @@ export async function removeCurrentFriend() {
   await loadFriendsData();
 }
 
-export async function openFriendProfile(friendId) {
-  const f = friends.find(fr => fr.id === friendId);
-  if (!f) return;
-  currentFriendProfile = f;
+export async function openProfile(user) {
+  if (!user || user.id === currentUser?.id) return;
+  currentFriendProfile = user;
   showScreen('friend-profile');
 
   const nameEl = document.getElementById('friend-profile-name');
   const subEl = document.getElementById('friend-profile-sub');
   const avEl = document.getElementById('friend-profile-avatar');
-  if (nameEl) nameEl.textContent = f.name;
-  if (subEl) subEl.textContent = `${getLevel(f.xp).name} · ${f.xp} XP · 🔥 ${f.streak}j`;
-  if (avEl) avEl.innerHTML = await buildAvatarSVG(f, 96);
-
+  const removeBtn = document.getElementById('friend-profile-remove-btn');
+  const tradeBtn = document.getElementById('friend-profile-trade-btn');
+  const addBtn = document.getElementById('friend-profile-add-btn');
   const grid = document.getElementById('friend-collection-grid');
+  const locked = document.getElementById('friend-collection-locked');
+
+  if (nameEl) nameEl.textContent = user.name;
+  if (subEl) subEl.textContent = `${getLevel(user.xp).name} · ${user.xp} XP · 🔥 ${user.streak}j`;
+  if (avEl) avEl.innerHTML = await buildAvatarSVG(user, 96);
+  if (addBtn) { addBtn.disabled = false; addBtn.textContent = '➕ Ajouter en ami'; }
+
+  const isFriend = !demoMode && currentUser ? (await getFriendIds()).includes(user.id) : false;
+
+  if (removeBtn) removeBtn.style.display = isFriend ? '' : 'none';
+  if (tradeBtn) tradeBtn.style.display = isFriend ? '' : 'none';
+  if (addBtn) addBtn.style.display = isFriend ? 'none' : '';
+
+  if (!isFriend) {
+    if (grid) grid.innerHTML = '';
+    if (locked) locked.style.display = '';
+    currentFriendCardsMap = {};
+    return;
+  }
+  if (locked) locked.style.display = 'none';
   if (!grid) return;
   if (demoMode) { grid.innerHTML = ''; currentFriendCardsMap = {}; return; }
 
-  const { data: theirCards } = await db.from('user_cards').select('*').eq('user_id', friendId).eq('org_id', CURRENT_ORG_ID);
+  const { data: theirCards } = await db.from('user_cards').select('*').eq('user_id', user.id).eq('org_id', CURRENT_ORG_ID);
   currentFriendCardsMap = {};
   (theirCards || []).forEach(r => { currentFriendCardsMap[r.card_id] = r; });
 
@@ -284,6 +331,31 @@ export async function openFriendProfile(friendId) {
     }
     return `<div class="card-slot-empty" style="height:145px"><div style="font-size:28px;opacity:.2">?</div></div>`;
   }).join('');
+}
+
+export async function sendRequestToCurrentProfile() {
+  if (!currentFriendProfile) return;
+  if (demoMode) { showNotif('Indisponible en mode démo'); return; }
+
+  const { data, error } = await db.rpc('send_friend_request_by_id', { p_target_user_id: currentFriendProfile.id });
+  if (error) {
+    showNotif(mapError(error, {
+      CANNOT_ADD_SELF: "Tu ne peux pas t'ajouter toi-même !",
+      DIFFERENT_ORG: 'Ce fan appartient à un autre club',
+      ALREADY_FRIENDS: 'Vous êtes déjà amis',
+      REQUEST_ALREADY_SENT: 'Demande déjà envoyée',
+    }));
+    return;
+  }
+
+  const addBtn = document.getElementById('friend-profile-add-btn');
+  if (data?.auto_accepted) {
+    showNotif('🎉 Vous êtes maintenant amis !');
+    await openProfile(currentFriendProfile);
+  } else {
+    showNotif('Demande envoyée !');
+    if (addBtn) { addBtn.disabled = true; addBtn.textContent = 'Demande envoyée ✓'; }
+  }
 }
 
 export function openTradeComposer() {
