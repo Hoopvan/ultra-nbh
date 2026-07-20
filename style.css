@@ -784,6 +784,21 @@ html, body {
 .ranking-chevron { transition: transform .2s; font-size: 12px; flex-shrink: 0; }
 .ranking-toggle.expanded .ranking-chevron { transform: rotate(180deg); }
 .ranking-body { display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; }
+
+.profile-bio {
+  font-size: 13px; color: var(--brand-text); text-align: center;
+  max-width: 280px; line-height: 1.4; cursor: pointer; padding: 2px 8px;
+}
+.profile-bio-empty { color: var(--brand-text-muted); font-style: italic; }
+.profile-bio-input {
+  width: 100%; resize: none; background: var(--brand-surface); border: 1px solid var(--brand-border);
+  border-radius: var(--radius-sm); padding: 8px 10px; font-family: var(--font-body);
+  font-size: 13px; color: var(--brand-text);
+}
+.profile-bio-save-btn {
+  background: var(--brand-primary); color: var(--brand-on-primary); border: none;
+  border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer;
+}
 .btn-red-compact {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   line-height: 1.3; padding: 13px 16px; font-size: 14px;

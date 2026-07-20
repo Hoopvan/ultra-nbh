@@ -595,6 +595,14 @@
       <div class="avatar-display" id="avatar-svg"></div>
       <div class="avatar-fan-name" id="av-name">—</div>
       <div class="avatar-rank" id="av-rank">★ Curieux</div>
+      <div id="profile-bio-display" class="profile-bio profile-bio-empty">Ajoute une petite bio ✏️</div>
+      <div id="profile-bio-edit" style="display:none;width:100%;max-width:280px">
+        <textarea id="profile-bio-input" maxlength="100" rows="2" placeholder="Une petite phrase sur toi..." class="profile-bio-input"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+          <span id="profile-bio-count" style="font-size:10px;color:var(--brand-text-muted)">0/100</span>
+          <button id="profile-bio-save-btn" class="profile-bio-save-btn">Enregistrer</button>
+        </div>
+      </div>
       <button id="open-avatar-edit-btn" class="avatar-edit-btn">
         ✏️ Modifier mon look
       </button>
@@ -1225,6 +1233,7 @@
     <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
       <div style="width:96px;height:96px" id="friend-profile-avatar"></div>
       <div id="friend-profile-sub" style="font-family:var(--font-display);font-size:14px;color:var(--brand-text-muted)">—</div>
+      <div id="friend-profile-bio" class="profile-bio" style="display:none"></div>
       <button id="friend-profile-remove-btn" class="friend-remove-btn" style="display:none">Retirer cet ami</button>
     </div>
     <button id="friend-profile-trade-btn" class="btn-red btn-red-compact" style="display:none">🔄 Proposer un échange</button>

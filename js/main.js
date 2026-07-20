@@ -8,6 +8,7 @@ import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccoun
 import { subscribeToPush, unsubscribeFromPush, isPushSubscribed } from './push.js';
 import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-create.js';
 import { openAvatarEdit, setEditParam, saveAvatarEdit, toggleWorn, buyItem } from './avatar.js';
+import { openBioEdit, updateBioCount, saveBio } from './profile.js';
 import { initTuto, nextTuto, prevTuto, skipTuto } from './tuto.js';
 import { initServerDate } from './date.js';
 import { openGame, closeGame } from './games/screens.js';
@@ -137,6 +138,11 @@ function wireEvents() {
   // Boîte Mystère
   document.getElementById('boite-claim-btn').addEventListener('click', claimBoite);
   document.getElementById('tl-submit').addEventListener('click', submitTimeline);
+
+  // Bio
+  document.getElementById('profile-bio-display').addEventListener('click', openBioEdit);
+  document.getElementById('profile-bio-input').addEventListener('input', updateBioCount);
+  document.getElementById('profile-bio-save-btn').addEventListener('click', saveBio);
 
   // Édition avatar
   document.getElementById('open-avatar-edit-btn').addEventListener('click', openAvatarEdit);

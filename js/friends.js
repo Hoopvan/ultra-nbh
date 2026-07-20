@@ -289,11 +289,23 @@ export async function openProfile(user) {
   const addBtn = document.getElementById('friend-profile-add-btn');
   const grid = document.getElementById('friend-collection-grid');
   const locked = document.getElementById('friend-collection-locked');
+  const bioEl = document.getElementById('friend-profile-bio');
 
   if (nameEl) nameEl.textContent = user.name;
   if (subEl) subEl.textContent = `${getLevel(user.xp).name} · ${user.xp} XP · 🔥 ${user.streak}j`;
   if (avEl) avEl.innerHTML = await buildAvatarSVG(user, 96);
   if (addBtn) { addBtn.disabled = false; addBtn.textContent = '➕ Ajouter en ami'; }
+
+  if (bioEl) {
+    bioEl.style.display = 'none';
+    if (!demoMode) {
+      // Requête isolée (pas dans le SEL partagé des listes) : si la migration
+      // bio n'a pas encore tourné, seul cet affichage échoue silencieusement,
+      // pas tout le classement.
+      const { data: bioData } = await db.from('users').select('bio').eq('id', user.id).single();
+      if (bioData?.bio) { bioEl.textContent = bioData.bio; bioEl.style.display = ''; }
+    }
+  }
 
   const isFriend = !demoMode && currentUser ? (await getFriendIds()).includes(user.id) : false;
 
