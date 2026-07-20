@@ -258,7 +258,7 @@ export async function openFriendProfile(friendId) {
   const avEl = document.getElementById('friend-profile-avatar');
   if (nameEl) nameEl.textContent = f.name;
   if (subEl) subEl.textContent = `${getLevel(f.xp).name} · ${f.xp} XP · 🔥 ${f.streak}j`;
-  if (avEl) avEl.innerHTML = await buildAvatarSVG(f);
+  if (avEl) avEl.innerHTML = await buildAvatarSVG(f, 96);
 
   const grid = document.getElementById('friend-collection-grid');
   if (!grid) return;
