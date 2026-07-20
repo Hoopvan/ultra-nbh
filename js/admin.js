@@ -30,6 +30,7 @@ window._adminSwitchTab   = switchAdminTab;
 window._adminDeleteCard  = deleteCard;
 window._adminToggleCard  = toggleCardActive;
 window._adminMoveCard    = moveCard;
+window._adminCloseProno  = closeProno;
 
 // ── Init ───────────────────────────────────────────────────────────────────
 
@@ -57,10 +58,18 @@ async function loadMissionList() {
   const today = new Date().toISOString().split('T')[0];
   const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
 
-  const { data } = await db.from('games')
-    .select('id, type, date, active, content')
+  let { data, error } = await db.from('games')
+    .select('id, type, date, active, content, closed_at')
     .eq('org_id', CURRENT_ORG_ID)
     .or(`date.gte.${weekAgo},type.eq.boite_mystere`);
+
+  if (error) {
+    // Repli si la migration 29 (colonne closed_at) n'a pas encore été exécutée.
+    ({ data } = await db.from('games')
+      .select('id, type, date, active, content')
+      .eq('org_id', CURRENT_ORG_ID)
+      .or(`date.gte.${weekAgo},type.eq.boite_mystere`));
+  }
 
   const el = document.getElementById('admin-mission-list');
   if (!el) return;
@@ -99,6 +108,15 @@ async function loadMissionList() {
     const dateCell = m.type === 'boite_mystere'
       ? `<span class="admin-row-date">∞</span>`
       : `<input type="date" class="admin-date-input" value="${m.date}" onchange="window._adminUpdateDate('${m.id}',this.value)">`;
+
+    const hasFinalScore = m.content?.score_domicile_final != null && m.content?.score_exterieur_final != null;
+    let pronoAction = '';
+    if (m.type === 'pronostic' && hasFinalScore) {
+      pronoAction = m.closed_at
+        ? `<span style="font-size:10px;color:var(--white-muted);white-space:nowrap">✓ Clôturé</span>`
+        : `<button class="admin-toggle" style="background:rgba(245,166,35,.15);border-color:rgba(245,166,35,.3);color:var(--gold)" onclick="window._adminCloseProno('${m.id}')">🏆 Clôturer</button>`;
+    }
+
     return `${separator}<div class="admin-row">
       <div class="admin-row-info">
         ${dateCell}
@@ -106,6 +124,7 @@ async function loadMissionList() {
         ${preview ? `<span class="admin-row-preview">${escapeHtml(preview)}</span>` : ''}
       </div>
       <div class="admin-row-actions">
+        ${pronoAction}
         <button class="admin-toggle ${m.active ? 'on' : 'off'}" onclick="window._adminToggle('${m.id}',${!m.active})">${m.active ? 'ON' : 'OFF'}</button>
         <button class="admin-del" onclick="window._adminDelete('${m.id}')">🗑</button>
       </div>
@@ -392,6 +411,16 @@ async function toggleMissionActive(id, active) {
 async function deleteMission(id) {
   if (!confirm('Supprimer cette mission ?')) return;
   await db.from('games').delete().eq('id', id).eq('org_id', CURRENT_ORG_ID);
+  await loadMissionList();
+}
+
+async function closeProno(id) {
+  if (!confirm('Clôturer ce pronostic ? Les points seront distribués aux joueurs et cette action est définitive.')) return;
+  const { error } = await db.rpc('close_pronostic_match', { p_game_id: id });
+  if (error) {
+    alert(error.message?.includes('ALREADY_CLOSED') ? 'Ce pronostic est déjà clôturé.' : 'Erreur lors de la clôture : ' + error.message);
+    return;
+  }
   await loadMissionList();
 }
 

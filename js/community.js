@@ -1,10 +1,12 @@
 import { db, LEVELS, CURRENT_ORG_ID } from './config.js';
-import { profile, gamesData, demoMode } from './state.js';
+import { profile, gamesData, demoMode, currentUser } from './state.js';
 import { miniAvatarSVG } from './avatar.js';
 import { getLevel } from './ui.js';
 import { escapeHtml } from './utils.js';
+import { getFriendIds, updateFriendsBadge } from './friends.js';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
+const SEL = 'id,name,xp,streak,avatar_skin,avatar_top,avatar_hair_color,avatar_eyes,avatar_mouth,avatar_facial_hair,avatar_clothe,worn_items';
 
 export async function loadCommunityData() {
   if (demoMode) return;
@@ -42,8 +44,11 @@ export async function loadCommunityData() {
     }
   }
 
-  const SEL = 'id,name,xp,streak,avatar_skin,avatar_top,avatar_hair_color,avatar_eyes,avatar_mouth,avatar_facial_hair,avatar_clothe,worn_items';
+  await renderFansGrid('club');
+  await updateFriendsBadge();
+}
 
+async function fetchClubFans() {
   // Top 3 global + pool du même niveau en parallèle
   const lvl = getLevel(profile?.xp || 0);
   const [{ data: top3 }, { data: peerPool }] = await Promise.all([
@@ -51,7 +56,7 @@ export async function loadCommunityData() {
     db.from('users').select(SEL).eq('org_id', CURRENT_ORG_ID).gte('xp', lvl.min).lt('xp', lvl.max).limit(20),
   ]);
 
-  if (!top3 || top3.length === 0) return;
+  if (!top3 || top3.length === 0) return [];
 
   // Fans du même niveau hors top 3, mélangés pour la diversité
   const top3Ids = new Set(top3.map(f => f.id));
@@ -71,14 +76,47 @@ export async function loadCommunityData() {
   }
 
   const allFans = [...top3, ...peers];
+  await renderFanDuJour(allFans[0]);
+  return allFans;
+}
 
-  const top = allFans[0];
+async function renderFanDuJour(top) {
+  if (!top) return;
   const fn = document.getElementById('fj-name'); if (fn) fn.textContent = top.name;
   const fs = document.getElementById('fj-sub'); if (fs) fs.textContent = `${getLevel(top.xp).name} · ${top.xp} XP · 🔥 ${top.streak}j`;
   const fa = document.getElementById('fj-av');
   if (fa) { fa.style.cssText = 'width:44px;height:44px'; fa.innerHTML = await miniAvatarSVG(top); }
+}
 
-  const grid = document.getElementById('fans-grid'); if (!grid) return;
+async function fetchFriendFans() {
+  const ids = await getFriendIds();
+  if (currentUser) ids.push(currentUser.id);
+  if (!ids.length) return [];
+  const { data } = await db.from('users').select(SEL).in('id', ids).order('xp', { ascending: false });
+  return data || [];
+}
+
+export async function renderFansGrid(mode = 'club') {
+  document.getElementById('classement-toggle-club')?.classList.toggle('active', mode === 'club');
+  document.getElementById('classement-toggle-amis')?.classList.toggle('active', mode === 'amis');
+
+  const grid = document.getElementById('fans-grid');
+  if (!grid) return;
+
+  if (demoMode && mode === 'amis') {
+    grid.innerHTML = '<div style="grid-column:1/-1;font-size:12px;color:var(--brand-text-muted);padding:8px 0">Indisponible en mode démo</div>';
+    return;
+  }
+
+  const allFans = mode === 'club' ? await fetchClubFans() : await fetchFriendFans();
+
+  if (!allFans.length) {
+    grid.innerHTML = mode === 'amis'
+      ? '<div style="grid-column:1/-1;font-size:12px;color:var(--brand-text-muted);padding:8px 0">Ajoute des amis pour voir ce classement !</div>'
+      : '';
+    return;
+  }
+
   const avatarSVGs = await Promise.all(allFans.map(f => miniAvatarSVG(f)));
   grid.innerHTML = allFans.map((f, i) => {
     const badge = i < 3

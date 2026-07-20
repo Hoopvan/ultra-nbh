@@ -18,11 +18,22 @@ import { selectEmotion, submitPouls } from './games/pouls.js';
 import { revealAvantApres } from './games/avant-apres.js';
 import { adjustScore, submitPronostic } from './games/pronostic.js';
 import { claimBoite } from './games/boite.js';
+import { renderFansGrid } from './community.js';
+import { showNotif } from './utils.js';
+import {
+  openFriendsScreen, sendFriendRequest, respondToRequest, cancelRequest, removeCurrentFriend,
+  openFriendProfile, openTradeComposer, closeTradeComposer, pickTradeCard, confirmTrade,
+  respondTrade, cancelTrade,
+} from './friends.js';
 
 function wireEvents() {
   // Onboarding
   document.getElementById('signin-btn').addEventListener('click', signInWithGoogle);
-  document.getElementById('demo-btn').addEventListener('click', startDemoMode);
+  document.getElementById('demo-btn').addEventListener('click', () => {
+    startDemoMode();
+    const friendsBtn = document.getElementById('open-friends-btn');
+    if (friendsBtn) friendsBtn.style.display = 'none';
+  });
 
   // Consentement RGPD
   const signinBtn = document.getElementById('signin-btn');
@@ -151,6 +162,51 @@ function wireEvents() {
     showScreen('collection');
   });
   document.getElementById('collection-back-btn').addEventListener('click', () => showTab('avatar'));
+
+  // Classement Club / Amis (onglet Tribune)
+  document.getElementById('classement-toggle-club').addEventListener('click', () => renderFansGrid('club'));
+  document.getElementById('classement-toggle-amis').addEventListener('click', () => renderFansGrid('amis'));
+
+  // Amis
+  document.getElementById('open-friends-btn').addEventListener('click', openFriendsScreen);
+  document.getElementById('friends-back-btn').addEventListener('click', () => showTab('tribune'));
+  document.getElementById('friend-add-btn').addEventListener('click', sendFriendRequest);
+  document.getElementById('copy-friend-code-btn').addEventListener('click', () => {
+    const code = document.getElementById('my-friend-code').textContent;
+    if (!code || code.includes('·')) return;
+    navigator.clipboard?.writeText(code).then(() => showNotif('Code copié !')).catch(() => {});
+  });
+  document.getElementById('screen-friends').addEventListener('click', e => {
+    const acceptReq = e.target.closest('[data-accept-request]');
+    if (acceptReq) { respondToRequest(acceptReq.dataset.acceptRequest, true); return; }
+    const declineReq = e.target.closest('[data-decline-request]');
+    if (declineReq) { respondToRequest(declineReq.dataset.declineRequest, false); return; }
+    const cancelReq = e.target.closest('[data-cancel-request]');
+    if (cancelReq) { cancelRequest(cancelReq.dataset.cancelRequest); return; }
+    const acceptTrade = e.target.closest('[data-accept-trade]');
+    if (acceptTrade) { respondTrade(acceptTrade.dataset.acceptTrade, true); return; }
+    const declineTrade = e.target.closest('[data-decline-trade]');
+    if (declineTrade) { respondTrade(declineTrade.dataset.declineTrade, false); return; }
+    const cancelTradeEl = e.target.closest('[data-cancel-trade]');
+    if (cancelTradeEl) { cancelTrade(cancelTradeEl.dataset.cancelTrade); return; }
+    const openFriend = e.target.closest('[data-open-friend]');
+    if (openFriend) openFriendProfile(openFriend.dataset.openFriend);
+  });
+
+  // Profil d'un ami
+  document.getElementById('friend-profile-back-btn').addEventListener('click', () => showScreen('friends'));
+  document.getElementById('friend-profile-remove-btn').addEventListener('click', removeCurrentFriend);
+  document.getElementById('friend-profile-trade-btn').addEventListener('click', openTradeComposer);
+
+  // Compositeur d'échange
+  document.getElementById('trade-composer-close-btn').addEventListener('click', closeTradeComposer);
+  document.getElementById('trade-confirm-btn').addEventListener('click', confirmTrade);
+  document.getElementById('overlay-trade-composer').addEventListener('click', e => {
+    const myPick = e.target.closest('[data-pick-my]');
+    if (myPick) { pickTradeCard('my', myPick.dataset.pickMy); return; }
+    const theirPick = e.target.closest('[data-pick-their]');
+    if (theirPick) pickTradeCard('their', theirPick.dataset.pickTheir);
+  });
 
   // Paramètres — accessible depuis les 3 onglets, retour vers l'onglet d'origine
   let settingsOriginTab = 'avatar';

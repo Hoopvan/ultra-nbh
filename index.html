@@ -360,6 +360,7 @@
     <div style="display:flex;gap:8px;align-items:center">
       <div class="xp-chip"><span style="font-size:13px">🐾</span><span class="xp-chip-val" id="coins-t">0</span></div>
       <div class="xp-chip"><span style="font-size:13px">⚡</span><span class="xp-chip-val" id="xp-t">0</span><span class="xp-chip-label">XP</span></div>
+      <button id="open-friends-btn" class="settings-icon-btn" style="position:relative" aria-label="Mes amis">👥<span id="friends-badge" class="friends-badge" style="display:none">0</span></button>
       <button class="settings-icon-btn open-settings-btn" aria-label="Paramètres">⚙️</button>
     </div>
   </div>
@@ -400,6 +401,10 @@
       <div><div class="fan-jour-label">⭐ Fan du jour</div><div class="fan-jour-name" id="fj-name">—</div><div class="fan-jour-sub" id="fj-sub">Chargement...</div></div>
     </div>
     <div class="section-label">Communauté</div>
+    <div class="classement-toggle">
+      <button class="classement-toggle-btn active" id="classement-toggle-club" data-classement="club">Club</button>
+      <button class="classement-toggle-btn" id="classement-toggle-amis" data-classement="amis">Amis</button>
+    </div>
     <div class="fans-wall"><div class="fans-wall-grid" id="fans-grid"></div></div>
 
     <!-- SECTION NBH -->
@@ -1144,6 +1149,86 @@
   </div>
   <div id="collection-tabs" class="collection-tabs"></div>
   <div id="collection-grid" class="collection-grid" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
+</div>
+
+<!-- MES AMIS -->
+<div id="screen-friends" class="screen" style="display:none;flex-direction:column">
+  <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 8px;flex-shrink:0;border-bottom:1px solid var(--brand-border)">
+    <button id="friends-back-btn" style="background:transparent;border:none;color:var(--brand-text);font-size:22px;cursor:pointer;padding:0 8px 0 0;line-height:1">←</button>
+    <div style="font-family:var(--font-display);font-size:24px;font-weight:900;color:var(--brand-text)">MES AMIS</div>
+  </div>
+  <div class="screen-scroll" style="padding:16px;display:flex;flex-direction:column;gap:8px">
+    <div class="friend-code-card">
+      <div class="friend-code-label">Mon code ami — partage-le pour qu'on t'ajoute</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="friend-code-value" id="my-friend-code">········</div>
+        <button id="copy-friend-code-btn" class="friend-copy-btn">📋 Copier</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <input id="friend-code-input" type="text" placeholder="Code d'un ami (ex: AB3K9XZP)" maxlength="8" class="friend-code-input">
+      <button id="friend-add-btn" class="friend-add-btn">Ajouter</button>
+    </div>
+
+    <div id="friend-requests-in-wrap" style="display:none">
+      <div class="section-label">Demandes reçues</div>
+      <div id="friend-requests-in" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <div id="friend-requests-out-wrap" style="display:none">
+      <div class="section-label">Demandes envoyées</div>
+      <div id="friend-requests-out" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <div id="friend-trades-in-wrap" style="display:none">
+      <div class="section-label">Échanges proposés</div>
+      <div id="friend-trades-in" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <div id="friend-trades-out-wrap" style="display:none">
+      <div class="section-label">Mes propositions d'échange</div>
+      <div id="friend-trades-out" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <div class="section-label">Mes amis</div>
+    <div id="friends-empty" style="display:none;font-size:13px;color:var(--brand-text-muted);padding:8px 0">Ajoute un ami avec son code pour le voir ici !</div>
+    <div id="friends-grid" class="fans-wall-grid"></div>
+
+    <div class="section-label">Classement pronostic entre amis</div>
+    <div id="friends-prono-ranking" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+
+<!-- PROFIL D'UN AMI (lecture seule) -->
+<div id="screen-friend-profile" class="screen" style="display:none;flex-direction:column">
+  <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 8px;flex-shrink:0;border-bottom:1px solid var(--brand-border)">
+    <button id="friend-profile-back-btn" style="background:transparent;border:none;color:var(--brand-text);font-size:22px;cursor:pointer;padding:0 8px 0 0;line-height:1">←</button>
+    <div id="friend-profile-name" style="font-family:var(--font-display);font-size:24px;font-weight:900;color:var(--brand-text)">—</div>
+  </div>
+  <div class="screen-scroll" style="padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+      <div style="width:96px;height:96px" id="friend-profile-avatar"></div>
+      <div id="friend-profile-sub" style="font-family:var(--font-display);font-size:14px;color:var(--brand-text-muted)">—</div>
+      <button id="friend-profile-remove-btn" class="friend-remove-btn">Retirer cet ami</button>
+    </div>
+    <button id="friend-profile-trade-btn" class="btn-red" style="font-size:15px;padding:12px">🔄 Proposer un échange</button>
+    <div class="section-label">Sa collection</div>
+    <div id="friend-collection-grid" class="collection-grid" style="padding:0"></div>
+  </div>
+</div>
+
+<!-- COMPOSITEUR D'ÉCHANGE -->
+<div id="overlay-trade-composer" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:2000;flex-direction:column;padding:16px;padding-top:calc(16px + env(safe-area-inset-top, 0px))">
+  <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;margin-bottom:10px">
+    <button id="trade-composer-close-btn" style="background:transparent;border:none;color:var(--on-dark);font-size:22px;cursor:pointer;line-height:1">✕</button>
+    <div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--on-dark)">PROPOSER UN ÉCHANGE</div>
+  </div>
+  <div style="font-size:12px;color:var(--on-dark-muted);margin-bottom:6px">Ta carte à donner</div>
+  <div id="trade-my-cards" class="trade-cards-row"></div>
+  <div style="font-size:12px;color:var(--on-dark-muted);margin:14px 0 6px">Sa carte à recevoir</div>
+  <div id="trade-their-cards" class="trade-cards-row"></div>
+  <button id="trade-confirm-btn" class="btn-red" style="margin-top:18px;font-size:15px;padding:14px" disabled>Confirmer l'échange</button>
 </div>
 
 <script type="module" src="/js/main.js"></script>

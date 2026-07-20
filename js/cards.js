@@ -17,6 +17,14 @@ let allCards = [];
 let userCardsMap = {}; // card_id → { count, id (row uuid) }
 let collectionTeamFilter = null;
 
+export function getAllCards() {
+  return allCards;
+}
+
+export function getUserCardsMap() {
+  return userCardsMap;
+}
+
 function getAvailableTeams() {
   const present = new Set(allCards.map(c => c.team || 'autre'));
   const ordered = TEAM_ORDER.filter(t => present.has(t));
@@ -238,7 +246,7 @@ function showPackOverlay(drawn, newCardIds = new Set()) {
   });
 }
 
-function buildCardFront(card, isNew = false) {
+export function buildCardFront(card, isNew = false) {
   return `
     <div style="position:relative;flex:1;overflow:hidden;min-height:0">
       <img class="card-photo" src="${escapeHtml(card.photo_url || '')}" alt="${escapeHtml(card.player_name)}" loading="lazy" onerror="this.style.display='none'">
