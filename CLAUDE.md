@@ -48,3 +48,7 @@ The app is a single-page app with a manual screen-router — no virtual DOM, no 
 ## Communication
 - Always explain in French what you are about to do and why before executing any command
 - Keep explanations short and clear
+
+## Journal de développement
+
+`Docs/Journal_Developpement.md` retrace l'historique complet du projet, session par session : ce qui a été fait, pourquoi, les décisions techniques, les migrations SQL créées et leur statut d'exécution, les bugs rencontrés/corrigés, ce qui reste en attente. **Mettre à jour ce fichier à la fin de chaque session de travail** (nouvelle entrée en tête de fichier, la plus récente en premier), avant de conclure — c'est la référence pour comprendre comment l'app a été construite au fil du temps, complémentaire à `git log` (qui ne capture pas le "pourquoi" ni le contexte produit).
