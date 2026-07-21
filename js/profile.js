@@ -13,7 +13,7 @@ export function renderBio() {
   const display = document.getElementById('profile-bio-display');
   if (!display) return;
   const bio = profile?.bio;
-  display.textContent = bio || 'Ajoute une petite bio ✏️';
+  display.textContent = bio || 'Ajoute une petite bio';
   display.classList.toggle('profile-bio-empty', !bio);
 }
 

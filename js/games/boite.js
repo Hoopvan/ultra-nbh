@@ -125,7 +125,9 @@ function initScratchCanvas() {
     if (transparent / (canvas.width * canvas.height) > 0.4) {
       canvas.style.display = 'none';
       document.getElementById('scratch-hint').textContent = '🎉 Révélé !';
-      document.getElementById('boite-claim-btn').style.display = 'block';
+      const claimBtn = document.getElementById('boite-claim-btn');
+      claimBtn.style.display = 'block';
+      claimBtn.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }
 

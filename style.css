@@ -513,6 +513,13 @@ html, body {
 .tuto-desc.footnote { font-size: 12px; font-style: italic; text-align: center; margin-bottom: 0; }
 .tuto-desc.hint { font-size: 11px; text-align: center; margin-bottom: 0; }
 
+@keyframes coinPop { 0% { transform: scale(0) rotate(-15deg); } 60% { transform: scale(1.25) rotate(8deg); } 100% { transform: scale(1) rotate(0); } }
+.tuto-coin-emoji.tuto-coin-pop { animation: coinPop .6s cubic-bezier(.34,1.56,.64,1); }
+.tuto-coin-counter {
+  font-family: var(--font-display); font-size: 44px; font-weight: 900;
+  color: var(--brand-primary); text-align: center; margin: 4px 0 20px;
+}
+
 .tuto-card-dark { background: linear-gradient(135deg, var(--brand-secondary) 0%, #0a1428 100%); border-radius: var(--radius-sm); padding: 16px; border: 1px solid rgba(255,255,255,0.15); }
 .tuto-card-dark-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--on-dark); margin-bottom: 10px; }
 .tuto-feature-list { display: flex; flex-direction: column; gap: 8px; }
@@ -788,6 +795,7 @@ html, body {
 .profile-bio {
   font-size: 13px; color: var(--brand-text); text-align: center;
   max-width: 280px; line-height: 1.4; cursor: pointer; padding: 2px 8px;
+  margin: 0 auto 14px;
 }
 .profile-bio-empty { color: var(--brand-text-muted); font-style: italic; }
 .profile-bio-input {

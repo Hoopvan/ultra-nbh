@@ -93,7 +93,7 @@ export async function loadOrgConfig() {
   }
 
   // Remplacement des références texte au nom de l'app
-  ['.name-sub', '#tuto-5 p'].forEach(sel => {
+  ['.name-sub', '#tuto-6 p'].forEach(sel => {
     const el = document.querySelector(sel);
     if (el) el.textContent = el.textContent.replace(/Hoop NBH/g, appName);
   });
