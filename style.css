@@ -773,6 +773,9 @@ html, body {
   position: relative; cursor: pointer; border: 2px solid transparent; opacity: .75;
   transition: border-color .15s, opacity .15s; display: flex; flex-direction: column;
 }
+.trade-card-pick.card-rarity-bronze { border-color: #cd7f32; }
+.trade-card-pick.card-rarity-silver { border-color: #b8b8c8; }
+.trade-card-pick.card-rarity-gold   { border-color: #ffd700; }
 .trade-card-pick.picked { border-color: var(--brand-primary); opacity: 1; }
 .trade-card-count {
   position: absolute; top: 24px; right: 5px; font-size: 9px; font-weight: 800;

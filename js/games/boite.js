@@ -4,7 +4,13 @@ import { profile, gamesData, demoMode, setProfile } from '../state.js';
 import { showNotif } from '../utils.js';
 import { updateUI } from '../ui.js';
 
-function closeGame() { document.dispatchEvent(new Event('game:closed')); }
+function closeGame() {
+  document.querySelectorAll('.game-screen').forEach(g => {
+    g.classList.remove('active');
+    g.style.display = 'none';
+  });
+  document.dispatchEvent(new Event('game:closed'));
+}
 
 let _boiteResult = null;
 

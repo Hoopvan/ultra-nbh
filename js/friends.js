@@ -385,13 +385,13 @@ export function openTradeComposer() {
   if (myEl) myEl.innerHTML = myCards.length
     ? myCards.map(c => {
         const count = getUserCardsMap()[c.id]?.count || 0;
-        return `<div class="trade-card-pick" data-pick-my="${c.id}">${buildCardFront(c)}<div class="trade-card-count${count === 1 ? ' trade-card-count-warn' : ''}">×${count}</div></div>`;
+        return `<div class="trade-card-pick card-rarity-${c.rarity}" data-pick-my="${c.id}">${buildCardFront(c)}<div class="trade-card-count${count === 1 ? ' trade-card-count-warn' : ''}">×${count}</div></div>`;
       }).join('')
     : '<div style="color:var(--on-dark-muted);font-size:12px;padding:8px">Aucune carte à proposer</div>';
   if (theirEl) theirEl.innerHTML = theirCards.length
     ? theirCards.map(c => {
         const count = currentFriendCardsMap[c.id]?.count || 0;
-        return `<div class="trade-card-pick" data-pick-their="${c.id}">${buildCardFront(c)}<div class="trade-card-count">×${count}</div></div>`;
+        return `<div class="trade-card-pick card-rarity-${c.rarity}" data-pick-their="${c.id}">${buildCardFront(c)}<div class="trade-card-count">×${count}</div></div>`;
       }).join('')
     : '<div style="color:var(--on-dark-muted);font-size:12px;padding:8px">Aucune carte disponible</div>';
 

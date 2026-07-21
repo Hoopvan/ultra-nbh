@@ -1,4 +1,4 @@
-import { db, CURRENT_ORG_ID, TEAM_LABEL } from './config.js';
+import { db, CURRENT_ORG_ID, TEAM_LABEL, TEAM_ORDER } from './config.js';
 import { profile } from './state.js';
 import { escapeHtml } from './utils.js';
 
@@ -501,16 +501,32 @@ async function loadCardList() {
   if (!container) return;
   container.innerHTML = '<div style="color:var(--white-muted);font-size:13px;padding:8px 0">Chargement…</div>';
   const { data: cards } = await db.from('cards').select('*').eq('org_id', CURRENT_ORG_ID).order('sort_order');
-  adminCards = cards || [];
+  const raw = cards || [];
+  // Regroupe par categorie (ordre TEAM_ORDER, categories inconnues a la fin)
+  // avant l'ordre manuel — deplacer une carte ▲▼ reordonne donc dans sa
+  // categorie sans jamais la faire sauter dans une autre.
+  adminCards = raw.slice().sort((a, b) => {
+    const ia = TEAM_ORDER.includes(a.team) ? TEAM_ORDER.indexOf(a.team) : TEAM_ORDER.length;
+    const ib = TEAM_ORDER.includes(b.team) ? TEAM_ORDER.indexOf(b.team) : TEAM_ORDER.length;
+    if (ia !== ib) return ia - ib;
+    return a.sort_order - b.sort_order;
+  });
   if (!adminCards.length) { container.innerHTML = '<div style="color:var(--white-muted);font-size:13px;padding:8px 0">Aucune carte.</div>'; return; }
 
   const RARITY_COLOR = { bronze: '#cd7f32', silver: '#b8b8c8', gold: '#ffd700' };
   const btnStyle = 'background:var(--black3);border:1px solid var(--black5);border-radius:6px;padding:4px 7px;color:var(--white-muted);font-size:13px;cursor:pointer;line-height:1';
 
+  let lastTeam;
   container.innerHTML = adminCards.map((c, i) => {
-    const isFirst = i === 0, isLast = i === adminCards.length - 1;
+    const isFirst = i === 0 || adminCards[i - 1].team !== c.team;
+    const isLast = i === adminCards.length - 1 || adminCards[i + 1].team !== c.team;
     const team = TEAM_LABEL[c.team] || c.team || '—';
-    return `
+    let header = '';
+    if (c.team !== lastTeam) {
+      header = `<div class="section-label" style="margin-top:${i === 0 ? 0 : 16}px;margin-bottom:8px">${escapeHtml(team)}</div>`;
+      lastTeam = c.team;
+    }
+    return `${header}
     <div style="background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;${!c.active ? 'opacity:.4' : ''}">
       ${c.photo_url ? `<img src="${c.photo_url}" style="width:36px;height:50px;object-fit:cover;border-radius:6px;border:1px solid var(--black5);flex-shrink:0">` : '<div style="width:36px;height:50px;background:var(--black3);border-radius:6px;flex-shrink:0"></div>'}
       <div style="flex:1;min-width:0">
