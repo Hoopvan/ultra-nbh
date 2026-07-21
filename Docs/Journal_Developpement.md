@@ -27,7 +27,7 @@ Un plan détaillé a été élaboré (mode plan Claude Code) avant tout codage, 
 | `28_card_trades.sql` | Dédoublonnage défensif de `user_cards` (l'écriture cliente non atomique existante pouvait créer des doublons) + contrainte unique `(user_id, card_id)`. **Policy SELECT manquante enfin ajoutée sur `user_cards`** (self-ou-ami) — comblait une dette d'audit RLS en attente depuis la session du redesign. Table `card_trades` + RPCs `propose_card_trade`/`respond_card_trade` (swap atomique avec verrous `for update` et revérification si une carte n'est plus possédée au moment d'accepter)/`cancel_card_trade`. | ✅ Exécutée et vérifiée |
 | `29_pronostic_cumulative.sql` | `users.pronostic_points` + `games.closed_at`. RPC admin `close_pronostic_match()` : calcule les points (`greatest(0, 10 - ecart)`) pour tous les votes d'un match une fois le score final connu, une seule fois (idempotent via `closed_at`). Décision motivée : cumul en colonne persistante plutôt que recalcul à la volée sur tout l'historique à chaque affichage (coût qui grandirait indéfiniment avec le nombre de matchs joués). | ✅ Exécutée et vérifiée |
 | `30_friend_request_by_id.sql` | RPC `send_friend_request_by_id()` — permet d'envoyer une demande depuis le classement Communauté (où on a l'id du fan mais pas son code, privé). Même logique de garde que `send_friend_request` (org, doublons, auto-accept si demande croisée). | ✅ Exécutée |
-| `31_user_bio.sql` | Colonne `users.bio` (100 caractères max, check constraint), grant update additif (colonne cosmétique, même traitement que `name`/`avatar_*`). | ⏳ **Pas encore confirmée exécutée** — à faire avant que la bio fonctionne en prod |
+| `31_user_bio.sql` | Colonne `users.bio` (100 caractères max, check constraint), grant update additif (colonne cosmétique, même traitement que `name`/`avatar_*`). | ✅ Exécutée |
 
 **Code front (nouveau module `js/friends.js` + modifications) :**
 - Écran `#screen-friends` : code perso à copier, ajout par code, demandes reçues/envoyées, échanges proposés/reçus, liste d'amis, **classement XP et classement pronostic entre amis en accordéon** (chevrons ▾/▴, repliés par défaut pour ne pas avoir à scroller pour atteindre le second).
@@ -44,24 +44,14 @@ Un plan détaillé a été élaboré (mode plan Claude Code) avant tout codage, 
 2. **Texte du bouton "Proposer un échange" rogné en haut sur iOS Safari.** Hypothèse retenue : mélange emoji + texte majuscule (`text-transform`) sur police display à petite taille (15px) faisait déborder la ligne au-dessus du bouton, coupée par l'`overflow:hidden` nécessaire à l'effet de reflet (`.btn-red::after`). Fix : nouvelle classe `.btn-red-compact` avec centrage flexbox + `line-height` explicite, plus robuste face aux métriques de police variables que l'alignement de ligne par défaut.
 3. **Deux badges (rareté + nombre d'exemplaires) se chevauchaient** sur les cartes du compositeur d'échange (78px de large, trop étroit pour deux badges côte à côte). Fix : empilés verticalement dans le même coin plutôt que dans des coins opposés.
 
-### Problème non résolu en fin de session : push git bloqué
+### Incident résolu : push git bloqué par une panne DNS GitHub
 
-`git push origin main` échoue de façon intermittente avec `Could not resolve host: github.com` — confirmé par `nslookup github.com` qui time out alors que `nslookup google.com` résout normalement. L'utilisateur confirme le même échec (`DNS_PROBE_FINISHED_NXDOMAIN`) depuis son propre navigateur, donc ce n'est **pas spécifique à l'environnement Claude Code** — panne DNS ponctuelle côté GitHub ou du réseau, à priori temporaire.
+`git push origin main` a échoué de façon intermittente pendant une bonne partie de la session avec `Could not resolve host: github.com` — confirmé par `nslookup github.com` qui timait out alors que `nslookup google.com` résolvait normalement. L'utilisateur a confirmé le même échec (`DNS_PROBE_FINISHED_NXDOMAIN`) depuis son propre navigateur, donc ce n'était **pas spécifique à l'environnement Claude Code** — panne DNS ponctuelle côté GitHub ou du réseau. Résolu tout seul le lendemain (2026-07-21) : `nslookup github.com` a de nouveau résolu une IP (`140.82.121.4`), et les 4 commits accumulés (`6b6fa50`, `93d5fcd`, `42ca7e3`, `6fb40e7`) ont été poussés d'un coup. `origin/main` est à jour à `6fb40e7`.
 
-**État exact au moment de la fin de session** (vérifié via `git rev-parse origin/main` et `git log origin/main..HEAD`) :
-- `origin/main` (dernier push confirmé réussi) : `4720b7e` (fix bug avatar 96px + fix bouton échange).
-- **3 commits locaux en attente de push**, dans l'ordre :
-  1. `6b6fa50` — badge nombre d'exemplaires dans le compositeur d'échange
-  2. `93d5fcd` — classement XP amis + profils cliquables + icône amis sur 3 onglets + fond booster
-  3. `42ca7e3` — bio personnalisable
-  4. *(+ ce commit du journal lui-même, à suivre)*
-
-Des tentatives de push automatiques ont été programmées en tâche de fond (`ScheduleWakeup`) toutes les ~20-25 minutes ; si la session reprend avant que ça ait abouti, **relancer `git push origin main`** en premier réflexe.
+**Piège à retenir** : si `git push` échoue avec `Could not resolve host`, vérifier `nslookup github.com` vs `nslookup google.com` pour distinguer une vraie panne DNS externe (résolution automatique en quelques heures, rien à corriger côté projet) d'un souci d'environnement. Ne pas chercher de fix côté config git/réseau local dans ce cas.
 
 ### Reste à faire
 
-- **Confirmer le push** des 3-4 commits en attente une fois le DNS résolu.
-- **Exécuter la migration `31_user_bio.sql`** (bio pas encore active en prod tant que ce n'est pas fait).
 - **Tester en conditions réelles avec 2 comptes** : classement XP/prono amis (le prono nécessite un match clôturé via le bouton admin "🏆 Clôturer"), échange de cartes bout-en-bout, ajout d'ami depuis le classement Communauté (nouveau depuis `30_friend_request_by_id.sql`), affichage de la bio sur un profil ami.
 - Le classement pronostic amis affichera 0 pour tout le monde tant qu'aucun match n'a été clôturé via le nouveau bouton admin (les matchs déjà joués avant l'activation de la fonctionnalité ne sont pas recomptés rétroactivement — compromis assumé, voir `29_pronostic_cumulative.sql`).
 - **Dette non traitée, signalée mais volontairement hors périmètre** : l'écriture directe cliente sur `user_cards` (ouverture de boosters) n'est toujours pas verrouillée côté serveur — un client malveillant pourrait en théorie dupliquer des cartes en contournant le système d'échange. Migrer tout le tirage pondéré de cartes en RPC SQL serait un chantier séparé, plus risqué, non demandé pour l'instant.
