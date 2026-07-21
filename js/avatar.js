@@ -26,13 +26,25 @@ const OVERLAY_ECHARPE = `
   <text x="140" y="193" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="1">HERMINE</text>
 </g>`;
 
-const OVERLAY_CASQUETTE = `
+// uid : identifiant unique du rendu (évite les collisions d'id <linearGradient>
+// quand plusieurs avatars avec casquette sont inlinés sur la même page, ex. liste d'amis).
+const OVERLAY_CASQUETTE = (uid) => `
 <g opacity="0.97">
-  <path d="M78,82 Q72,28 140,8 Q208,28 202,82 Z" fill="#0d1b3e"/>
-  <rect x="72" y="80" width="136" height="7" rx="3" fill="#0b1e42"/>
-  <path d="M72,87 L208,87 Q222,95 212,106 L72,106 Z" fill="#0b1e42"/>
-  <circle cx="140" cy="10" r="4" fill="#1a3060"/>
-  <text x="140" y="64" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="16" fill="#e8192c">NBH</text>
+  <defs>
+    <linearGradient id="capGrad-${uid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1c3266"/>
+      <stop offset="100%" stop-color="#0a1530"/>
+    </linearGradient>
+  </defs>
+  <path d="M82,68 Q77,22 140,6 Q203,22 198,68 Z" fill="url(#capGrad-${uid})"/>
+  <path d="M140,8 Q137,38 140,68" stroke="#000" stroke-opacity="0.22" stroke-width="1.5" fill="none"/>
+  <path d="M100,64 Q104,32 140,10" stroke="#000" stroke-opacity="0.16" stroke-width="1.2" fill="none"/>
+  <path d="M180,64 Q176,32 140,10" stroke="#000" stroke-opacity="0.16" stroke-width="1.2" fill="none"/>
+  <circle cx="140" cy="7.5" r="3.5" fill="#0a1530" stroke="#2a3f70" stroke-width="1.2"/>
+  <rect x="78" y="65" width="124" height="6" rx="3" fill="#0a1530"/>
+  <path d="M74,69 Q72,77 82,83 Q140,93 198,81 Q205,76 194,69 Z" fill="#0a1530"/>
+  <path d="M76,72 Q140,83 196,72" stroke="#000" stroke-opacity="0.3" stroke-width="1.2" fill="none"/>
+  <text x="140" y="48" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="14" fill="#e8192c">NBH</text>
 </g>`;
 
 const OVERLAY_BANDEAU = `
@@ -69,18 +81,18 @@ async function fetchDicebear(p, size) {
     params.set('facialHair', p.avatar_facial_hair);
     params.set('facialHairColor', HAIR_HEX[p?.avatar_hair_color] || HAIR_HEX.brown);
   }
-  if (hasLunettes) params.set('accessories', 'sunglasses');
+  if (hasLunettes) { params.set('accessories', 'sunglasses'); params.set('accessoriesColor', 'e8192c'); }
 
   const res = await fetch(`${DICEBEAR_API}?${params}`);
   if (!res.ok) throw new Error('dicebear');
   return res.text();
 }
 
-function applyOverlays(svg, worn) {
+function applyOverlays(svg, worn, uid) {
   const overlays = [];
   if (worn.includes('bandeau'))   overlays.push(OVERLAY_BANDEAU);
   if (worn.includes('echarpe'))   overlays.push(OVERLAY_ECHARPE);
-  if (worn.includes('casquette')) overlays.push(OVERLAY_CASQUETTE);
+  if (worn.includes('casquette')) overlays.push(OVERLAY_CASQUETTE(uid));
   if (worn.includes('maillot'))   overlays.push(OVERLAY_MAILLOT);
   return overlays.length ? svg.replace('</svg>', overlays.join('') + '</svg>') : svg;
 }
@@ -90,12 +102,13 @@ export async function buildAvatarSVG(p, size = 280) {
   if (_mainCache[key]) return _mainCache[key];
   const worn = p?.worn_items || [];
   try {
-    const svg = applyOverlays(await fetchDicebear(p, size), worn);
+    const svg = applyOverlays(await fetchDicebear(p, size), worn, ++_uidCounter);
     _mainCache[key] = svg;
     return svg;
   } catch { return FALLBACK_SVG; }
 }
 
+let _uidCounter = 0;
 const _miniCache = {};
 const _mainCache = {};
 
@@ -115,7 +128,7 @@ export async function miniAvatarSVG(p) {
   const key = p?.id;
   if (key && _miniCache[key]) return _miniCache[key];
   try {
-    const svg = applyOverlays(await fetchDicebear(p, 52), p?.worn_items || []);
+    const svg = applyOverlays(await fetchDicebear(p, 52), p?.worn_items || [], ++_uidCounter);
     if (key) _miniCache[key] = svg;
     return svg;
   } catch { return FALLBACK_SVG; }
