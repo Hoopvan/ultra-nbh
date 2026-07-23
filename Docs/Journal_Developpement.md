@@ -4,6 +4,117 @@ Historique du projet, session par session, la plus récente en premier. Objectif
 
 ---
 
+## Session du 2026-07-23 (suite) — Audit responsive complet + fix scroll-end-spacer confirmé
+
+### Contexte
+
+Suite de la session bugs mobile/PWA du même jour (voir entrée précédente) : l'extension Chrome (`claude-in-chrome`) a fini par se connecter, et l'utilisateur a demandé un audit responsive "expert" complet de toute la webapp (tous breakpoints 320-2560px, tous navigateurs, accessibilité, perf, PWA...).
+
+**Cadrage posé avant de commencer (question explicite à l'utilisateur) :** `#app` a un `max-width:430px` fixe et volontaire (cadre téléphone centré sur desktop, décision déjà prise en session design refresh) — l'utilisateur a confirmé vouloir **garder ce principe** plutôt que refondre en vraie mise en page desktop. L'audit s'est donc concentré sur la vraie plage d'usage (320-430px), avec juste une vérification que le cadre desktop ne bug pas.
+
+### Contrainte d'outillage découverte et contournée
+
+`resize_window` (extension Chrome) ne redimensionne pas réellement la fenêtre native en dessous d'environ 500-520px de large (limite interne de Chrome) — confirmé par `window.innerWidth` qui restait bloqué ~500-524px quel que soit la valeur demandée, y compris via un appel Win32 `MoveWindow` direct (PowerShell) en dessous de cette largeur. **Contournement retenu** : forcer la largeur de `#app` lui-même via une feuille de style injectée (`__vpSim(w, h)`, définit `#app{width:...!important}` + `--app-height`) plutôt que la fenêtre réelle — fiable pour tout ce qui est positionné `.screen`/`position:absolute` (contenu normal de l'app), qui suit `#app`.
+
+**Piège découvert avec cette technique** : les éléments `position:fixed` (3 `.modal-overlay`, `#overlay-booster`, `#overlay-trade-composer`, `.notif`) ignorent `#app` et se calent sur le **vrai** viewport — donc invisibles/faussés par `__vpSim` seul. Pour les tester à une largeur/hauteur réelle courte (ex. simuler un paysage), il a fallu un vrai redimensionnement de fenêtre OS via `MoveWindow` (Win32, PowerShell) — largeur toujours bridée à ~500px par Chrome, mais la **hauteur**, elle, accepte de descendre bien plus bas (testé jusqu'à 270px réels), ce qui a suffi à révéler un vrai bug (voir plus bas).
+
+### Bugs responsive trouvés et corrigés (tous vérifiés visuellement avant/après)
+
+| Bug | Cause | Fix |
+|---|---|---|
+| Compteur du prochain match (JOURS/HEURES/MIN/SEC) déborde de sa carte à ≤360px, un bloc coupé | `.countdown-box` est `flex:1` sans `min-width:0` — le minimum de contenu (padding + "00") empêche le rétrécissement en dessous d'un certain seuil, dépassé à 320-360px | `min-width:0` ajouté à `.countdown-box` (style.css) ; padding/gap/font-size encore réduits dans le `@media (max-width:360px)` existant |
+| **Overlay d'ouverture de pack (le moment le plus visible de l'app) : 3 cartes à largeur fixe 100px débordent de l'écran sans wrap sur iPhone SE/mini/13 mini (320-375px)** | `js/cards.js` `showPackOverlay()` codait en dur `CARD_W = 100` (px), sans lien avec la largeur réelle disponible | `CARD_W` calculé dynamiquement depuis `window.innerWidth` (borné 64-100px, hauteur dérivée du ratio 100:145), même logique que `setAppHeight()` déjà utilisée ailleurs dans le code |
+| **Bug bloquant découvert en testant le fix ci-dessus : en mode démo local, ouvrir un pack gèle l'app indéfiniment** | `loadCards()` (js/cards.js) n'avait pas de garde `demoMode` (contrairement à `loadUserCards()`/`persistDrawnCards()`) — appel réseau réel vers les credentials placeholder de `.env`, qui ne timeout jamais vraiment (pas juste ~7-8s comme observé ailleurs) | Ajout d'un jeu de 4 cartes factices (`DEMO_CARDS`) retourné directement si `demoMode`, sans appel réseau — cohérent avec le principe du mode démo ("bypasse Supabase partout") documenté dans CLAUDE.md |
+| Bouton "Ajouter" (ajout d'ami par code) poussé hors écran à 320px, invisible/inaccessible | `.friend-code-input` est `flex:1` sans `min-width:0` — même piège que le compteur, le champ texte a un minimum de largeur intrinsèque (~170-190px navigateur) qui pousse le bouton "Ajouter" hors du cadre | `min-width:0` ajouté à `.friend-code-input` |
+| **Overlay de pack, modales (suppression compte, niveaux, déblocage) et composeur d'échange inutilisables/bloquants sur un écran très court (paysage, fenêtre réduite)** — contenu coupé en haut ET en bas, sans aucun scroll, bouton retour inatteignable | Ces éléments `position:fixed;inset:0` centraient leur contenu (`justify-content/align-items:center` ou modale ancrée en bas) sans jamais prévoir de `overflow-y:auto` — invisible tant qu'on ne teste pas un vrai viewport court | `overflow-y:auto` ajouté à `#overlay-booster` et `#overlay-trade-composer` ; `.modal` passe à `max-height:85vh; overflow-y:auto` (pattern bottom-sheet standard) |
+
+### Revue statique (pas de bug trouvé, juste vérifié)
+
+- Tous les écrans de jeu (`pouls`, `vestiaire`, `anecdote`, `nantes_nbh`, `avant_apres`, `timeline`, `photo_mystere`, `pronostic`, `boite_mystere`) utilisent grid/flex en `%`/`fr`, aucune largeur fixe risquée trouvée.
+- `.trade-cards-row` a déjà `overflow-x:auto` pour ses cartes à largeur fixe (78px) — pattern correct, contrairement à l'overlay de pack qui ne l'avait pas.
+- Grep ciblé de tous les `flex: 1` du CSS : seuls le compteur et le champ code ami manquaient de `min-width:0` parmi les cas à risque réel (les autres, comme `.mission-info`, contiennent du texte qui *wrap* au lieu de forcer un minimum — pas de bug).
+- Aucun `outline:none` global sur les boutons/nav (seulement sur des champs de formulaire, remplacé par un changement de bordure visible) — pas d'anti-pattern d'accessibilité clavier flagrant trouvé.
+- Écrans Collection, Paramètres, Mon Perso, Tribune, Missions, panneau d'édition avatar, Mes Amis : vérifiés visuellement à 320/375/430px, scroll-end-spacer et safe-area (fixes de la session précédente) confirmés fonctionnels.
+
+### Limites explicites de cet audit (à ne pas prendre pour un audit exhaustif)
+
+- Testé uniquement sous **Chrome desktop** (via l'extension) — pas de test réel Safari/Firefox/Edge, ni Android/iOS physique.
+- Pas d'audit de contraste WCAG systématique (calcul de ratio par paire texte/fond) — vérification légère seulement (tokens `--on-dark` déjà en place depuis les sessions précédentes).
+- Pas de nettoyage CSS mort / doublons entrepris (tâche importante mais distincte, reportée si l'utilisateur la souhaite).
+- Tailles tactiles (`.game-back-btn`, `.settings-icon-btn` ≈ 34-36px) sous la recommandation 44×44px — signalé mais pas modifié unilatéralement (impact visuel notable sur des éléments de nav très visibles, à valider avec l'utilisateur avant de toucher).
+
+### Fichiers modifiés
+
+`style.css` (5 fixes ci-dessus), `js/cards.js` (largeur de carte responsive + garde démo sur `loadCards`), `js-local/` régénéré via `build.ps1`.
+
+### Reste à faire
+
+- Décider si un audit de contraste WCAG AA formel et/ou un agrandissement des zones tactiles sous 44px est souhaité.
+- Nettoyage CSS mort/doublons (non fait, reporté).
+- Confirmer sur device réel (comme toujours pour les sujets iOS/Safari — Playwright/Chrome ne suffisent pas pour les bugs WebKit spécifiques).
+
+---
+
+## Session du 2026-07-21/22 — Bugs remontés par les tests, cadeau de bienvenue, CMS cartes, exploration équipements
+
+### Contexte / demande initiale
+
+Suite directe de la session du 2026-07-20 (système d'amis) : l'utilisateur a testé en conditions réelles et remonté une série de bugs + demandes ponctuelles au fil de la session, plutôt qu'un seul chantier planifié.
+
+### Bugs corrigés
+
+| Bug | Cause | Fix |
+|---|---|---|
+| Bio "Mon Perso" pas centrée, collée à "Modifier mon look" | `.profile-bio` (div bloc) n'avait pas `margin:auto` — le `text-align:center` du parent ne centre pas un enfant bloc, seulement le texte à l'intérieur de sa propre boîte. Bouton sans marge du haut. | `margin:0 auto 14px` sur `.profile-bio`. |
+| Pictogramme ✏️ affiché deux fois (bio + "Modifier mon look") | Redondance de contenu, pas un bug technique. | Retiré le ✏️ du texte de la bio (`js/profile.js`, `index.html`). |
+| Boîte Mystère reste incrustée sous l'écran Missions après clic sur "J'AI COMPRIS" | **Root cause trouvée après un premier correctif insuffisant** (scrollIntoView du bouton) : `claimBoite()` appelle une fonction `closeGame()` *locale à `js/games/boite.js`*, différente de celle exportée par `screens.js` et utilisée par la flèche retour — cette version locale se contentait de `dispatchEvent('game:closed')` sans jamais cacher les éléments `.game-screen`. | `closeGame()` locale de `boite.js` cache maintenant aussi `.game-screen` avant de dispatcher l'event, comme la version de `screens.js`. |
+| Badges de rareté (bronze/argent/or) sans couleur dans le compositeur d'échange | `js/friends.js` construisait les cartes du compositeur sans poser la classe `card-rarity-${rarity}` (présente dans la vue "Ma collection"/"Sa collection" mais oubliée ici) — le CSS qui colore bordure + badge dépend de cette classe sur le conteneur. | Classe ajoutée sur `.trade-card-pick`, + règle CSS dédiée pour le cadre (la carte n'a pas de `.card-front-face` comme la collection, structure DOM différente). |
+
+### Cadeau de bienvenue (150 🐾) + animation tuto
+
+Demande : à la création de compte, offrir 150 Hermines (au lieu de 0) pour que le joueur puisse débloquer un équipement dès le début, avec une petite animation dans l'onboarding — et garder "Couleurs NBH" gratuite mais **non portée par défaut** (pour que l'utilisateur découvre lui-même le mécanisme d'équipement). Vérifié que ce dernier point était déjà le comportement réel du code (`worn_items` démarre à `[]`, seul `active_items` contient `["couleurs"]` = juste "possédée", pas "portée") — rien à changer de ce côté.
+
+- **`supabase/32_starter_coins.sql`** (à exécuter sur Supabase) : recrée `create_profile()` à l'identique (même signature que la version de `27_friends_system.sql`), seul le coins initial passe de `0` à `150`.
+- **Nouveau slide 2 du tuto** ("Un cadeau pour commencer") inséré juste après l'écran de bienvenue — tous les slides suivants renumérotés `tuto-3` à `tuto-6` (`index.html`, `js/tuto.js` `TUTO_STEPS` passé à 6, `js/config.js` sélecteur `#tuto-6 p` mis à jour en conséquence). Animation : emoji 🐾 qui "pop" (`coinPop` keyframe) + compteur qui défile de 0 au solde réel (`requestAnimationFrame`, easing cubique), rejouable sans re-déclencher si le tuto est relancé depuis Paramètres (affiche alors le solde réel, pas re-99999 → 150 fictif).
+
+### CMS Admin > Cartes : réorganisation + nouvelles catégories
+
+Demande : formulaire d'ajout de carte avant la liste des cartes existantes (plutôt qu'après), liste triée/groupée par catégorie, + 3 nouvelles catégories : **Kop, Fans, Partenaires**.
+
+- `index.html` : blocs "Ajouter une carte" et "Cartes existantes" inversés dans le DOM.
+- `js/config.js` : `TEAM_LABEL`/`TEAM_ORDER` étendus (`pro, espoir, asso, kop, fans, partenaires, admin, autre`) — ces constantes sont déjà consommées dynamiquement partout ailleurs (onglets de la collection fan dans `cards.js`), donc les nouvelles catégories apparaissent automatiquement comme onglets dès qu'une carte les utilise, sans autre changement.
+- `js/admin.js` `loadCardList()` : la liste est maintenant triée par catégorie (ordre `TEAM_ORDER`) puis par `sort_order` manuel à l'intérieur, avec un en-tête de section par catégorie. Les flèches ▲▼ de réordonnancement sont désormais désactivées aux **limites du groupe** (pas juste début/fin de liste globale) pour qu'on ne puisse jamais faire sauter une carte dans une autre catégorie par erreur via ces boutons.
+- Aucune contrainte SQL (`CHECK`) ne restreint les valeurs de `cards.team` — pas de migration nécessaire pour les nouvelles catégories, colonne texte libre.
+
+### Équipements avatar — casquette et lunettes livrés, écharpe/maillot/bandeau abandonnés cette session
+
+Demande initiale large ("des designs de meilleure qualité, plus liés à des clubs de sport") pour les 6 équipements payants. Approche choisie : construire un **artifact HTML interactif** (avatar DiceBear + overlays réels, toggle avant/après par item) pour valider visuellement avant de toucher au vrai code — évite d'itérer à l'aveugle sur des captures d'écran.
+
+**Livré et poussé dans `js/avatar.js` :**
+- **Casquette** : redessinée (dégradé, coutures de panneaux façon vraie casquette gaufrée), rétrécie et remontée pour ne plus couper les yeux (l'ancienne version, une fois agrandie dans l'aperçu, débordait jusqu'à hauteur des yeux), texte "NBH" conservé (l'utilisateur n'a pas voulu de l'écusson rond proposé initialement). Le gradient SVG (`<linearGradient id="capGrad">`) est maintenant suffixé par un identifiant unique par avatar (`++_uidCounter`) — sinon collision d'id si plusieurs avatars avec casquette sont inlinés sur la même page (liste d'amis, classement).
+- **Lunettes** : **pas de nouveau dessin** — on garde la monture générique DiceBear (demande explicite de l'utilisateur), juste recolorée en rouge club via le paramètre natif `accessoriesColor` de l'API DiceBear (découvert en session en interrogeant `schema.json` de l'API), au lieu d'un overlay dessiné à la main comme prévu initialement.
+
+**Abandonnés cette session (écharpe, maillot, bandeau) :**
+- Mes deux premières tentatives de redesign (dessinées à la main en SVG) ont été jugées mauvaises par l'utilisateur ("horrible", "affreux") — décision : il préfère designer ces 3 items en externe et me renvoyer les fichiers plutôt que je continue à réinterpréter ses demandes.
+- Écharpe : nouvelle direction demandée mais pas encore livrée — tenue à bout de bras au-dessus de la tête (photo de référence fournie), pas nouée autour du cou comme avant.
+- Bandeau : doit devenir un **badge/pin épinglé sur le torse** (décision prise via question à choix), pas juste un habillage de headband — mais pas encore designé/intégré.
+- Maillot : l'utilisateur a fourni `Design/maillot.svg` (col en V doré/marine, bande blanche, "NBH") — **rendu visuellement bon**, mais j'ai commis l'erreur de le redessiner moi-même au lieu de l'utiliser tel quel (mal reçu, "horrible"). En repartant sur l'idée d'utiliser directement son fichier, découverte d'un problème technique réel : le SVG n'a **aucune transparence** (tous les pixels opaques, y compris les coins) — ce qui ressemblait à un damier de transparence à l'écran est en fait un motif blanc/gris opaque cuit dans l'image (résidu probable du fond studio de la photo source, mal géré par l'outil de vectorisation). Confirmé via un script Node + `sharp` (lecture des pixels bruts). **Décision utilisateur : abandonné pour cette session**, à reprendre quand il aura des fichiers avec une vraie transparence (ou détourés).
+- Livrés à l'utilisateur pour qu'il fasse le design en externe : un **gabarit SVG de calage** (`Design/gabarit-equipements.svg` — avatar en transparence + repères visage/yeux/col/zone circulaire de sécurité) et 3 **prompts de génération d'image** (écharpe/maillot/badge) prêts à coller dans un outil type Midjourney/DALL·E, avec rappel qu'il faudra vectoriser + recaler sur le gabarit ensuite.
+- **Format à respecter documenté pour toute future contribution externe** : SVG (pas raster), `viewBox="0 0 280 280"` exact, fond réellement transparent (pas juste visuellement), couleurs en dur sauf zone à paramétrer par club, texte vectorisé sauf si doit rester éditable.
+
+### Incident récurrent : DNS GitHub
+
+`git push` a de nouveau échoué avec `Could not resolve host: github.com` (même symptôme que la session du 2026-07-20 : `nslookup github.com` timeout, `nslookup google.com` résout normalement). Un simple **retry** (sans aucune autre action) a suffi à faire passer le push. Confirme que ce n'est décidément pas un problème d'environnement ou de config — juste une résolution DNS ponctuelle côté GitHub/réseau, qui se résout seule.
+
+### Reste à faire
+
+- **Exécuter `supabase/32_starter_coins.sql`** sur le Dashboard Supabase (pas encore confirmé fait par l'utilisateur à la fin de cette session).
+- **Tester en conditions réelles** : création d'un nouveau compte (150 🐾 + slide d'animation du tuto), CMS cartes réorganisé (catégories Kop/Fans/Partenaires), casquette repositionnée, lunettes recolorées.
+- **Écharpe / maillot / bandeau** : en attente de fichiers de l'utilisateur, designés en externe, avec une vraie transparence — à intégrer dans `avatar.js` une fois reçus (overlay SVG classique comme les autres items, pas de nouveau mécanisme de rendu nécessaire).
+- **`Design/`** toujours non tracké dans git (dossier de travail/scratch avec captures de bugs, polices, gabarit) — décision de le tracker ou pas toujours reportée.
+
+---
+
 ## Session du 2026-07-20 — Système d'amis complet
 
 ### Contexte / demande initiale

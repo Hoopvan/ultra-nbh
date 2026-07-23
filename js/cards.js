@@ -32,7 +32,17 @@ function getAvailableTeams() {
   return ordered;
 }
 
+const DEMO_CARDS = [
+  { id: 'demo-1', rarity: 'bronze', team: 'pro', player_name: 'Joueur Demo 1', position: 'Meneur', photo_url: '' },
+  { id: 'demo-2', rarity: 'bronze', team: 'pro', player_name: 'Joueur Demo 2', position: 'Ailier', photo_url: '' },
+  { id: 'demo-3', rarity: 'silver', team: 'pro', player_name: 'Joueur Demo 3', position: 'Pivot', photo_url: '' },
+  { id: 'demo-4', rarity: 'gold', team: 'pro', player_name: 'Joueur Demo 4', position: 'Ailier fort', photo_url: '' },
+];
+
 export async function loadCards() {
+  // Le mode demo bypasse Supabase partout ailleurs (pas de backend requis en local) ;
+  // sans ce garde, l'appel reseau reel (credentials placeholder) reste en attente indefiniment.
+  if (demoMode) { allCards = DEMO_CARDS; return; }
   const { data } = await db.from('cards').select('*').eq('active', true).eq('org_id', CURRENT_ORG_ID).order('sort_order');
   allCards = data || [];
 }
@@ -202,7 +212,14 @@ function showPackOverlay(drawn, newCardIds = new Set()) {
   overlay.style.display = 'flex';
 
   // Render face-down cards, avec une petite arrivée en cascade
-  const CARD_W = 100, CARD_H = 145;
+  // Largeur calculée depuis la place dispo (overlay padding 24px de chaque cote) :
+  // sur un petit ecran (iPhone SE/mini 320-375px), 3 cartes de 100px fixes + gaps
+  // depassaient l'ecran. Le ratio 100:145 est conserve via CARD_H derive de CARD_W.
+  const gap = 14;
+  const available = Math.min(window.innerWidth, 430) - 48;
+  const CARD_W = Math.max(64, Math.min(100, (available - gap * (drawn.length - 1)) / drawn.length));
+  const CARD_H = Math.round(CARD_W * 1.45);
+  row.style.gap = gap + 'px';
   row.innerHTML = drawn.map((_, i) => `
     <div class="card-wrap card-deal" style="width:${CARD_W}px;height:${CARD_H}px;animation-delay:${i * 120}ms">
       <div class="card-inner">
