@@ -1,4 +1,4 @@
-import { db, CURRENT_ORG_ID } from './config.js';
+import { db } from './config.js';
 import { getToday } from './date.js';
 import { currentUser, profile, demoMode, setCurrentUser, setProfile, setDemoMode, gamesData } from './state.js';
 import { updateProfile } from './profile.js';
@@ -6,6 +6,7 @@ import { loadCommunityData } from './community.js';
 import { loadGames } from './games/loader.js';
 import { showScreen, showMain } from './nav.js';
 import { subscribeToPush } from './push.js';
+import { showNotif } from './utils.js';
 
 export async function signInWithGoogle() {
   try { localStorage.setItem('hoop_rgpd', '1'); } catch(e) {}
@@ -103,10 +104,14 @@ export function confirmDeleteAccount() {
 export async function deleteAccount() {
   const input = document.getElementById('delete-confirm-input');
   if (!input || input.value.trim().toUpperCase() !== 'SUPPRIMER') return;
+  const btn = document.getElementById('delete-account-confirm-btn');
   try {
-    await db.from('pouls_votes').delete().eq('user_id', currentUser.id).eq('org_id', CURRENT_ORG_ID);
-    await db.from('users').delete().eq('id', currentUser.id);
-    await db.rpc('delete_user');
+    const { error } = await db.rpc('delete_user');
+    if (error) {
+      console.error('Delete error:', error);
+      showNotif("Impossible de supprimer le compte, réessaie plus tard.");
+      return;
+    }
     await db.auth.signOut();
     setCurrentUser(null);
     setProfile(null);
@@ -115,6 +120,9 @@ export async function deleteAccount() {
     showScreen('onboarding');
   } catch(e) {
     console.error('Delete error:', e);
+    showNotif("Impossible de supprimer le compte, réessaie plus tard.");
+  } finally {
+    if (btn) { btn.disabled = true; btn.style.opacity = '.4'; btn.style.cursor = 'not-allowed'; }
   }
 }
 
