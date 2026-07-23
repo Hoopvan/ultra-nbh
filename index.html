@@ -250,7 +250,7 @@
           Installe <span class="accent">l'app</span>
         </div>
         <p class="tuto-desc xs">
-          Accède en un tap depuis ton écran d'accueil et reçois les notifications de match. En bonus : <strong>+100 XP ⚡ +200 🐾</strong> !
+          Accède en un tap depuis ton écran d'accueil et reçois les notifications de match.
         </p>
         <div id="tuto-install-android" class="tuto-install-cta">
           <button id="tuto-install-btn" class="btn-red">📲 INSTALLER L'APP</button>
@@ -292,6 +292,9 @@
         <div class="tuto-desc hint">
           💡 Aussi depuis <strong>Ton Perso → Paramètres</strong>
         </div>
+        <p class="tuto-desc xs">
+          En bonus : <strong>+100 XP ⚡ +200 🐾</strong> à l'installation !
+        </p>
       </div>
 
     </div>
@@ -676,7 +679,7 @@
 
 <!-- ÉCRAN PARAMÈTRES -->
 <div id="screen-settings" class="screen" style="display:none;flex-direction:column">
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 8px;flex-shrink:0;border-bottom:1px solid var(--black4)">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(16px + env(safe-area-inset-top, 0px)) 16px 8px;flex-shrink:0;border-bottom:1px solid var(--black4)">
     <button id="settings-back-btn" style="background:transparent;border:none;color:var(--white);font-size:22px;cursor:pointer;padding:0 8px 0 0;line-height:1">←</button>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--white)">PARAMÈTRES</div>
   </div>
@@ -1176,7 +1179,7 @@
 
 <!-- ÉCRAN COLLECTION -->
 <div id="screen-collection" class="screen" style="display:none;flex-direction:column">
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 8px;flex-shrink:0;border-bottom:1px solid var(--black4)">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(16px + env(safe-area-inset-top, 0px)) 16px 8px;flex-shrink:0;border-bottom:1px solid var(--black4)">
     <button id="collection-back-btn" style="background:transparent;border:none;color:var(--white);font-size:22px;cursor:pointer;padding:0 8px 0 0;line-height:1">←</button>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--white)">MA COLLECTION</div>
     <div id="collection-count" style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:16px;color:var(--white-muted)">—</div>
@@ -1187,7 +1190,7 @@
 
 <!-- MES AMIS -->
 <div id="screen-friends" class="screen" style="display:none;flex-direction:column">
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 8px;flex-shrink:0;border-bottom:1px solid var(--brand-border)">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(16px + env(safe-area-inset-top, 0px)) 16px 8px;flex-shrink:0;border-bottom:1px solid var(--brand-border)">
     <button id="friends-back-btn" style="background:transparent;border:none;color:var(--brand-text);font-size:22px;cursor:pointer;padding:0 8px 0 0;line-height:1">←</button>
     <div style="font-family:var(--font-display);font-size:24px;font-weight:900;color:var(--brand-text)">MES AMIS</div>
   </div>
@@ -1249,7 +1252,7 @@
 
 <!-- PROFIL D'UN AMI (lecture seule) -->
 <div id="screen-friend-profile" class="screen" style="display:none;flex-direction:column">
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 8px;flex-shrink:0;border-bottom:1px solid var(--brand-border)">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(16px + env(safe-area-inset-top, 0px)) 16px 8px;flex-shrink:0;border-bottom:1px solid var(--brand-border)">
     <button id="friend-profile-back-btn" style="background:transparent;border:none;color:var(--brand-text);font-size:22px;cursor:pointer;padding:0 8px 0 0;line-height:1">←</button>
     <div id="friend-profile-name" style="font-family:var(--font-display);font-size:24px;font-weight:900;color:var(--brand-text)">—</div>
   </div>
