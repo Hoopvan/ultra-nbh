@@ -60,6 +60,9 @@ export function updateUI() {
   const mcProno = document.getElementById('mc-pronostic');
   if (mcProno) mcProno.style.display = gamesData.pronostic ? '' : 'none';
 
+  const mcInstall = document.getElementById('mc-install-pwa');
+  if (mcInstall) mcInstall.style.display = profile.pwa_install_date ? 'none' : '';
+
   if (profile.free_booster_date  === today) setMissionDone('mc-free-booster', 'mx-free-booster');
   if (profile.pouls_date         === today) setMissionDone('mc-pouls',        'mx-pouls');
   if (profile.vestiaire_date     === today) setMissionDone('mc-vestiaire',    'mx-vestiaire');

@@ -1,3 +1,7 @@
+export function isInStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+}
+
 export function escapeHtml(str) {
   return String(str ?? '')
     .replace(/&/g, '&amp;')

@@ -1,11 +1,12 @@
 import { startCountdown } from './utils.js';
-import { closeModal } from './utils.js';
+import { closeModal, isInStandaloneMode } from './utils.js';
 import { showLevelsModal } from './ui.js';
 import { showTab, showScreen } from './nav.js';
 import { loadOrgConfig, loadUnlockables, TABS } from './config.js';
-import { demoMode, currentUser } from './state.js';
+import { demoMode, currentUser, profile } from './state.js';
 import { initAuth, signInWithGoogle, startDemoMode, signOut, confirmDeleteAccount, deleteAccount } from './auth.js';
 import { subscribeToPush, unsubscribeFromPush, isPushSubscribed } from './push.js';
+import { claimPwaInstallReward } from './games/pwa-install.js';
 import { goToAvatarCreate, setCreateParam, submitProfile } from './profile-create.js';
 import { openAvatarEdit, setEditParam, saveAvatarEdit, toggleWorn, buyItem } from './avatar.js';
 import { openBioEdit, updateBioCount, saveBio } from './profile.js';
@@ -94,6 +95,17 @@ function wireEvents() {
   document.getElementById('m-lvl-label').addEventListener('click', showLevelsModal);
 
   // Missions
+  document.getElementById('mc-install-pwa').addEventListener('click', () => {
+    if (profile?.pwa_install_date) return;
+    if (deferredInstallPrompt) { triggerInstall(); return; }
+    document.querySelector('.open-settings-btn')?.click();
+    setTimeout(() => {
+      const panel = document.getElementById('install-instructions');
+      const arrow = document.getElementById('install-expand-arrow');
+      if (panel && panel.style.display === 'none') { panel.style.display = 'block'; if (arrow) arrow.textContent = '▲'; }
+      panel?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+  });
   document.getElementById('mc-free-booster').addEventListener('click', openDailyFreeBooster);
   ['pouls', 'vestiaire', 'anecdote'].forEach(t =>
     document.getElementById(`mc-${t}`).addEventListener('click', () => openGame(t))
@@ -282,12 +294,10 @@ function isIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 }
 
-function isInStandaloneMode() {
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-}
-
 function initInstallUI() {
   if (isInStandaloneMode()) return; // déjà installée
+
+  window.addEventListener('appinstalled', () => claimPwaInstallReward());
 
   if (isIOS()) {
     return; // Les instructions iOS sont toujours visibles dans le tuto et les paramètres

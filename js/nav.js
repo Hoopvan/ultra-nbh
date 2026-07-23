@@ -4,8 +4,10 @@ import { loadCommunityData } from './community.js';
 import { initTuto } from './tuto.js';
 import { checkBoiteAccess } from './games/boite.js';
 import { checkPronoResult } from './games/pronostic.js';
+import { claimPwaInstallReward } from './games/pwa-install.js';
 import { gamesData } from './state.js';
 import { openGame } from './games/screens.js';
+import { isInStandaloneMode } from './utils.js';
 
 /* ── NAVBAR : creux SVG dynamique ─────────────────────────────────────
    Chaque path centre la notch sur l'onglet actif.
@@ -57,7 +59,10 @@ export function showTab(tab) {
   updateNavbar(tab);
   updateUI();
   if (tab === 'tribune') loadCommunityData();
-  if (tab === 'missions') { checkBoiteAccess(); checkPronoResult(); }
+  if (tab === 'missions') {
+    checkBoiteAccess(); checkPronoResult();
+    if (isInStandaloneMode()) claimPwaInstallReward();
+  }
 }
 
 export function showMain() {
