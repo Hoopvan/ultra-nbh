@@ -8,6 +8,22 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Hoop NBH">
+<script>
+(function () {
+  /* iOS (Safari + PWA installee) calcule 100dvh de facon peu fiable,
+     surtout en mode standalone : le resultat peut deborder ou laisser
+     un vide selon les versions. window.innerHeight reste la source la
+     plus fiable sur tous les navigateurs/modes ; on l'expose en variable
+     CSS, recalculee a chaque changement reel de viewport. */
+  function setAppHeight() {
+    document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
+  }
+  setAppHeight();
+  window.addEventListener('resize', setAppHeight);
+  window.addEventListener('orientationchange', setAppHeight);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', setAppHeight);
+})();
+</script>
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
 <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
