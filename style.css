@@ -162,6 +162,12 @@ html, body {
   isolation: isolate;
 }
 .tab-content::-webkit-scrollbar { display: none; }
+/* Filet de securite : Safari iOS ignore parfois le padding-bottom d'un
+   conteneur scrollable qui est aussi un flex-item (bug WebKit connu et
+   ancien). Un vrai element en fin de contenu, lui, est toujours respecte —
+   c'est ce qui garantit que le dernier element ne reste jamais a moitie
+   cache sous la navbar une fois scrolle tout en bas. */
+.scroll-end-spacer { height: calc(84px + env(safe-area-inset-bottom, 0px)); }
 
 /* ══════════════════════════════════════════════════════════════════════
    LOADING
